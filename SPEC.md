@@ -9,6 +9,9 @@ för att följa just det laget. Inget lag är hårdkodat.
 - En användare (jag), på mobilen.
 - Körs via **GitHub Pages** (`https://flyinggooner.github.io/Football-not-soccer/`) och läggs till på hemskärmen.
   Lokal fil (`file://`) stöds i mån av möjlighet men är inte målet.
+- Kan **installeras** som app (PWA) via Chrome → ⋮ → *Installera app* / *Lägg till på startskärmen*.
+  Öppnas då i eget fönster utan webbläsarens adressfält. Kräver `manifest.webmanifest` och ikoner i `icons/`
+  bredvid `index.html` (enda undantaget från en-fil-regeln). Ingen service worker; offline sköts som förut via `localStorage`.
 - Svarar snabbt på: *Hur ser tabellen ut? Vilka matcher spelas härnäst? Hur gick det för mitt lag?*
 
 ## Lägen
