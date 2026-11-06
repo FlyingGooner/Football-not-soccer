@@ -1,7 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" fill="#37003C"/>
-  <circle cx="256" cy="256" r="150" fill="#fff"/>
-  <polygon points="256,186 322,234 297,312 215,312 190,234" fill="#37003C"/>
-  <path d="M256 106v80M322 234l78-24M297 312l46 66M215 312l-46 66M190 234l-78-24" stroke="#37003C" stroke-width="14"/>
-  <circle cx="256" cy="256" r="150" fill="none" stroke="#00FF85" stroke-width="16"/>
+  <text x="256" y="320" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="900" font-size="190" letter-spacing="-10" fill="#fff">F<tspan fill="#00FF85" font-size="140">n</tspan>S</text>
 </svg>
