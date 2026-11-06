@@ -11,11 +11,12 @@ för att följa just det laget. Inget lag är hårdkodat.
   Lokal fil (`file://`) stöds i mån av möjlighet men är inte målet.
 - Kan **installeras** som app (PWA) via Chrome → ⋮ → *Installera app* / *Lägg till på startskärmen*.
   Öppnas då i eget fönster utan webbläsarens adressfält. Kräver `manifest.webmanifest` och ikoner i `icons/`
-  bredvid `index.html` (enda undantaget från en-fil-regeln). Ingen service worker; offline sköts som förut via `localStorage`.
+  bredvid `index.html` (undantag från en-fil-regeln, liksom `presentation.html`: en fristående
+  mobilpresentation av appen utan externa resurser). Ingen service worker; offline sköts som förut via `localStorage`.
 - Svarar snabbt på: *Hur ser tabellen ut? Vilka matcher spelas härnäst? Hur gick det för mitt lag?*
 
 ## Version
-- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.5.2`, så man ser när en ny version nått GitHub Pages.
+- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.5.3`, så man ser när en ny version nått GitHub Pages.
 
 ## Lägen
 Appen har två lägen. Valt läge sparas i `localStorage` och appen öppnas i samma läge nästa gång.
