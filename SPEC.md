@@ -78,6 +78,7 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - Valt lag markeras med lagets egen färg (från datakällan) som vänsterkant.
 - Ljust tema: vita kort på ljusgrå bakgrund (`#F2F2F2`), lila rubriker.
   Mörkt tema (`prefers-color-scheme: dark`): mörklila bakgrund (`#1A001D`), kort i `#2A002E`.
+- Sidan deklarerar `color-scheme: light dark` så att webbläsare med tvingat mörkt läge (t.ex. Chrome/Brave) inte färgar om den.
 - Typsnitt: systemets sans-serif, fet och kompakt i rubriker och siffror (tabular-nums).
 - Rundade kort (8–12 px), tydliga accordion-pilar som roterar vid öppning, mjuk animation (≤ 200 ms,
   avstängd vid `prefers-reduced-motion`).
