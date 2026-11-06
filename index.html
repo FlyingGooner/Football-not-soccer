@@ -44,25 +44,8 @@ body {
   font-variant-numeric: tabular-nums;
   padding-bottom: env(safe-area-inset-bottom);
 }
-header {
-  position: sticky; top: 0; z-index: 10;
-  background: var(--purple);
-  color: var(--head-text);
-  padding: calc(env(safe-area-inset-top) + 10px) 16px 10px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  border-bottom: 3px solid var(--green);
-}
-header h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
-header h1 span { color: var(--green); }
-#refresh {
-  min-width: 44px; min-height: 44px;
-  border: 0; border-radius: 22px; padding: 0 16px;
-  background: var(--green); color: var(--purple);
-  font: inherit; font-weight: 700; cursor: pointer;
-}
-#refresh:disabled { opacity: .6; }
-#refresh:focus-visible, .acc-toggle:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
-#status { padding: 8px 16px 0; font-size: 13px; color: var(--muted); min-height: 26px; }
+.acc-toggle:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+#status { padding: calc(env(safe-area-inset-top) + 8px) 16px 0; font-size: 13px; color: var(--muted); min-height: 26px; }
 #status.offline { color: var(--pink); font-weight: 600; }
 main { padding: 8px 12px 24px; max-width: 640px; margin: 0 auto; display: grid; gap: 14px; }
 .card { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(55,0,60,.12); }
@@ -142,10 +125,6 @@ ul.list .r { font-weight: 800; text-align: right; }
 </style>
 </head>
 <body>
-<header>
-  <h1>Football<span>,</span> not soccer</h1>
-  <button id="refresh" type="button" aria-label="Uppdatera">Uppdatera</button>
-</header>
 <div id="status" role="status" aria-live="polite"></div>
 <main>
   <section class="card" id="card-table">
@@ -497,15 +476,17 @@ function scheduleLive() {
 setInterval(() => {
   document.querySelectorAll('[data-kickoff]').forEach((n) => { n.textContent = countdown(new Date(n.dataset.kickoff) - Date.now()); });
 }, 30000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) scheduleLive(); else clearTimeout(liveTimer); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { clearTimeout(liveTimer); return; }
+  // reopening the app counts as a start: refresh if data is older than a minute
+  if (!state.updatedAt || Date.now() - state.updatedAt > 60000) refresh(); else scheduleLive();
+});
 
 // ---------- Refresh ----------
 let busy = false;
 async function refresh() {
   if (busy) return;
   busy = true;
-  const btn = $('refresh');
-  btn.disabled = true; btn.textContent = 'Hämtar…';
   try {
   const [t, m] = await Promise.allSettled([fetchTable(), fetchMatches()]);
   if (t.status === 'fulfilled') state.table = t.value;
@@ -517,13 +498,12 @@ async function refresh() {
     const offline = !navigator.onLine;
     renderStatus(offline ? 'Offline – visar sparad data' : (failed.length === 2 ? 'Kunde inte hämta data – visar sparad data' : 'Viss data kunde inte hämtas'), true);
     if (!state.table && !state.matches) {
-      for (const id of ['table-summary', 'next-summary', 'last-summary']) $(id).replaceChildren(el('span', { class: 'error', text: 'Kunde inte hämta data. Kontrollera nätet och tryck på Uppdatera.' }));
+      for (const id of ['table-summary', 'next-summary', 'last-summary']) $(id).replaceChildren(el('span', { class: 'error', text: 'Kunde inte hämta data. Kontrollera nätet och öppna appen igen.' }));
     }
   } else renderStatus();
   } catch (e) {
     renderStatus('Något gick fel vid visning av data', true);
   } finally {
-    btn.disabled = false; btn.textContent = 'Uppdatera';
     busy = false;
   }
   scheduleLive();
@@ -532,7 +512,6 @@ async function refresh() {
 // ---------- Boot ----------
 initAccordions();
 const cached = store.get(CONFIG.cacheKey);
-$('refresh').addEventListener('click', refresh);
 window.addEventListener('online', () => { if (!document.hidden) refresh(); });
 if (cached && (cached.table || cached.matches)) {
   try { state = cached; renderAll(); renderStatus('Hämtar ny data…'); }

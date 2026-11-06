@@ -33,9 +33,8 @@ Alla accordions är stängda vid start; öppet/stängt-läget sparas i `localSto
 
 Matcher i 2 och 3 omfattar alla turneringar (PL, FA-cupen, Ligacupen, Champions League m.fl.).
 
-## Header
-- Sticky header med appens namn och en "Uppdatera"-knapp.
-- Under headern: "Senast uppdaterad hh:mm" (och "Offline – visar sparad data" vid behov).
+## Statusrad
+- Ingen header eller uppdatera-knapp. Överst finns bara en rad: "Senast uppdaterad …" (och "Offline – visar sparad data" vid behov).
 
 ## Tema – inspirerat av Premier Leagues webbplats
 Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara färgkänsla och stil.
@@ -59,7 +58,7 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - All åtkomst via adapterfunktioner (`fetchTable()`, `fetchFixtures()`, `fetchResults()`, `fetchLive()`).
 
 ## Uppdatering och live
-- Hämtning när appen öppnas, vid tryck på "Uppdatera" och när nätet kommer tillbaka (om appen är synlig). Inga anrop i bakgrunden.
+- Hämtning när appen öppnas, när den visas igen efter att ha legat i bakgrunden (om datan är äldre än 1 minut) och när nätet kommer tillbaka (om appen är synlig). Inga anrop i bakgrunden.
 - Under pågående match (och appen öppen och synlig): uppdatera live-ställningen var 30:e sekund.
 - Cachad data visas direkt vid start, därefter ersätts den av färsk data.
 
@@ -75,7 +74,7 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 ## Utanför v1
 - Fler lag, nyheter, trupp, detaljerad statistik, pushnotiser, backend.
 - Service worker för fullt offlinestöd (index.html och klubbmärken). Avvaktar tills behovet uppstår.
-- Automatisk hämtning vid avspark; användaren trycker på Uppdatera.
+- Automatisk hämtning vid avspark; användaren öppnar appen igen.
 
 ## Tekniska krav
 - Fil: `index.html`, självständig (inline CSS/JS), inga externa beroenden utöver data-API:t
