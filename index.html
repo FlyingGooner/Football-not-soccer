@@ -230,6 +230,8 @@ const CONFIG = {
   leagueDaysBack: 21,
   leagueDaysAhead: 35,
   livePollMs: 30000,
+  teamCacheMax: 5,            // teams whose matches are kept in the cache
+  leagueReuseMs: 600000,      // reuse league data for a team's league matches if newer than this
   staleMs: 60000,
   apiBase: 'https://site.api.espn.com/apis',
   cacheKey: 'fns.cache.v2',
@@ -364,9 +366,12 @@ async function fetchTable() {
 }
 
 // All matches for one team across configured competitions. Also returns the team color if the source has one.
-async function fetchTeamMatches(teamId) {
+// With known = the team's league matches already in hand, the league itself is not fetched again.
+async function fetchTeamMatches(teamId, known) {
   const jobs = [];
+  if (known) jobs.push(Promise.resolve({ list: known, color: (cache.colors || {})[teamId] || null }));
   for (const comp of CONFIG.teamCompetitions) for (const fixture of [false, true]) {
+    if (known && comp.id === CONFIG.league.id) continue;
     const url = `${CONFIG.apiBase}/site/v2/sports/soccer/${comp.id}/teams/${encodeURIComponent(teamId)}/schedule${fixture ? '?fixture=true' : ''}`;
     jobs.push(getJSON(url).then((d) => ({ list: events(d, comp), color: hexColor(d && d.team && d.team.color) })));
   }
@@ -378,7 +383,10 @@ async function fetchTeamMatches(teamId) {
 
 // League matches in a window around today. Fetched as the current scoreboard plus one-week date ranges
 // (small ranges are more reliably accepted than one long range). Partial failures are tolerated.
+let leagueFetchedFull = false;
+const leagueColors = Object.create(null);   // team id -> colour, collected from team schedules
 async function fetchLeagueMatches() {
+  leagueFetchedFull = false;
   const now = Date.now(), day = 864e5, base = `${CONFIG.apiBase}/site/v2/sports/soccer/${CONFIG.league.id}/scoreboard`;
   const urls = [base];
   for (let from = -CONFIG.leagueDaysBack; from < CONFIG.leagueDaysAhead; from += 7) {
@@ -402,16 +410,17 @@ async function fetchLeagueMatchesViaTeams() {
   const jobs = [];
   for (const id of ids) for (const fixture of [false, true]) {
     const url = `${CONFIG.apiBase}/site/v2/sports/soccer/${CONFIG.league.id}/teams/${encodeURIComponent(id)}/schedule${fixture ? '?fixture=true' : ''}`;
-    jobs.push(getJSON(url).then((d) => events(d, CONFIG.league)));
+    jobs.push(getJSON(url).then((d) => {
+      const c = hexColor(d && d.team && d.team.color);
+      if (c) leagueColors[id] = c;
+      return events(d, CONFIG.league);
+    }));
   }
   const settled = await Promise.allSettled(jobs);
   const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
   if (!ok.length) throw settled[0] ? settled[0].reason : new Error('no teams');
-  const day = 864e5, now = Date.now();
-  return mergeMatches(ok).filter((m) => {
-    const t = new Date(m.date).getTime();
-    return t >= now - CONFIG.leagueDaysBack * day && t <= now + CONFIG.leagueDaysAhead * day;
-  });
+  leagueFetchedFull = true;   // every team's full league schedule: reusable in team mode
+  return mergeMatches(ok);
 }
 
 // Current scoreboard for a competition (used for live updates).
@@ -436,13 +445,38 @@ async function fetchLiveFor(live) {
   return mergeMatches([out]);
 }
 
+const validMatch = (m) => m && typeof m === 'object' && m.home && m.away && typeof m.id === 'string' && !isNaN(new Date(m.date));
+function sanitizeTeams(obj) {
+  const out = Object.create(null);
+  if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) {
+    if (validId(k) && v && typeof v === 'object' && Array.isArray(v.matches)) out[k] = { ...v, matches: v.matches.filter(validMatch) };
+  }
+  return out;
+}
+function sanitizeColors(obj) {
+  const out = Object.create(null);
+  if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) if (validId(k) && typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) out[k] = v;
+  return out;
+}
+
 // ---------- State ----------
 // cache: { table, league: [matches], teams: { [id]: { matches, color } }, updatedAt: { table, league, [teamId] } }
-let cache = { table: null, league: null, teams: {}, updatedAt: {} };
+let cache = { table: null, league: null, leagueFull: false, teams: {}, updatedAt: {} };
 let team = null;   // { id, name, logo, color } or null = league mode
 let liveTimer = null;
 const mode = () => (team ? 'team' : 'league');
-const teamData = () => (team && cache.teams[team.id]) || null;
+// The team's league matches taken from league data, when that data covers the whole league schedule.
+function leagueMatchesFor(id) {
+  if (!cache.leagueFull || !Array.isArray(cache.league)) return null;
+  const list = cache.league.filter((m) => m && m.home && m.away && (m.home.id === id || m.away.id === id));
+  return list.length ? list : null;
+}
+const teamData = () => {
+  if (!team) return null;
+  if (cache.teams[team.id]) return cache.teams[team.id];
+  const known = leagueMatchesFor(team.id);   // instant view until the team's own data arrives
+  return known ? { matches: known, color: (cache.colors || {})[team.id] || null } : null;
+};
 const saveCache = () => store.set(CONFIG.cacheKey, cache);
 
 // ---------- Perspective helpers (team mode) ----------
@@ -752,17 +786,20 @@ async function refresh() {
   busy = true;
   try {
     const forTeam = team;
-    const jobs = [fetchTable(), forTeam ? fetchTeamMatches(forTeam.id) : fetchLeagueMatches()];
+    const leagueFresh = Date.now() - ((cache.updatedAt || {}).league || 0) < CONFIG.leagueReuseMs;
+    const known = forTeam && leagueFresh ? leagueMatchesFor(forTeam.id) : null;
+    const jobs = [fetchTable(), forTeam ? fetchTeamMatches(forTeam.id, known) : fetchLeagueMatches()];
     const [t, m] = await Promise.allSettled(jobs);
     const now = Date.now();
     cache.updatedAt = cache.updatedAt || {};
     if (t.status === 'fulfilled') { cache.table = t.value; cache.updatedAt.table = now; }
     if (m.status === 'fulfilled') {
-      if (forTeam) { cache.teams[forTeam.id] = m.value; cache.updatedAt[forTeam.id] = now; }
-      else { cache.league = m.value; cache.updatedAt.league = now; }
+      if (forTeam) { cache.teams[forTeam.id] = { ...m.value, ts: now }; cache.updatedAt[forTeam.id] = now; }
+      else { cache.league = m.value; cache.leagueFull = leagueFetchedFull; cache.colors = { ...(cache.colors || {}), ...leagueColors }; cache.updatedAt.league = now; }
     }
-    // keep the cache small: current team only
-    for (const id of Object.keys(cache.teams)) if (!team || id !== team.id) delete cache.teams[id];
+    // keep the cache small: the most recently used teams only
+    const ids = Object.keys(cache.teams).sort((a, b) => (cache.teams[b].ts || 0) - (cache.teams[a].ts || 0));
+    for (const id of ids.slice(CONFIG.teamCacheMax)) if (!team || id !== team.id) { delete cache.teams[id]; delete cache.updatedAt[id]; }
     saveCache();
     if (team !== forTeam) { again = true; return; }   // mode changed while loading
     renderAll();
@@ -789,11 +826,11 @@ try {
     team = { id: savedTeam.id, name: str(savedTeam.name) || '?', logo: str(savedTeam.logo), color: hexColor((str(savedTeam.color) || '').replace('#', '')) };
   }
   const c = store.get(CONFIG.cacheKey);
-  if (c && typeof c === 'object') cache = { table: c.table || null, league: c.league || null, teams: Object.assign(Object.create(null), c.teams && typeof c.teams === 'object' ? c.teams : {}), updatedAt: c.updatedAt || {} };
+  if (c && typeof c === 'object') cache = { table: Array.isArray(c.table) ? c.table.filter((r) => r && validId(r.id)) : null, leagueFull: c.leagueFull === true, colors: sanitizeColors(c.colors), teams: sanitizeTeams(c.teams), league: Array.isArray(c.league) ? c.league.filter(validMatch) : null, updatedAt: c.updatedAt || {} };
   renderAll();
   if (lastUpdated()) renderStatus('Hämtar ny data…');
 } catch {
-  cache = { table: null, league: null, teams: {}, updatedAt: {} };
+  cache = { table: null, league: null, leagueFull: false, teams: {}, updatedAt: {} };
   store.set(CONFIG.cacheKey, null);
   renderAll();
 }

@@ -101,7 +101,10 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - Hämtning när appen öppnas, när den visas igen efter att ha legat i bakgrunden (om datan är äldre än 1 minut) och när nätet kommer tillbaka (om appen är synlig). Inga anrop i bakgrunden.
 - Under pågående match (och appen öppen och synlig): uppdatera live-ställningen var 30:e sekund.
   I ligaläge gäller det alla pågående ligamatcher, i lagläge lagets match.
-- Byte av lag eller läge hämtar data för det nya läget direkt; tidigare hämtad data per lag cachas.
+- Byte av lag eller läge hämtar data för det nya läget direkt.
+- Sparad data för de 5 senast valda lagen behålls, så att byte tillbaka visas direkt (och uppdateras sedan).
+- Har ligadata byggts av alla lags scheman visas ett nyvalt lags ligamatcher direkt från den, och lagfärgerna sparas
+  därifrån. Är ligadatan nyare än 10 minuter hämtas inte lagets ligaschema igen, bara övriga turneringar (10 anrop i stället för 12).
 - Cachad data visas direkt vid start, därefter ersätts den av färsk data.
 
 ## Integritet och säkerhet
