@@ -74,6 +74,8 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 
 ## Utanför v1
 - Fler lag, nyheter, trupp, detaljerad statistik, pushnotiser, backend.
+- Service worker för fullt offlinestöd (index.html och klubbmärken). Avvaktar tills behovet uppstår.
+- Automatisk hämtning vid avspark; användaren trycker på Uppdatera.
 
 ## Tekniska krav
 - Fil: `index.html`, självständig (inline CSS/JS), inga externa beroenden utöver data-API:t
