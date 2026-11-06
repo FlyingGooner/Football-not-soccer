@@ -162,9 +162,11 @@ dialog .row { display: flex; gap: 10px; justify-content: flex-end; }
 dialog button { min-height: 44px; padding: 0 18px; border-radius: 22px; border: 0; font: inherit; font-weight: 700; cursor: pointer; }
 dialog .cancel { background: var(--line); color: var(--text); }
 dialog .ok { background: var(--purple); color: var(--green); }
+#version { position: fixed; top: calc(env(safe-area-inset-top) + 4px); right: 8px; z-index: 50; font: 600 11px/1 system-ui, sans-serif; padding: 3px 6px; border-radius: 6px; background: #37003C; color: #00FF85; opacity: .85; pointer-events: none; }
 </style>
 </head>
 <body>
+<div id="version" aria-label="Version"></div>
 <div id="status" role="status" aria-live="polite"></div>
 <main>
   <div id="teambar" aria-label="Valt lag">
@@ -213,6 +215,7 @@ dialog .ok { background: var(--purple); color: var(--green); }
 
 // ---------- Config ----------
 const CONFIG = {
+  version: '0.4.0',                                  // bump on every push (shown top right)
   league: { id: 'eng.1', name: 'Premier League' },   // table + league mode
   teamCompetitions: [                                // competitions collected in team mode
     { id: 'eng.1', name: 'Premier League' },
@@ -240,6 +243,7 @@ const CONFIG = {
   teamKey: 'fns.team.v1',
   accKey: 'fns.acc.v2',
 };
+document.getElementById('version').textContent = 'v' + CONFIG.version;
 
 // ---------- Small helpers ----------
 const $ = (id) => document.getElementById(id);

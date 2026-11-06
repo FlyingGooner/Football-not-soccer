@@ -25,6 +25,7 @@ Dessa regler gäller för all utveckling i repot (för människor och AI-assiste
 
 ## Arbetsflöde
 - `main` är enda grenen och standardgren. Committa och pusha direkt till `main` (inga feature-grenar eller PR:er om inget annat sägs).
+- Höj `CONFIG.version` i `index.html` vid varje push (semver: patch för fixar, minor för nya funktioner) och skriv versionen i commit-meddelandet, t.ex. `v0.4.1: Fix ...`.
 - Små, fokuserade commits med beskrivande meddelanden.
 - Kör subagenten `security-reviewer` (`.claude/agents/security-reviewer.md`) före push när `index.html` eller datakällor ändras. Allt nätverk ska gå över `https://` och CSP:n i `index.html` ska hållas så snäv som möjligt.
 - Testa i en mobil viewport (t.ex. Chrome DevTools eller Playwright) innan push.

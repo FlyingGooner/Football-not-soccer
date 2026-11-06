@@ -14,6 +14,9 @@ för att följa just det laget. Inget lag är hårdkodat.
   bredvid `index.html` (enda undantaget från en-fil-regeln). Ingen service worker; offline sköts som förut via `localStorage`.
 - Svarar snabbt på: *Hur ser tabellen ut? Vilka matcher spelas härnäst? Hur gick det för mitt lag?*
 
+## Version
+- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.4.0`, så man ser när en ny version nått GitHub Pages.
+
 ## Lägen
 Appen har två lägen. Valt läge sparas i `localStorage` och appen öppnas i samma läge nästa gång.
 Första gången appen öppnas är den i **ligaläge**.
