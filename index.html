@@ -386,8 +386,13 @@ async function fetchLeagueMatches() {
   }
   const settled = await Promise.allSettled(urls.map((u) => getJSON(u).then((d) => events(d, CONFIG.league))));
   const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
-  if (ok.some((list) => list.length)) return mergeMatches(ok);
-  return fetchLeagueMatchesViaTeams();
+  const merged = mergeMatches(ok);
+  const n = CONFIG.roundSize;
+  const enough = merged.filter((m) => m.state === 'pre').length >= n && merged.filter((m) => m.state === 'post').length >= n;
+  if (enough) return merged;
+  // Date ranges are not always honoured; fill in from team schedules but keep fresh scoreboard data.
+  try { return mergeMatches([await fetchLeagueMatchesViaTeams(), merged]); }
+  catch (e) { if (merged.length) return merged; throw e; }
 }
 
 // Fallback: build the league fixture list from every team's league schedule (the endpoint team mode uses).
