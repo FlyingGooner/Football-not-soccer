@@ -1,0 +1,26 @@
+# Regler för projektet "It's football, not soccer"
+
+Dessa regler gäller för all utveckling i repot (för människor och AI-assistenter).
+
+## Grundprinciper
+1. **En enda HTML-fil.** Appen ligger i `index.html` med inbäddad CSS och JS. Inga byggsteg, inga ramverk, ingen `npm`.
+2. **Mobil först.** Designa för smal skärm (360–430 px) och touch. Ska fungera att öppna direkt från filsystemet på mobilen (`file://`) eller via GitHub Pages.
+3. **Inga hemligheter i koden.** API-nycklar committas aldrig. Behövs en nyckel matar användaren in den i appen och den sparas i `localStorage`.
+4. **Fungera offline så gott det går.** Senast hämtad data cachas i `localStorage` och visas med tidsstämpel om nätet saknas.
+5. **Specen styr.** Funktioner beskrivs i `SPEC.md` innan de byggs. Ändras beteendet ska specen uppdateras i samma commit.
+
+## Kod
+- Vanilla JavaScript (ES2020+), inga externa skript om det inte är absolut nödvändigt.
+- Håll datakällan bakom ett litet adapterlager (`fetchFixtures()`, `fetchTable()` osv.) så att källan kan bytas eller fler lag läggas till.
+- Lag-ID och liknande konfiguration samlas i ett `CONFIG`-objekt överst i skriptet – inget hårdkodat Arsenal-specifikt ute i koden.
+- Tider visas i användarens lokala tidszon (Europe/Stockholm som standard).
+- Tydlig felhantering: visa ett begripligt meddelande, aldrig en blank skärm.
+
+## Språk och stil
+- UI-text på svenska. Kod, variabelnamn och commit-meddelanden på engelska.
+- Det heter **fotboll**/**football**, aldrig "soccer" i UI-texten.
+- Ljust och mörkt tema via `prefers-color-scheme`. Arsenalröd (`#EF0107`) som accentfärg.
+
+## Arbetsflöde
+- Små, fokuserade commits med beskrivande meddelanden.
+- Testa i en mobil viewport (t.ex. Chrome DevTools eller Playwright) innan push.
