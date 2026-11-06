@@ -87,7 +87,9 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
   - Lagets schema/resultat: `/apis/site/v2/sports/soccer/{liga}/teams/{lag-id}/schedule` (+ `?fixture=true` för kommande),
     för varje turnering i konfigurationen.
   - Ligans matcher: `/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=YYYYMMDD-YYYYMMDD`
-    (ett datumintervall bakåt och framåt; omgångar bildas av de 10 närmaste matcherna).
+    i intervall om en vecka (3 veckor bakåt, 5 framåt) plus dagens scoreboard.
+  - Reserv om scoreboard inte ger några matcher: ligans matcher byggs av varje lags schema i ligan
+    (samma endpoint som lagläget). Live-uppdatering faller på samma sätt tillbaka till hemmalagets schema.
   - Tabell: `/apis/v2/sports/soccer/eng.1/standings`
   - Live: scoreboard-endpoint för pågående match.
 - Verifierat: API:t fungerar från webbläsaren i mobilen via GitHub Pages.

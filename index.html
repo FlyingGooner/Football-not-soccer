@@ -384,14 +384,49 @@ async function fetchLeagueMatches() {
   }
   const settled = await Promise.allSettled(urls.map((u) => getJSON(u).then((d) => events(d, CONFIG.league))));
   const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
-  if (!ok.length) throw settled[0].reason;
-  return mergeMatches(ok);
+  if (ok.some((list) => list.length)) return mergeMatches(ok);
+  return fetchLeagueMatchesViaTeams();
+}
+
+// Fallback: build the league fixture list from every team's league schedule (the endpoint team mode uses).
+async function fetchLeagueMatchesViaTeams() {
+  const table = cache.table && cache.table.length ? cache.table : await fetchTable();
+  const ids = table.map((r) => r.id).filter(validId);
+  const jobs = [];
+  for (const id of ids) for (const fixture of [false, true]) {
+    const url = `${CONFIG.apiBase}/site/v2/sports/soccer/${CONFIG.league.id}/teams/${encodeURIComponent(id)}/schedule${fixture ? '?fixture=true' : ''}`;
+    jobs.push(getJSON(url).then((d) => events(d, CONFIG.league)));
+  }
+  const settled = await Promise.allSettled(jobs);
+  const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
+  if (!ok.length) throw settled[0] ? settled[0].reason : new Error('no teams');
+  const day = 864e5, now = Date.now();
+  return mergeMatches(ok).filter((m) => {
+    const t = new Date(m.date).getTime();
+    return t >= now - CONFIG.leagueDaysBack * day && t <= now + CONFIG.leagueDaysAhead * day;
+  });
 }
 
 // Current scoreboard for a competition (used for live updates).
 async function fetchLive(compId) {
   const comp = CONFIG.teamCompetitions.find((c) => c.id === compId) || CONFIG.league;
   return events(await getJSON(`${CONFIG.apiBase}/site/v2/sports/soccer/${comp.id}/scoreboard`), comp);
+}
+
+// Live updates for the given matches: scoreboard first, the home team's schedule as fallback.
+async function fetchLiveFor(live) {
+  const comps = [...new Set(live.map((m) => m.leagueId))];
+  const out = [];
+  await Promise.all(comps.map(async (compId) => {
+    try { out.push(...await fetchLive(compId)); return; } catch { /* fall back below */ }
+    const comp = CONFIG.teamCompetitions.find((c) => c.id === compId) || CONFIG.league;
+    const homes = [...new Set(live.filter((m) => m.leagueId === compId).map((m) => m.home && m.home.id).filter(validId))];
+    const res = await Promise.allSettled(homes.flatMap((id) => [false, true].map((fx) =>
+      getJSON(`${CONFIG.apiBase}/site/v2/sports/soccer/${comp.id}/teams/${encodeURIComponent(id)}/schedule${fx ? '?fixture=true' : ''}`)
+        .then((d) => events(d, comp)))));
+    for (const r of res) if (r.status === 'fulfilled') out.push(...r.value);
+  }));
+  return mergeMatches([out]);
 }
 
 // ---------- State ----------
@@ -681,8 +716,7 @@ function scheduleLive() {
   if (!live.length || document.hidden) return;
   liveTimer = setTimeout(async () => {
     try {
-      const comps = [...new Set(live.map((m) => m.leagueId))];
-      const fresh = (await Promise.all(comps.map(fetchLive))).flat();
+      const fresh = await fetchLiveFor(live);
       const byId = new Map(fresh.map((m) => [m.id, m]));
       const upd = (list) => list.map((m) => byId.get(m.id) || m);
       if (team && teamData()) teamData().matches = upd(teamData().matches);
