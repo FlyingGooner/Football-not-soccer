@@ -26,4 +26,5 @@ Dessa regler gäller för all utveckling i repot (för människor och AI-assiste
 ## Arbetsflöde
 - `main` är enda grenen och standardgren. Committa och pusha direkt till `main` (inga feature-grenar eller PR:er om inget annat sägs).
 - Små, fokuserade commits med beskrivande meddelanden.
+- Kör subagenten `security-reviewer` (`.claude/agents/security-reviewer.md`) före push när `index.html` eller datakällor ändras. Allt nätverk ska gå över `https://` och CSP:n i `index.html` ska hållas så snäv som möjligt.
 - Testa i en mobil viewport (t.ex. Chrome DevTools eller Playwright) innan push.

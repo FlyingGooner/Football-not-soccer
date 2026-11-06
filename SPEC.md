@@ -67,6 +67,10 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - Anropen görs direkt från mobilen till ESPN; ESPN ser IP-adress, webbläsare och vad som hämtas.
 - Ingen inloggning, inga cookies, ingen spårning, inga analysverktyg.
 - Data från API:t renderas alltid som text (`textContent`), aldrig som HTML.
+- Alla anrop och bilder går över `https://`.
+- Content-Security-Policy i `index.html`: anrop tillåts bara till `site.api.espn.com`, bilder bara över https, inga externa skript.
+- `no-referrer`: API:t får inte veta sidans adress.
+- Subagenten `security-reviewer` granskar säkerhet och integritet före push.
 
 ## Utanför v1
 - Fler lag, nyheter, trupp, detaljerad statistik, pushnotiser, backend.
