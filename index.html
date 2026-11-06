@@ -374,12 +374,18 @@ async function fetchTeamMatches(teamId) {
   return { matches: mergeMatches(ok.map((o) => o.list)), color: (ok.find((o) => o.color) || {}).color || null };
 }
 
-// League matches in a window around today.
+// League matches in a window around today. Fetched as the current scoreboard plus one-week date ranges
+// (small ranges are more reliably accepted than one long range). Partial failures are tolerated.
 async function fetchLeagueMatches() {
-  const now = Date.now(), day = 864e5;
-  const range = `${ymd(now - CONFIG.leagueDaysBack * day)}-${ymd(now + CONFIG.leagueDaysAhead * day)}`;
-  const data = await getJSON(`${CONFIG.apiBase}/site/v2/sports/soccer/${CONFIG.league.id}/scoreboard?dates=${range}&limit=500`);
-  return mergeMatches([events(data, CONFIG.league)]);
+  const now = Date.now(), day = 864e5, base = `${CONFIG.apiBase}/site/v2/sports/soccer/${CONFIG.league.id}/scoreboard`;
+  const urls = [base];
+  for (let from = -CONFIG.leagueDaysBack; from < CONFIG.leagueDaysAhead; from += 7) {
+    urls.push(`${base}?dates=${ymd(now + from * day)}-${ymd(now + (from + 6) * day)}`);
+  }
+  const settled = await Promise.allSettled(urls.map((u) => getJSON(u).then((d) => events(d, CONFIG.league))));
+  const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
+  if (!ok.length) throw settled[0].reason;
+  return mergeMatches(ok);
 }
 
 // Current scoreboard for a competition (used for live updates).
