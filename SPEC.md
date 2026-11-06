@@ -59,7 +59,7 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - All åtkomst via adapterfunktioner (`fetchTable()`, `fetchFixtures()`, `fetchResults()`, `fetchLive()`).
 
 ## Uppdatering och live
-- Hämtning när appen öppnas och vid tryck på "Uppdatera". Inga anrop i bakgrunden.
+- Hämtning när appen öppnas, vid tryck på "Uppdatera" och när nätet kommer tillbaka (om appen är synlig). Inga anrop i bakgrunden.
 - Under pågående match (och appen öppen och synlig): uppdatera live-ställningen var 30:e sekund.
 - Cachad data visas direkt vid start, därefter ersätts den av färsk data.
 

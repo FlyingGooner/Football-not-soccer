@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://site.api.espn.com; img-src 'self' https: data:; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://site.api.espn.com; img-src 'self' https: data:; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#37003C">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -225,9 +225,14 @@ const store = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore */ } },
 };
-const fmtDate = new Intl.DateTimeFormat('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' });
-const fmtTime = new Intl.DateTimeFormat('sv-SE', { hour: '2-digit', minute: '2-digit' });
-const fmtShort = new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short' });
+function safeFmt(opts) {
+  const f = new Intl.DateTimeFormat('sv-SE', opts);
+  return { format: (d) => { const t = new Date(d); return isNaN(t) ? '–' : f.format(t); } };
+}
+const fmtDate = safeFmt({ weekday: 'short', day: 'numeric', month: 'short' });
+const fmtTime = safeFmt({ hour: '2-digit', minute: '2-digit' });
+const fmtShort = safeFmt({ day: 'numeric', month: 'short' });
+const str = (v) => (typeof v === 'string' && v ? v : null);
 function countdown(ms) {
   if (ms <= 0) return 'Snart avspark';
   const m = Math.floor(ms / 60000), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60;
@@ -249,19 +254,21 @@ function num(v) {
   return Number.isFinite(n) ? n : null;
 }
 function teamOf(c) {
-  const t = c.team || {};
+  const t = (c && typeof c.team === 'object' && c.team) || {};
   const logos = t.logos || (t.logo ? [{ href: t.logo }] : []);
   return {
     id: String(t.id ?? ''),
-    name: t.shortDisplayName || t.displayName || t.name || '?',
+    name: str(t.shortDisplayName) || str(t.displayName) || str(t.name) || '?',
     logo: logos[0] && logos[0].href,
   };
 }
 function normalizeEvent(ev, leagueName) {
+  if (!ev || typeof ev !== 'object' || ev.id == null) return null;
+  if (isNaN(new Date(ev.date || (ev.competitions && ev.competitions[0] && ev.competitions[0].date)))) return null;
   const comp = (ev.competitions || [])[0] || {};
   const st = (comp.status || ev.status || {});
   const type = st.type || {};
-  const cs = comp.competitors || [];
+  const cs = (Array.isArray(comp.competitors) ? comp.competitors : []).filter((c) => c && typeof c === 'object');
   const home = cs.find((c) => c.homeAway === 'home') || cs[0];
   const away = cs.find((c) => c.homeAway === 'away') || cs[1];
   if (!home || !away) return null;
@@ -290,7 +297,8 @@ function resultOf(m) {
 async function fetchLeagueSchedule(league, fixture) {
   const url = `${CONFIG.apiBase}/site/v2/sports/soccer/${league.id}/teams/${CONFIG.teamId}/schedule${fixture ? '?fixture=true' : ''}`;
   const data = await getJSON(url);
-  return (data.events || []).map((ev) => { ev._leagueId = league.id; return normalizeEvent(ev, league.name); }).filter(Boolean);
+  const evs = Array.isArray(data.events) ? data.events : [];
+  return evs.filter((ev) => ev && typeof ev === 'object').map((ev) => { ev._leagueId = league.id; return normalizeEvent(ev, league.name); }).filter(Boolean);
 }
 
 async function fetchMatches() {
@@ -407,7 +415,7 @@ function matchHero(m, kind) {
   } else {
     const r = resultOf(m);
     mid = el('div', { class: 'mid' },
-      el('span', { class: 'score', text: `${m.homeScore ?? 0}–${m.awayScore ?? 0}` }),
+      el('span', { class: 'score', text: `${m.homeScore ?? '–'}–${m.awayScore ?? '–'}` }),
       m.state === 'in'
         ? el('span', { class: 'live', text: `LIVE ${m.clock || m.detail}`.trim() })
         : (r ? el('span', { class: `badge ${r}`, text: { W: 'Vinst', D: 'Oavgjort', L: 'Förlust' }[r] }) : null));
@@ -429,7 +437,7 @@ function matchList(list, past) {
       el('span', { class: 'd' }, fmtShort.format(d), el('br'), past ? '' : fmtTime.format(d)),
       el('span', null, el('span', { class: 'o', text: `${o.name} (${m.isHome ? 'H' : 'B'})` }), el('br'), el('span', { class: 'c', text: m.league })),
       past
-        ? el('span', { class: 'r' }, `${m.isHome ? m.homeScore : m.awayScore}–${m.isHome ? m.awayScore : m.homeScore} `, r ? el('span', { class: `badge ${r}`, text: { W: 'V', D: 'O', L: 'F' }[r] }) : null)
+        ? el('span', { class: 'r' }, `${(m.isHome ? m.homeScore : m.awayScore) ?? '–'}–${(m.isHome ? m.awayScore : m.homeScore) ?? '–'} `, r ? el('span', { class: `badge ${r}`, text: { W: 'V', D: 'O', L: 'F' }[r] }) : null)
         : el('span', { class: 'r small muted', text: '' }));
   }));
 }
@@ -498,6 +506,7 @@ async function refresh() {
   busy = true;
   const btn = $('refresh');
   btn.disabled = true; btn.textContent = 'Hämtar…';
+  try {
   const [t, m] = await Promise.allSettled([fetchTable(), fetchMatches()]);
   if (t.status === 'fulfilled') state.table = t.value;
   if (m.status === 'fulfilled') state.matches = m.value;
@@ -511,17 +520,24 @@ async function refresh() {
       for (const id of ['table-summary', 'next-summary', 'last-summary']) $(id).replaceChildren(el('span', { class: 'error', text: 'Kunde inte hämta data. Kontrollera nätet och tryck på Uppdatera.' }));
     }
   } else renderStatus();
-  btn.disabled = false; btn.textContent = 'Uppdatera';
-  busy = false;
+  } catch (e) {
+    renderStatus('Något gick fel vid visning av data', true);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Uppdatera';
+    busy = false;
+  }
   scheduleLive();
 }
 
 // ---------- Boot ----------
 initAccordions();
 const cached = store.get(CONFIG.cacheKey);
-if (cached && (cached.table || cached.matches)) { state = cached; renderAll(); renderStatus('Hämtar ny data…'); }
 $('refresh').addEventListener('click', refresh);
-window.addEventListener('online', refresh);
+window.addEventListener('online', () => { if (!document.hidden) refresh(); });
+if (cached && (cached.table || cached.matches)) {
+  try { state = cached; renderAll(); renderStatus('Hämtar ny data…'); }
+  catch { state = { table: null, matches: null, updatedAt: null }; store.set(CONFIG.cacheKey, null); }
+}
 refresh();
 </script>
 </body>
