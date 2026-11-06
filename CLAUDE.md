@@ -24,5 +24,6 @@ Dessa regler gäller för all utveckling i repot (för människor och AI-assiste
 - Inga anrop i bakgrunden; bara vid start, manuell uppdatering och under pågående match.
 
 ## Arbetsflöde
+- `main` är enda grenen och standardgren. Committa och pusha direkt till `main` (inga feature-grenar eller PR:er om inget annat sägs).
 - Små, fokuserade commits med beskrivande meddelanden.
 - Testa i en mobil viewport (t.ex. Chrome DevTools eller Playwright) innan push.

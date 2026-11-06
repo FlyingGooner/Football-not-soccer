@@ -6,7 +6,7 @@ Version 1 omfattar **endast Arsenal FC herrlag**.
 
 ## Användning
 - En användare (jag), på mobilen.
-- Körs via **GitHub Pages** (`https://<användare>.github.io/It-s-football-not-soccer-/`) och läggs till på hemskärmen.
+- Körs via **GitHub Pages** (`https://flyinggooner.github.io/Football-not-soccer/`) och läggs till på hemskärmen.
   Lokal fil (`file://`) stöds i mån av möjlighet men är inte målet.
 - Svarar snabbt på: *Var ligger Arsenal i tabellen? När är nästa match? Hur gick senaste?*
 
