@@ -15,7 +15,7 @@ för att följa just det laget. Inget lag är hårdkodat.
 - Svarar snabbt på: *Hur ser tabellen ut? Vilka matcher spelas härnäst? Hur gick det för mitt lag?*
 
 ## Version
-- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.5.0`, så man ser när en ny version nått GitHub Pages.
+- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.5.1`, så man ser när en ny version nått GitHub Pages.
 
 ## Lägen
 Appen har två lägen. Valt läge sparas i `localStorage` och appen öppnas i samma läge nästa gång.
@@ -35,13 +35,7 @@ Första gången appen öppnas är den i **ligaläge**.
 ## Layout – ligaläge (uppifrån och ned)
 Allt är hopfällt vid start så att vyn ryms på en mobilskärm utan att skrolla.
 
-### 1. Tabell
-- **Synligt:** topp 3 (placering, lag, M, V, O, F, MS, P). Raderna är tryckbara.
-- **Utfällt:** resten av tabellen (plats 4–20) i samma tabell, plus förklaring av zonerna.
-- Placeringszoner markeras med en färgad kant: Champions League, Europa League/Conference League, nedflyttning.
-- På smal skärm döljs V/O/F; M, MS, P visas alltid.
-
-### 2. Aktuella matcher
+### 1. Aktuella matcher
 - **Synligt:** alla pågående matcher under "Pågår nu" (ställning, matchminut, LIVE), fyllt på med
   närmast kommande matcher till minst 3 rader. Grupperat per dag med "Idag", "I morgon" eller datum.
 - **Utfällt:** fler kommande matcher, upp till två omgångar (20 matcher) totalt.
@@ -53,27 +47,33 @@ Allt är hopfällt vid start så att vyn ryms på en mobilskärm utan att skroll
 - Datan kommer från scoreboardens `details` – inga extra anrop. Utfällt läge gäller bara under sessionen.
 - I lagläge visas målen direkt under ställningen i Nästa/Senaste match.
 
-### 3. Senaste resultat
+### 2. Senaste resultat
 - **Synligt:** de 2 senast spelade matcherna, nyaste först, med slutresultat.
 - **Utfällt:** fler resultat, upp till två omgångar (20 matcher) totalt.
+
+### 3. Tabell
+- **Synligt:** topp 3 (placering, lag, M, V, O, F, MS, P). Raderna är tryckbara.
+- **Utfällt:** resten av tabellen (plats 4–20) i samma tabell, plus förklaring av zonerna.
+- Placeringszoner markeras med en färgad kant: Champions League, Europa League/Conference League, nedflyttning.
+- På smal skärm döljs V/O/F; M, MS, P visas alltid.
 
 ## Layout – lagläge (uppifrån och ned)
 Överst: raden med valt lag och ✕ (se ovan). Därefter tre kort, var och ett med en alltid synlig
 sammanfattning och en utfällbar del (accordion).
 
-### 1. Tabell
-- **Synligt:** lagets rad – placering, lag, M, V, O, F, MS, P samt formen i de 5 senaste ligamatcherna
-  (V/O/F-prickar).
-- **Utfällt:** hela tabellen med laget markerat; raderna är tryckbara för att byta lag.
-
-### 2. Nästa match
+### 1. Nästa match
 - **Synligt:** nästa match – motståndare (med klubbmärke), hemma/borta, turnering, datum och avsparkstid
   i lokal tid, nedräkning ("om 2 d 4 h"). Pågående match: ställning, matchminut och "LIVE".
 - **Utfällt:** de 5 därefter kommande matcherna (datum, tid, motståndare, H/B, turnering).
 
-### 3. Senaste match
+### 2. Senaste match
 - **Synligt:** senaste spelade match – resultat, motståndare, H/B, turnering, datum, V/O/F-markering.
 - **Utfällt:** de 5 matcherna innan dess i samma format.
+
+### 3. Tabell
+- **Synligt:** lagets rad – placering, lag, M, V, O, F, MS, P samt formen i de 5 senaste ligamatcherna
+  (V/O/F-prickar).
+- **Utfällt:** hela tabellen med laget markerat; raderna är tryckbara för att byta lag.
 
 Matcher i lagläge omfattar alla turneringar laget spelar i (PL, FA-cupen, Ligacupen, Champions League m.fl.).
 

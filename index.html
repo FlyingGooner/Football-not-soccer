@@ -180,15 +180,6 @@ dialog .ok { background: var(--purple); color: var(--green); }
     <button type="button" id="teambar-close" aria-label="Tillbaka till ligan">✕</button>
   </div>
 
-  <section class="card" id="card-table">
-    <h2 id="table-title">Premier League</h2>
-    <div class="summary" id="table-summary"><span class="muted">Laddar…</span></div>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="table-panel" data-acc="table">
-      <span>Hela tabellen</span><span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="acc-panel" id="table-panel"><div id="table-full"></div></div>
-  </section>
-
   <section class="card" id="card-next">
     <h2 id="next-title">Nästa match</h2>
     <div class="summary" id="next-summary"><span class="muted">Laddar…</span></div>
@@ -206,6 +197,15 @@ dialog .ok { background: var(--purple); color: var(--green); }
     </button>
     <div class="acc-panel" id="last-panel"><div id="last-list"></div></div>
   </section>
+
+  <section class="card" id="card-table">
+    <h2 id="table-title">Premier League</h2>
+    <div class="summary" id="table-summary"><span class="muted">Laddar…</span></div>
+    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="table-panel" data-acc="table">
+      <span>Hela tabellen</span><span class="chev" aria-hidden="true"></span>
+    </button>
+    <div class="acc-panel" id="table-panel"><div id="table-full"></div></div>
+  </section>
 </main>
 
 <dialog id="pick">
@@ -221,7 +221,7 @@ dialog .ok { background: var(--purple); color: var(--green); }
 
 // ---------- Config ----------
 const CONFIG = {
-  version: '0.5.0',                                  // bump on every push (shown top right)
+  version: '0.5.1',                                  // bump on every push (shown top right)
   league: { id: 'eng.1', name: 'Premier League' },   // table + league mode
   teamCompetitions: [                                // competitions collected in team mode
     { id: 'eng.1', name: 'Premier League' },
