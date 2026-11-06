@@ -1,37 +1,69 @@
-# Spec – Fotbollsföljaren (v0.2)
+# Spec – Fotbollsföljaren (v0.3)
 
 ## Syfte
 En personlig, lättviktig webbapp i en enda HTML-fil för att följa fotboll som intresserar mig.
-Version 1 omfattar **endast Arsenal FC herrlag**.
+Version 1 omfattar **Premier League (herr)**. Appen visar ligan som helhet, och man kan välja ett lag i tabellen
+för att följa just det laget. Inget lag är hårdkodat.
 
 ## Användning
 - En användare (jag), på mobilen.
 - Körs via **GitHub Pages** (`https://flyinggooner.github.io/Football-not-soccer/`) och läggs till på hemskärmen.
   Lokal fil (`file://`) stöds i mån av möjlighet men är inte målet.
-- Svarar snabbt på: *Var ligger Arsenal i tabellen? När är nästa match? Hur gick senaste?*
+- Svarar snabbt på: *Hur ser tabellen ut? Vilka matcher spelas härnäst? Hur gick det för mitt lag?*
 
-## Layout (uppifrån och ned)
-En kolumn med tre kort. Varje kort har en alltid synlig sammanfattning och en utfällbar del (accordion).
-Alla accordions är stängda vid start; öppet/stängt-läget sparas i `localStorage`.
+## Lägen
+Appen har två lägen. Valt läge sparas i `localStorage` och appen öppnas i samma läge nästa gång.
+Första gången appen öppnas är den i **ligaläge**.
+
+- **Ligaläge** – inget lag valt. Visar ligan som helhet.
+- **Lagläge** – ett lag valt. Visar det lagets tabellrad, matcher och form.
+
+### Välja och byta lag
+- Tryck på ett lag i tabellen → dialog "Byt till {lag}?" med **Byt** / **Avbryt**.
+  I ligaläge lyder texten "Följ {lag}?".
+- I lagläge visas överst en rad med det valda lagets märke och namn samt **✕**.
+  ✕ tar dig tillbaka till ligaläge (ingen bekräftelse).
+- Det valda lagets rad i tabellen markeras med lagets egen färg (från datakällan) som vänsterkant
+  och svag bakgrundston. Saknas färg används lila.
+
+## Layout – ligaläge (uppifrån och ned)
+### 1. Tabell
+- **Synligt:** hela tabellen (20 lag), placering, lag, M, V, O, F, MS, P. Varje rad är tryckbar.
+- Placeringszoner markeras med en färgad kant: Champions League, Europa League/Conference League, nedflyttning.
+- På smal skärm döljs V/O/F; M, MS, P visas alltid.
+
+### 2. Kommande matcher
+- **Synligt:** ligans nästa omgång (10 matcher) i tidsordning, grupperade per dag ("Lör 8 nov").
+  Varje match: avsparkstid, hemmalag – bortalag med märken. Pågående matcher visas överst med ställning,
+  matchminut och LIVE.
+- **Utfällt:** nästa omgång därefter (10 matcher till), i samma format.
+
+### 3. Senaste resultat
+- **Synligt:** ligans senast spelade omgång (10 matcher), nyaste först, grupperade per dag, med slutresultat.
+- **Utfällt:** omgången innan dess.
+
+## Layout – lagläge (uppifrån och ned)
+Överst: raden med valt lag och ✕ (se ovan). Därefter tre kort, var och ett med en alltid synlig
+sammanfattning och en utfällbar del (accordion).
 
 ### 1. Tabell
-- **Synligt:** Arsenals rad i Premier League – placering, lag, M (matcher), V, O, F, MS (målskillnad), P (poäng)
-  samt formen i de 5 senaste ligamatcherna (V/O/F-prickar).
-- **Utfällt:** hela tabellen (20 lag) med samma kolumner, Arsenal markerad.
-  Placeringszoner markeras med en färgad kant: Champions League, Europa League/Conference League, nedflyttning.
-- På smal skärm döljs V/O/F i hela tabellen; M, MS, P visas alltid.
+- **Synligt:** lagets rad – placering, lag, M, V, O, F, MS, P samt formen i de 5 senaste ligamatcherna
+  (V/O/F-prickar).
+- **Utfällt:** hela tabellen med laget markerat; raderna är tryckbara för att byta lag.
 
 ### 2. Nästa match
-- **Synligt:** nästa match – motståndare (med klubbmärke om källan har det), hemma/borta, turnering,
-  datum och avsparkstid i lokal tid, nedräkning ("om 2 d 4 h").
-  Pågående match: ställning, matchminut och "LIVE"-markering i stället för nedräkning.
+- **Synligt:** nästa match – motståndare (med klubbmärke), hemma/borta, turnering, datum och avsparkstid
+  i lokal tid, nedräkning ("om 2 d 4 h"). Pågående match: ställning, matchminut och "LIVE".
 - **Utfällt:** de 5 därefter kommande matcherna (datum, tid, motståndare, H/B, turnering).
 
 ### 3. Senaste match
 - **Synligt:** senaste spelade match – resultat, motståndare, H/B, turnering, datum, V/O/F-markering.
 - **Utfällt:** de 5 matcherna innan dess i samma format.
 
-Matcher i 2 och 3 omfattar alla turneringar (PL, FA-cupen, Ligacupen, Champions League m.fl.).
+Matcher i lagläge omfattar alla turneringar laget spelar i (PL, FA-cupen, Ligacupen, Champions League m.fl.).
+
+## Accordions
+- Alla accordions är stängda vid första start; öppet/stängt-läget sparas i `localStorage` per läge.
 
 ## Statusrad
 - Ingen header eller uppdatera-knapp. Överst finns bara en rad: "Senast uppdaterad …" (och "Offline – visar sparad data" vid behov).
@@ -41,7 +73,7 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - Primär bakgrund i header och kortrubriker: djup lila `#37003C`.
 - Accenter: grön `#00FF85` (t.ex. LIVE, CL-zon, vinst), rosa/magenta `#E90052` (förlust, nedflyttningszon),
   cyan `#04F5FF` (länkar/fokus, Europa-zon).
-- Arsenals rad markeras med Arsenalröd `#EF0107` som vänsterkant.
+- Valt lag markeras med lagets egen färg (från datakällan) som vänsterkant.
 - Ljust tema: vita kort på ljusgrå bakgrund (`#F2F2F2`), lila rubriker.
   Mörkt tema (`prefers-color-scheme: dark`): mörklila bakgrund (`#1A001D`), kort i `#2A002E`.
 - Typsnitt: systemets sans-serif, fet och kompakt i rubriker och siffror (tabular-nums).
@@ -50,16 +82,21 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 
 ## Datakälla
 - **ESPN:s öppna JSON-API** (`site.api.espn.com`), inofficiellt, gratis, ingen nyckel.
-  - Schema/resultat: `/apis/site/v2/sports/soccer/eng.1/teams/359/schedule` (+ övriga turneringar vid behov)
+  - Lagets schema/resultat: `/apis/site/v2/sports/soccer/{liga}/teams/{lag-id}/schedule` (+ `?fixture=true` för kommande),
+    för varje turnering i konfigurationen.
+  - Ligans matcher: `/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=YYYYMMDD-YYYYMMDD`
+    (ett datumintervall bakåt och framåt; omgångar bildas av de 10 närmaste matcherna).
   - Tabell: `/apis/v2/sports/soccer/eng.1/standings`
   - Live: scoreboard-endpoint för pågående match.
-- Måste verifieras att API:t tillåter anrop från webbläsaren (CORS) innan bygget.
+- Verifierat: API:t fungerar från webbläsaren i mobilen via GitHub Pages.
 - Reserv: football-data.org (gratisnyckel som användaren anger i appen).
-- All åtkomst via adapterfunktioner (`fetchTable()`, `fetchFixtures()`, `fetchResults()`, `fetchLive()`).
+- All åtkomst via adapterfunktioner (`fetchTable()`, `fetchTeamMatches(teamId)`, `fetchLeagueMatches()`, `fetchLive()`).
 
 ## Uppdatering och live
 - Hämtning när appen öppnas, när den visas igen efter att ha legat i bakgrunden (om datan är äldre än 1 minut) och när nätet kommer tillbaka (om appen är synlig). Inga anrop i bakgrunden.
 - Under pågående match (och appen öppen och synlig): uppdatera live-ställningen var 30:e sekund.
+  I ligaläge gäller det alla pågående ligamatcher, i lagläge lagets match.
+- Byte av lag eller läge hämtar data för det nya läget direkt; tidigare hämtad data per lag cachas.
 - Cachad data visas direkt vid start, därefter ersätts den av färsk data.
 
 ## Integritet och säkerhet
@@ -72,7 +109,8 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - Subagenten `security-reviewer` granskar säkerhet och integritet före push.
 
 ## Utanför v1
-- Fler lag, nyheter, trupp, detaljerad statistik, pushnotiser, backend.
+- Andra ligor än Premier League och en ligaväljare (nästa naturliga steg; konfigurationen ska förbereda för det).
+- Nyheter, trupp, detaljerad statistik, pushnotiser, backend.
 - Service worker för fullt offlinestöd (index.html och klubbmärken). Avvaktar tills behovet uppstår.
 - Automatisk hämtning vid avspark; användaren öppnar appen igen.
 
@@ -83,9 +121,12 @@ Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara 
 - Tillgänglighet: accordions är `<button>` med `aria-expanded`, tryckytor ≥ 44 px, text ≥ 16 px.
 
 ## Acceptanskriterier v1
-- [ ] Arsenals tabellrad syns direkt; tryck fäller ut hela tabellen med Arsenal markerad.
+- [ ] Första start visar ligaläge: hela tabellen, nästa omgång och senaste omgång grupperade per dag.
+- [ ] Tryck på ett lag i tabellen → bekräftelse → lagläge för det laget.
+- [ ] I lagläge: lagets rad med form syns direkt, hela tabellen fälls ut, laget markerat med sin färg.
 - [ ] Nästa match visas med korrekt lokal tid och nedräkning; utfällt visas 5 kommande.
 - [ ] Senaste match visas med resultat och V/O/F; utfällt visas 5 tidigare.
-- [ ] Pågående match visar LIVE och uppdateras utan omladdning.
+- [ ] ✕ tar tillbaka till ligaläge; valt läge och lag finns kvar efter omstart.
+- [ ] Pågående match visar LIVE och uppdateras utan omladdning, i båda lägena.
 - [ ] Utan nät visas sparad data med tidsstämpel; vid API-fel ett tydligt felmeddelande.
 - [ ] Ljust och mörkt tema i PL-inspirerad stil, utan PL:s varumärken.
