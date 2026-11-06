@@ -27,20 +27,22 @@ Första gången appen öppnas är den i **ligaläge**.
   och svag bakgrundston. Saknas färg används lila.
 
 ## Layout – ligaläge (uppifrån och ned)
+Allt är hopfällt vid start så att vyn ryms på en mobilskärm utan att skrolla.
+
 ### 1. Tabell
-- **Synligt:** hela tabellen (20 lag), placering, lag, M, V, O, F, MS, P. Varje rad är tryckbar.
+- **Synligt:** topp 3 (placering, lag, M, V, O, F, MS, P). Raderna är tryckbara.
+- **Utfällt:** resten av tabellen (plats 4–20) i samma tabell, plus förklaring av zonerna.
 - Placeringszoner markeras med en färgad kant: Champions League, Europa League/Conference League, nedflyttning.
 - På smal skärm döljs V/O/F; M, MS, P visas alltid.
 
-### 2. Kommande matcher
-- **Synligt:** ligans nästa omgång (10 matcher) i tidsordning, grupperade per dag ("Lör 8 nov").
-  Varje match: avsparkstid, hemmalag – bortalag med märken. Pågående matcher visas överst med ställning,
-  matchminut och LIVE.
-- **Utfällt:** nästa omgång därefter (10 matcher till), i samma format.
+### 2. Aktuella matcher
+- **Synligt:** alla pågående matcher under "Pågår nu" (ställning, matchminut, LIVE), fyllt på med
+  närmast kommande matcher till minst 3 rader. Grupperat per dag med "Idag", "I morgon" eller datum.
+- **Utfällt:** fler kommande matcher, upp till två omgångar (20 matcher) totalt.
 
 ### 3. Senaste resultat
-- **Synligt:** ligans senast spelade omgång (10 matcher), nyaste först, grupperade per dag, med slutresultat.
-- **Utfällt:** omgången innan dess.
+- **Synligt:** de 2 senast spelade matcherna, nyaste först, med slutresultat.
+- **Utfällt:** fler resultat, upp till två omgångar (20 matcher) totalt.
 
 ## Layout – lagläge (uppifrån och ned)
 Överst: raden med valt lag och ✕ (se ovan). Därefter tre kort, var och ett med en alltid synlig

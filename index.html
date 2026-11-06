@@ -137,9 +137,10 @@ ul.list .r { font-weight: 800; text-align: right; }
 #teambar button:focus-visible { outline: 3px solid var(--cyan); }
 .acc-toggle[hidden] { display: none; }
 /* League match list */
-.day { padding: 8px 16px 4px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); border-top: 1px solid var(--line); }
+.day { padding: 6px 16px 2px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); border-top: 1px solid var(--line); }
 .day:first-child { border-top: 0; }
-.lm { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 8px 0; min-height: 44px; }
+.lm { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 6px 0; min-height: 40px; }
+#card-table:not(.expanded) tr.more { display: none; }
 .lm .t { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 15px; min-width: 0; }
 .lm .t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lm .t.h { justify-content: flex-end; text-align: right; }
@@ -221,6 +222,9 @@ const CONFIG = {
   upcomingCount: 5,
   recentCount: 5,
   roundSize: 10,
+  leaguePreviewRows: 3,       // table rows visible in collapsed league mode
+  leaguePreviewMatches: 3,    // upcoming matches visible in collapsed league mode (all live matches are always shown)
+  leaguePreviewResults: 2,    // results visible in collapsed league mode
   leagueDaysBack: 21,
   leagueDaysAhead: 35,
   livePollMs: 30000,
@@ -439,16 +443,20 @@ function tableHead() {
     el('th', { class: 'wdl', text: 'V' }), el('th', { class: 'wdl', text: 'O' }), el('th', { class: 'wdl', text: 'F' }),
     el('th', { text: 'MS' }), el('th', { text: 'P' })));
 }
-function fullTable() {
-  const body = el('tbody', { class: 'pick' }, ...cache.table.map((r) => tableRow(r, true)));
-  return [
-    el('table', { class: 'full' }, tableHead(), body),
-    el('div', { class: 'legend' },
+function tableLegend() {
+  return el('div', { class: 'legend' },
       el('span', null, el('i', { style: 'background:var(--green)' }), 'Champions League'),
       el('span', null, el('i', { style: 'background:var(--cyan)' }), 'Europa'),
       el('span', null, el('i', { style: 'background:var(--pink)' }), 'Nedflyttning'),
-      el('span', { text: 'Tryck på ett lag för att följa det' })),
-  ];
+      el('span', { text: 'Tryck på ett lag för att följa det' }));
+}
+function fullTable(preview) {
+  const body = el('tbody', { class: 'pick' }, ...cache.table.map((r, i) => {
+    const tr = tableRow(r, true);
+    if (preview && i >= preview) tr.classList.add('more');
+    return tr;
+  }));
+  return el('table', { class: 'full' }, tableHead(), body);
 }
 function formDots(matches) {
   const pl = (matches || []).filter((m) => m.state === 'post' && m.leagueId === CONFIG.league.id).slice(-5);
@@ -471,21 +479,21 @@ function renderTable() {
     sum.append(el('span', { class: 'muted', text: 'Ingen tabell tillgänglig.' }));
     return;
   }
-  if (!team) {               // league mode: whole table visible, no accordion
-    toggle.hidden = true;
+  toggle.hidden = false;
+  if (!team) {               // league mode: top rows visible, the rest of the same table expands
     sum.classList.add('flush');
-    sum.append(...fullTable());
+    sum.append(fullTable(CONFIG.leaguePreviewRows));
+    full.append(tableLegend());
     return;
   }
   sum.classList.remove('flush');
-  toggle.hidden = false;
   const me = cache.table.find((r) => r.id === team.id);
   if (me) {
     sum.append(el('table', null, tableHead(), el('tbody', null, tableRow(me, false))));
     const f = formDots(teamData() && teamData().matches);
     if (f) toggle.insertBefore(f, toggle.querySelector('.chev'));
   } else sum.append(el('span', { class: 'muted', text: `${team.name} finns inte i tabellen.` }));
-  full.append(...fullTable());
+  full.append(fullTable(0), tableLegend());
 }
 
 // ---------- Rendering: team matches ----------
@@ -524,6 +532,13 @@ function teamMatchList(list, past) {
 }
 
 // ---------- Rendering: league matches ----------
+function dayLabel(date) {
+  const key = fmtDayKey.format(date), d = 864e5;
+  if (key === fmtDayKey.format(Date.now())) return 'Idag';
+  if (key === fmtDayKey.format(Date.now() + d)) return 'I morgon';
+  if (key === fmtDayKey.format(Date.now() - d)) return 'I går';
+  return fmtDate.format(date);
+}
 function leagueMatchList(list, past) {
   if (!list.length) return el('div', { class: 'empty muted small', text: past ? 'Inga spelade matcher.' : 'Inga inplanerade matcher.' });
   const wrap = el('div');
@@ -531,7 +546,7 @@ function leagueMatchList(list, past) {
   for (const m of list) {
     const key = m.state === 'in' ? 'live' : fmtDayKey.format(m.date);
     if (key !== lastDay) {
-      wrap.append(el('div', { class: 'day', text: m.state === 'in' ? 'Pågår nu' : fmtDate.format(m.date) }));
+      wrap.append(el('div', { class: 'day', text: m.state === 'in' ? 'Pågår nu' : dayLabel(m.date) }));
       lastDay = key;
     }
     const mid = m.state === 'pre'
@@ -550,17 +565,19 @@ function renderMatches() {
   const ns = $('next-summary'), nl = $('next-list'), ls = $('last-summary'), ll = $('last-list');
   ns.replaceChildren(); nl.replaceChildren(); ls.replaceChildren(); ll.replaceChildren();
   if (!team) {
-    setTexts({ 'next-title': 'Kommande matcher', 'next-toggle': 'Nästa omgång', 'last-title': 'Senaste resultat', 'last-toggle': 'Föregående omgång' });
+    setTexts({ 'next-title': 'Aktuella matcher', 'next-toggle': 'Fler kommande matcher', 'last-title': 'Senaste resultat', 'last-toggle': 'Fler resultat' });
     const ms = cache.league || [];
     const live = ms.filter((m) => m.state === 'in');
     const upcoming = [...live, ...ms.filter((m) => m.state === 'pre')];
     const past = ms.filter((m) => m.state === 'post').reverse();
     const n = CONFIG.roundSize;
     if (!cache.league) { ns.append(el('span', { class: 'muted', text: 'Inga matcher tillgängliga.' })); ls.append(el('span', { class: 'muted', text: 'Inga matcher tillgängliga.' })); return; }
-    ns.append(leagueMatchList(upcoming.slice(0, n), false));
-    nl.append(leagueMatchList(upcoming.slice(n, 2 * n), false));
-    ls.append(leagueMatchList(past.slice(0, n), true));
-    ll.append(leagueMatchList(past.slice(n, 2 * n), true));
+    const k = Math.max(live.length, CONFIG.leaguePreviewMatches);   // live matches always visible
+    const kp = CONFIG.leaguePreviewResults;
+    ns.append(leagueMatchList(upcoming.slice(0, k), false));
+    nl.append(leagueMatchList(upcoming.slice(k, Math.max(k, 2 * n)), false));
+    ls.append(leagueMatchList(past.slice(0, kp), true));
+    ll.append(leagueMatchList(past.slice(kp, 2 * n), true));
     return;
   }
   setTexts({ 'next-title': 'Nästa match', 'next-toggle': 'Kommande matcher', 'last-title': 'Senaste match', 'last-toggle': 'Tidigare matcher' });
@@ -605,6 +622,7 @@ function setAcc(btn, open) {
   btn.setAttribute('aria-expanded', String(open));
   panel.classList.toggle('open', open);
   panel.inert = !open;
+  btn.closest('.card').classList.toggle('expanded', open);
 }
 function applyAccordions() {
   const saved = (store.get(CONFIG.accKey) || {})[mode()] || {};
