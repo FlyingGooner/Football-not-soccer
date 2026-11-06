@@ -15,7 +15,7 @@ för att följa just det laget. Inget lag är hårdkodat.
 - Svarar snabbt på: *Hur ser tabellen ut? Vilka matcher spelas härnäst? Hur gick det för mitt lag?*
 
 ## Version
-- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.5.1`, så man ser när en ny version nått GitHub Pages.
+- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.5.2`, så man ser när en ny version nått GitHub Pages.
 
 ## Lägen
 Appen har två lägen. Valt läge sparas i `localStorage` och appen öppnas i samma läge nästa gång.
