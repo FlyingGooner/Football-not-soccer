@@ -15,7 +15,7 @@ för att följa just det laget. Inget lag är hårdkodat.
 - Svarar snabbt på: *Hur ser tabellen ut? Vilka matcher spelas härnäst? Hur gick det för mitt lag?*
 
 ## Version
-- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.4.1`, så man ser när en ny version nått GitHub Pages.
+- Versionsnummer (`CONFIG.version`) visas längst upp i högra hörnet, t.ex. `v0.5.0`, så man ser när en ny version nått GitHub Pages.
 
 ## Lägen
 Appen har två lägen. Valt läge sparas i `localStorage` och appen öppnas i samma läge nästa gång.
@@ -45,6 +45,13 @@ Allt är hopfällt vid start så att vyn ryms på en mobilskärm utan att skroll
 - **Synligt:** alla pågående matcher under "Pågår nu" (ställning, matchminut, LIVE), fyllt på med
   närmast kommande matcher till minst 3 rader. Grupperat per dag med "Idag", "I morgon" eller datum.
 - **Utfällt:** fler kommande matcher, upp till två omgångar (20 matcher) totalt.
+
+### Matchdetaljer
+- Pågående och spelade matcher i listorna är tryckbara. Tryck fäller ut/ihop målen under matchen:
+  minut, ⚽ och målskytt per lag (hemma till vänster, borta till höger), med "(str.)" för straff och
+  "(sj.)" för självmål. Röda kort visas med 🟥. Saknas data: "Ingen matchinfo tillgänglig."
+- Datan kommer från scoreboardens `details` – inga extra anrop. Utfällt läge gäller bara under sessionen.
+- I lagläge visas målen direkt under ställningen i Nästa/Senaste match.
 
 ### 3. Senaste resultat
 - **Synligt:** de 2 senast spelade matcherna, nyaste först, med slutresultat.

@@ -162,6 +162,12 @@ dialog .row { display: flex; gap: 10px; justify-content: flex-end; }
 dialog button { min-height: 44px; padding: 0 18px; border-radius: 22px; border: 0; font: inherit; font-weight: 700; cursor: pointer; }
 dialog .cancel { background: var(--line); color: var(--text); }
 dialog .ok { background: var(--purple); color: var(--green); }
+.lm.tap { cursor: pointer; -webkit-tap-highlight-color: transparent; border-radius: 8px; }
+.lm.tap:active { background: color-mix(in srgb, currentColor 8%, transparent); }
+.evs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; font-size: 13px; padding: 2px 0 8px; }
+.evs.muted { display: block; text-align: center; }
+.evs .h { text-align: right; }
+.ev .m { opacity: .7; margin: 0 4px; font-variant-numeric: tabular-nums; }
 #version { position: fixed; top: calc(env(safe-area-inset-top) + 4px); right: 8px; z-index: 50; font: 600 11px/1 system-ui, sans-serif; padding: 3px 6px; border-radius: 6px; background: #37003C; color: #00FF85; opacity: .85; pointer-events: none; }
 </style>
 </head>
@@ -215,7 +221,7 @@ dialog .ok { background: var(--purple); color: var(--green); }
 
 // ---------- Config ----------
 const CONFIG = {
-  version: '0.4.1',                                  // bump on every push (shown top right)
+  version: '0.5.0',                                  // bump on every push (shown top right)
   league: { id: 'eng.1', name: 'Premier League' },   // table + league mode
   teamCompetitions: [                                // competitions collected in team mode
     { id: 'eng.1', name: 'Premier League' },
@@ -338,8 +344,42 @@ function normalizeEvent(ev, comp) {
     clock: str(st.displayClock) || '',
     home: teamOf(home), away: teamOf(away),
     homeScore: num(home.score), awayScore: num(away.score),
+    events: keyEvents(c0.details),
   };
 }
+// Goals and red cards from a scoreboard competition's `details`.
+function keyEvents(details) {
+  if (!Array.isArray(details)) return null;
+  const out = [];
+  for (const d of details) {
+    if (!d || typeof d !== 'object') continue;
+    const t = (str(d.type && d.type.text) || '').toLowerCase();
+    const goal = d.scoringPlay === true || t.includes('goal') || t === 'penalty - scored';
+    const red = d.redCard === true || t.includes('red card');
+    if (!goal && !red) continue;
+    const a = Array.isArray(d.athletesInvolved) && d.athletesInvolved[0];
+    out.push({
+      kind: goal ? 'goal' : 'red',
+      min: str(d.clock && d.clock.displayValue) || '',
+      name: str(a && (a.shortName || a.displayName)) || '?',
+      teamId: String((d.team && d.team.id) ?? ''),
+      pen: goal && (d.penaltyKick === true || t.includes('penalty')),
+      og: goal && (d.ownGoal === true || t.includes('own goal')),
+    });
+  }
+  return out;
+}
+function eventsView(m) {
+  const evs = m.events;
+  if (!evs) return el('div', { class: 'evs muted small', text: 'Ingen matchinfo tillgänglig.' });
+  if (!evs.length) return el('div', { class: 'evs muted small', text: 'Inga mål.' });
+  const line = (e) => el('div', { class: 'ev' },
+    el('span', { class: 'm', text: e.min }), e.kind === 'goal' ? '⚽ ' : '🟥 ',
+    el('span', { text: e.name }), e.pen ? el('span', { class: 'muted', text: ' (str.)' }) : null, e.og ? el('span', { class: 'muted', text: ' (sj.)' }) : null);
+  const col = (id, cls) => el('div', { class: cls }, ...evs.filter((e) => e.teamId === id).map(line));
+  return el('div', { class: 'evs' }, col(m.home.id, 'h'), col(m.away.id, 'a'));
+}
+const openMatches = new Set();   // expanded match rows (session only)
 const events = (data, comp) => (Array.isArray(data && data.events) ? data.events : [])
   .filter((ev) => ev && typeof ev === 'object').map((ev) => normalizeEvent(ev, comp)).filter(Boolean);
 const stateRank = { pre: 0, in: 1, post: 2 };
@@ -347,7 +387,7 @@ function mergeMatches(lists) {
   const byId = new Map();
   for (const list of lists) for (const m of list) {
     const prev = byId.get(m.id);
-    if (!prev || (stateRank[m.state] ?? 0) >= (stateRank[prev.state] ?? 0)) byId.set(m.id, m);
+    if (!prev || (stateRank[m.state] ?? 0) >= (stateRank[prev.state] ?? 0)) byId.set(m.id, prev && !m.events && prev.events ? { ...m, events: prev.events } : m);
   }
   return [...byId.values()].sort((x, y) => new Date(x.date) - new Date(y.date));
 }
@@ -601,6 +641,7 @@ function matchHero(m, kind) {
   const side = (t) => el('div', { class: 'side' }, logo(t.logo, ''), el('span', { text: t.name }));
   return el('div', null,
     el('div', { class: 'match-main' }, side(m.home), mid, side(m.away)),
+    m.state !== 'pre' && m.events && m.events.length ? eventsView(m) : null,
     el('div', { class: 'meta' },
       `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`,
       m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
@@ -640,10 +681,24 @@ function leagueMatchList(list, past) {
     const mid = m.state === 'pre'
       ? el('span', { class: 's', text: fmtTime.format(m.date) })
       : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore), m.state === 'in' ? el('span', { class: 'live', text: `LIVE ${m.clock || ''}`.trim() }) : null);
-    wrap.append(el('div', { class: 'lm' },
+    const row = el('div', { class: 'lm' },
       el('span', { class: 't h' }, el('span', { text: m.home.name }), logo(m.home.logo, '')),
       mid,
-      el('span', { class: 't' }, logo(m.away.logo, ''), el('span', { text: m.away.name }))));
+      el('span', { class: 't' }, logo(m.away.logo, ''), el('span', { text: m.away.name })));
+    if (m.state === 'pre') { wrap.append(row); continue; }
+    const open = openMatches.has(m.id), box = el('div', { class: 'lmx' });
+    row.classList.add('tap');
+    row.setAttribute('role', 'button'); row.setAttribute('tabindex', '0'); row.setAttribute('aria-expanded', String(open));
+    if (open) box.append(eventsView(m));
+    const toggle = () => {
+      const now = !openMatches.has(m.id);
+      if (now) openMatches.add(m.id); else openMatches.delete(m.id);
+      row.setAttribute('aria-expanded', String(now));
+      box.replaceChildren(...(now ? [eventsView(m)] : []));
+    };
+    row.addEventListener('click', toggle);
+    row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+    wrap.append(row, box);
   }
   return wrap;
 }
