@@ -1,53 +1,86 @@
-# Spec – Fotbollsföljaren (v0.1)
+# Spec – Fotbollsföljaren (v0.2)
 
 ## Syfte
 En personlig, lättviktig webbapp i en enda HTML-fil för att följa fotboll som intresserar mig.
 Version 1 omfattar **endast Arsenal FC herrlag**.
 
-## Användare och användning
+## Användning
 - En användare (jag), på mobilen.
-- Öppnas snabbt för att svara på: *När spelar Arsenal härnäst? Hur gick senaste matchen? Var ligger vi i tabellen?*
+- Körs via **GitHub Pages** (`https://<användare>.github.io/It-s-football-not-soccer-/`) och läggs till på hemskärmen.
+  Lokal fil (`file://`) stöds i mån av möjlighet men är inte målet.
+- Svarar snabbt på: *Var ligger Arsenal i tabellen? När är nästa match? Hur gick senaste?*
 
-## Funktioner – v1 (MVP)
-1. **Nästa match** (överst, framträdande)
-   - Motståndare, hemma/borta, turnering, datum och avsparkstid i lokal tid.
-   - Nedräkning ("om 2 d 4 h").
-   - Pågående match: visa ställning och "LIVE"-markering.
-2. **Senaste resultat**
-   - De 5 senaste matcherna med resultat och V/O/F-markering (grön/grå/röd).
-3. **Kommande matcher**
-   - De närmaste ~10 matcherna i alla turneringar (Premier League, FA-cupen, Ligacupen, Champions League m.fl.).
-4. **Premier League-tabell**
-   - Hela tabellen med Arsenal markerad; kolumner: placering, lag, M, MS, P.
-5. **Uppdatering**
-   - Data hämtas när appen öppnas och via en "Uppdatera"-knapp.
-   - Cachad data visas direkt, med texten "Senast uppdaterad hh:mm".
+## Layout (uppifrån och ned)
+En kolumn med tre kort. Varje kort har en alltid synlig sammanfattning och en utfällbar del (accordion).
+Alla accordions är stängda vid start; öppet/stängt-läget sparas i `localStorage`.
 
-## Utanför v1
-- Fler lag (damlaget, landslag, andra klubbar) – men arkitekturen ska förbereda för det.
-- Nyheter, spelartrupp, statistik, notiser.
-- Inloggning eller backend.
+### 1. Tabell
+- **Synligt:** Arsenals rad i Premier League – placering, lag, M (matcher), V, O, F, MS (målskillnad), P (poäng)
+  samt formen i de 5 senaste ligamatcherna (V/O/F-prickar).
+- **Utfällt:** hela tabellen (20 lag) med samma kolumner, Arsenal markerad.
+  Placeringszoner markeras med en färgad kant: Champions League, Europa League/Conference League, nedflyttning.
+- På smal skärm döljs V/O/F i hela tabellen; M, MS, P visas alltid.
+
+### 2. Nästa match
+- **Synligt:** nästa match – motståndare (med klubbmärke om källan har det), hemma/borta, turnering,
+  datum och avsparkstid i lokal tid, nedräkning ("om 2 d 4 h").
+  Pågående match: ställning, matchminut och "LIVE"-markering i stället för nedräkning.
+- **Utfällt:** de 5 därefter kommande matcherna (datum, tid, motståndare, H/B, turnering).
+
+### 3. Senaste match
+- **Synligt:** senaste spelade match – resultat, motståndare, H/B, turnering, datum, V/O/F-markering.
+- **Utfällt:** de 5 matcherna innan dess i samma format.
+
+Matcher i 2 och 3 omfattar alla turneringar (PL, FA-cupen, Ligacupen, Champions League m.fl.).
+
+## Header
+- Sticky header med appens namn och en "Uppdatera"-knapp.
+- Under headern: "Senast uppdaterad hh:mm" (och "Offline – visar sparad data" vid behov).
+
+## Tema – inspirerat av Premier Leagues webbplats
+Inspiration, inte kopia: **inga PL-logotyper, lejonet eller PL-typsnitt**, bara färgkänsla och stil.
+- Primär bakgrund i header och kortrubriker: djup lila `#37003C`.
+- Accenter: grön `#00FF85` (t.ex. LIVE, CL-zon, vinst), rosa/magenta `#E90052` (förlust, nedflyttningszon),
+  cyan `#04F5FF` (länkar/fokus, Europa-zon).
+- Arsenals rad markeras med Arsenalröd `#EF0107` som vänsterkant.
+- Ljust tema: vita kort på ljusgrå bakgrund (`#F2F2F2`), lila rubriker.
+  Mörkt tema (`prefers-color-scheme: dark`): mörklila bakgrund (`#1A001D`), kort i `#2A002E`.
+- Typsnitt: systemets sans-serif, fet och kompakt i rubriker och siffror (tabular-nums).
+- Rundade kort (8–12 px), tydliga accordion-pilar som roterar vid öppning, mjuk animation (≤ 200 ms,
+  avstängd vid `prefers-reduced-motion`).
 
 ## Datakälla
-- Krav: gratis, fungerar direkt från webbläsaren (CORS), ingen server.
-- Förstahandsval: ESPN:s öppna JSON-endpoints (`site.api.espn.com`) för lagschema och tabell (Arsenal = team-id `359`, PL = `eng.1`).
-- Reserv: TheSportsDB (gratisnyckel) eller football-data.org (egen nyckel som användaren anger i appen).
-- All åtkomst går via adapterfunktioner så att källan kan bytas utan att UI ändras.
+- **ESPN:s öppna JSON-API** (`site.api.espn.com`), inofficiellt, gratis, ingen nyckel.
+  - Schema/resultat: `/apis/site/v2/sports/soccer/eng.1/teams/359/schedule` (+ övriga turneringar vid behov)
+  - Tabell: `/apis/v2/sports/soccer/eng.1/standings`
+  - Live: scoreboard-endpoint för pågående match.
+- Måste verifieras att API:t tillåter anrop från webbläsaren (CORS) innan bygget.
+- Reserv: football-data.org (gratisnyckel som användaren anger i appen).
+- All åtkomst via adapterfunktioner (`fetchTable()`, `fetchFixtures()`, `fetchResults()`, `fetchLive()`).
 
-## UI / layout
-- En kolumn, kort (cards) i ordningen: Nästa match → Senaste resultat → Kommande → Tabell.
-- Sticky header med titel och uppdatera-knapp.
-- Stora tryckytor (minst 44 px), läsbar text (≥ 16 px).
-- Ljust/mörkt tema efter systeminställning.
+## Uppdatering och live
+- Hämtning när appen öppnas och vid tryck på "Uppdatera". Inga anrop i bakgrunden.
+- Under pågående match (och appen öppen och synlig): uppdatera live-ställningen var 30:e sekund.
+- Cachad data visas direkt vid start, därefter ersätts den av färsk data.
+
+## Integritet och säkerhet
+- Anropen görs direkt från mobilen till ESPN; ESPN ser IP-adress, webbläsare och vad som hämtas.
+- Ingen inloggning, inga cookies, ingen spårning, inga analysverktyg.
+- Data från API:t renderas alltid som text (`textContent`), aldrig som HTML.
+
+## Utanför v1
+- Fler lag, nyheter, trupp, detaljerad statistik, pushnotiser, backend.
 
 ## Tekniska krav
-- Fil: `index.html`, självständig (inline CSS/JS).
-- Fungerar i aktuell Safari (iOS) och Chrome (Android).
-- Laddtid < 1 s från cache; inga externa beroenden utöver data-API:t.
-- Valfritt senare: PWA-manifest för "Lägg till på hemskärmen".
+- Fil: `index.html`, självständig (inline CSS/JS), inga externa beroenden utöver data-API:t
+  (klubbmärken laddas som bilder från källan).
+- Fungerar i aktuell Safari (iOS) och Chrome (Android), 360–430 px bredd.
+- Tillgänglighet: accordions är `<button>` med `aria-expanded`, tryckytor ≥ 44 px, text ≥ 16 px.
 
 ## Acceptanskriterier v1
-- [ ] Öppnar `index.html` på mobilen och ser nästa Arsenal-match med korrekt lokal tid.
-- [ ] Ser de 5 senaste resultaten och PL-tabellen med Arsenal markerad.
-- [ ] Utan nät visas senast cachade data med tidsstämpel.
-- [ ] Vid API-fel visas ett tydligt felmeddelande.
+- [ ] Arsenals tabellrad syns direkt; tryck fäller ut hela tabellen med Arsenal markerad.
+- [ ] Nästa match visas med korrekt lokal tid och nedräkning; utfällt visas 5 kommande.
+- [ ] Senaste match visas med resultat och V/O/F; utfällt visas 5 tidigare.
+- [ ] Pågående match visar LIVE och uppdateras utan omladdning.
+- [ ] Utan nät visas sparad data med tidsstämpel; vid API-fel ett tydligt felmeddelande.
+- [ ] Ljust och mörkt tema i PL-inspirerad stil, utan PL:s varumärken.
