@@ -45,16 +45,16 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 .acc-toggle:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
-#status { padding: calc(env(safe-area-inset-top) + 8px) 16px 0; font-size: 13px; color: var(--muted); min-height: 26px; }
+#status { padding: calc(env(safe-area-inset-top) + 6px) 16px 0; font-size: 12px; color: var(--muted); min-height: 20px; }
 #status.offline { color: var(--pink); font-weight: 600; }
-main { padding: 8px 12px 24px; max-width: 640px; margin: 0 auto; display: grid; gap: 14px; }
+main { padding: 6px 12px 16px; max-width: 640px; margin: 0 auto; display: grid; gap: 10px; }
 .card { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(55,0,60,.12); }
 .card h2 {
-  margin: 0; padding: 10px 16px;
+  margin: 0; padding: 7px 16px;
   background: var(--purple); color: var(--head-text);
-  font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px;
+  font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px;
 }
-.summary { padding: 14px 16px; }
+.summary { padding: 8px 16px; }
 .acc-toggle {
   width: 100%; min-height: 44px;
   display: flex; align-items: center; justify-content: space-between;
@@ -75,7 +75,7 @@ main { padding: 8px 12px 24px; max-width: 640px; margin: 0 auto; display: grid; 
 
 /* Table */
 table { width: 100%; border-collapse: collapse; }
-th, td { padding: 8px 4px; text-align: center; white-space: nowrap; }
+th, td { padding: 6px 4px; text-align: center; white-space: nowrap; }
 th { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
 td.team, th.team { text-align: left; width: 100%; white-space: normal; }
 td.pos { font-weight: 800; width: 32px; border-left: 4px solid transparent; }
@@ -98,22 +98,22 @@ tr.me td.team { font-weight: 800; }
 .legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 16px 12px; font-size: 12px; color: var(--muted); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
 
-.form { display: flex; gap: 4px; margin-top: 10px; align-items: center; }
-.dot { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; }
+.form { display: flex; gap: 3px; align-items: center; margin-left: auto; margin-right: 12px; }
+.dot { width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; }
 .dot.W { background: #00B86B; color: #fff; }
 .dot.D { background: var(--draw); }
 .dot.L { background: var(--pink); }
 
 /* Matches */
 .match-main { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; text-align: center; }
-.side { display: grid; justify-items: center; gap: 6px; font-weight: 700; font-size: 15px; }
-.side img { width: 48px; height: 48px; object-fit: contain; }
-.side .ph { width: 48px; height: 48px; border-radius: 50%; background: var(--line); }
+.side { display: grid; justify-items: center; gap: 4px; font-weight: 700; font-size: 14px; }
+.side img { width: 36px; height: 36px; object-fit: contain; }
+.side .ph { width: 36px; height: 36px; border-radius: 50%; background: var(--line); }
 .mid { display: grid; gap: 4px; justify-items: center; }
-.score { font-size: 30px; font-weight: 800; letter-spacing: 1px; }
-.time { font-size: 22px; font-weight: 800; }
-.meta { text-align: center; margin-top: 10px; font-size: 14px; color: var(--muted); }
-.countdown { display: inline-block; margin-top: 8px; padding: 4px 10px; border-radius: 12px; background: var(--purple); color: var(--green); font-weight: 700; font-size: 14px; }
+.score { font-size: 26px; font-weight: 800; letter-spacing: 1px; }
+.time { font-size: 20px; font-weight: 800; }
+.meta { text-align: center; margin-top: 6px; font-size: 13px; color: var(--muted); }
+.countdown { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 10px; background: var(--purple); color: var(--green); font-weight: 700; font-size: 14px; }
 /* Solid badge for contrast; only the small dot pulses */
 .live { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 4px; background: var(--green); color: #1A001D; font-weight: 800; font-size: 12px; }
 .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--pink); animation: pulse 1.2s ease-in-out infinite; }
@@ -129,10 +129,10 @@ ul.list .c { font-size: 12px; color: var(--muted); }
 ul.list .r { font-weight: 800; text-align: right; }
 .empty { padding: 12px 16px; }
 /* Team bar */
-#teambar { display: none; align-items: center; gap: 10px; background: var(--card); border-radius: 12px; padding: 6px 6px 6px 12px; border-left: 5px solid var(--sel); box-shadow: 0 1px 3px rgba(55,0,60,.12); }
+#teambar { display: none; align-items: center; gap: 10px; background: var(--card); border-radius: 12px; padding: 0 0 0 12px; border-left: 5px solid var(--sel); box-shadow: 0 1px 3px rgba(55,0,60,.12); }
 #teambar.show { display: flex; }
-#teambar img, #teambar .ph { width: 28px; height: 28px; object-fit: contain; }
-#teambar .n { font-weight: 800; font-size: 18px; flex: 1; }
+#teambar img, #teambar .ph { width: 24px; height: 24px; object-fit: contain; }
+#teambar .n { font-weight: 800; font-size: 16px; flex: 1; }
 #teambar button { width: 44px; height: 44px; border: 0; border-radius: 22px; background: transparent; color: var(--muted); font-size: 22px; cursor: pointer; }
 #teambar button:focus-visible { outline: 3px solid var(--cyan); }
 .acc-toggle[hidden] { display: none; }
@@ -464,6 +464,7 @@ function formDots(matches) {
 function renderTable() {
   const sum = $('table-summary'), full = $('table-full'), toggle = document.querySelector('[data-acc="table"]');
   sum.replaceChildren(); full.replaceChildren();
+  toggle.querySelectorAll('.form').forEach((n) => n.remove());
   $('table-title').textContent = CONFIG.league.name;
   if (!cache.table || !cache.table.length) {
     toggle.hidden = true;
@@ -482,7 +483,7 @@ function renderTable() {
   if (me) {
     sum.append(el('table', null, tableHead(), el('tbody', null, tableRow(me, false))));
     const f = formDots(teamData() && teamData().matches);
-    if (f) sum.append(f);
+    if (f) toggle.insertBefore(f, toggle.querySelector('.chev'));
   } else sum.append(el('span', { class: 'muted', text: `${team.name} finns inte i tabellen.` }));
   full.append(...fullTable());
 }
@@ -507,7 +508,7 @@ function matchHero(m, kind) {
     el('div', { class: 'meta' },
       `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`,
       m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
-      m.state === 'pre' && kind === 'next' ? el('div', null, el('span', { class: 'countdown', 'data-kickoff': m.date, text: countdown(d - Date.now()) })) : null));
+      m.state === 'pre' && kind === 'next' ? el('span', { class: 'countdown', 'data-kickoff': m.date, text: countdown(d - Date.now()) }) : null));
 }
 function teamMatchList(list, past) {
   if (!list.length) return el('div', { class: 'empty muted small', text: past ? 'Inga tidigare matcher.' : 'Inga fler inplanerade matcher.' });
