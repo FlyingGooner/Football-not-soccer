@@ -19,7 +19,7 @@ Dessa regler gäller för all utveckling i repot (för människor och AI-assiste
 ## Språk och stil
 - UI-text på svenska. Kod, variabelnamn och commit-meddelanden på engelska.
 - Det heter **fotboll**/**football**, aldrig "soccer" i UI-texten.
-- Tema inspirerat av Premier Leagues webbplats (lila `#37003C` + grön/rosa/cyan accenter), se `SPEC.md`. Använd aldrig PL:s eller klubbarnas logotyper/typsnitt i UI-designen. Ljust och mörkt tema via `prefers-color-scheme`.
+- Tema inspirerat av Premier Leagues webbplats (lila `#37003C` + grön/rosa/cyan accenter), se `SPEC.md`. Använd aldrig PL:s logotyper eller typsnitt (klubbmärken som kommer från datakällan är ok). Ljust och mörkt tema via `prefers-color-scheme`.
 - Data från API:er renderas alltid som text (`textContent`), aldrig som HTML.
 - Inga anrop i bakgrunden; bara vid start, manuell uppdatering och under pågående match.
 
