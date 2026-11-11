@@ -355,3 +355,5 @@ function loadLayout(raw) {
 }
 // Leagues shown in the picker, in the chosen order.
 const pickerLeagues = (layout) => { const { order, hidden } = layoutOf(layout, 'leagues'); return order.filter((id) => !hidden.includes(id)); };
+// A match that should have kicked off but still says 'pre': the cached answer is stale, fetch fresh (not the 60 s same-URL reuse).
+const overdue = (list, now = Date.now()) => (list || []).some((m) => m.state === 'pre' && new Date(m.date) <= now);

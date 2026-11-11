@@ -617,7 +617,7 @@ function leagueJob(lid, now) {
       return v.matches;
     });
   }
-  if (started(e.league)) return fetchToday(lid).then((list) => () => { e.league = mergeMatches([e.league, list]); e.updatedAt.league = now; return list; });
+  if (started(e.league)) return fetchToday(lid, overdue(e.league)).then((list) => () => { e.league = mergeMatches([e.league, list]); e.updatedAt.league = now; return list; });
   return null;
 }
 async function refresh() {

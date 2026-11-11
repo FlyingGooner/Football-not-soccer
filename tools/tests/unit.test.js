@@ -157,3 +157,9 @@ T.test('U6: för stort ESPN-svar avvisas före JSON.parse', () => {
   let err = null; try { parseResponse('{"a":"' + 'x'.repeat(200) + '"}', 100); } catch (e) { err = e; }
   T.ok(err && /stort/.test(err.message), 'stort svar ger fel');
 });
+T.test('avspark passerad men status pre → färsk hämtning, inte 60 s-cachen', () => {
+  const now = Date.parse('2026-11-11T15:00:15Z');
+  T.ok(overdue([{ state: 'pre', date: '2026-11-11T15:00Z' }], now), 'avspark passerad');
+  T.ok(!overdue([{ state: 'pre', date: '2026-11-11T17:00Z' }, { state: 'in', date: '2026-11-11T14:00Z' }], now), 'inget försenat');
+  T.ok(!overdue(null, now), 'tom');
+});
