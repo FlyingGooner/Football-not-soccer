@@ -103,7 +103,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 | `fns.team.v2` | Valt lag `{ id, name, logo, color, leagueId }` eller saknas (= ligaläge). `.v1` (utan `leagueId`) läses en gång som `eng.1` |
 | `fns.league.v1` | Vald liga i ligaläge, ett id ur `CONFIG.leagues` |
 | `fns.tab.v1` | Vald flik: `matches`, `table`, `team` eller `settings` |
-| `fns.layout.v1` | Kortordning per vy: `{ matches | team: { order: [kort-id], hidden: [kort-id] } }`, bara vyer som skiljer sig från standard |
+| `fns.layout.v1` | Kortordning per vy: `{ matches, team: { order: [kort-id], hidden: [kort-id] } }`, bara vyer som skiljer sig från standard |
 
 ```json
 {
