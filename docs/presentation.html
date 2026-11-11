@@ -30,7 +30,7 @@
     <h2>Tre principer bakom appen</h2>
     <div class="cols">
       <div class="card"><div class="ic" aria-hidden="true">🎯</div><h3>Ett tydligt fokus</h3><p>Appen svarar på en enda fråga: hur går det för mitt lag? Allt annat väljs aktivt bort.</p></div>
-      <div class="card"><div class="ic" aria-hidden="true">🔒</div><h3>Integritet först</h3><p>Ingen inloggning, ingen spårning. Data stannar på telefonen och strikt CSP stänger ute allt externt.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🔒</div><h3>Integritet först</h3><p>Ingen inloggning, ingen spårning. Data stannar på telefonen, och webbläsaren stänger ute allt som inte är appens eget.</p></div>
       <div class="card"><div class="ic" aria-hidden="true">⚡</div><h3>Ren webb</h3><p>HTML, CSS och vanlig JavaScript. Inga byggsteg – hela appen kan levereras som en enda fil.</p></div>
     </div>
   </section>
@@ -66,11 +66,11 @@
     <h2>Ett enda, godkänt undantag</h2>
     <p>Resultat kan inte byggas in i förväg. Därför får appen läsa från en källa – och bara på ett sätt.</p>
     <div class="flow">
-      <div class="fbox"><b>1 · ESPN:s öppna API</b>Bara <code>site.api.espn.com</code> och klubbmärken från <code>a.espncdn.com</code>. Inga nycklar, inget konto.</div>
+      <div class="fbox"><b>1 · ESPN:s öppna API</b>Resultat och klubbmärken från ESPN. Inget konto, ingen nyckel.</div>
       <div class="farr" aria-hidden="true">↓</div>
-      <div class="fbox"><b>2 · Fasta adresser</b>URL:er byggs på ett ställe av kända liga-id, lag-id och datum. Inga cookies, ingen referer, tidsgräns 10 s.</div>
+      <div class="fbox"><b>2 · Bara det du valt</b>Appen frågar bara efter kända ligor och lag. Den skickar inget om dig och ger upp efter 10 sekunder.</div>
       <div class="farr" aria-hidden="true">↓</div>
-      <div class="fbox"><b>3 · Kontroll</b>Svaret får inte vara för stort och tolkas fält för fält. Okänt kastas, text visas som text.</div>
+      <div class="fbox"><b>3 · Kontroll</b>För stora svar stoppas. Allt granskas innan det visas, och det som ser fel ut slängs.</div>
       <div class="farr" aria-hidden="true">↓</div>
       <div class="fbox"><b>4 · Cache i telefonen</b>Hämtas när appen öppnas och live var 60:e sekund. Inget skickas – ESPN ser bara vad som hämtas.</div>
     </div>
@@ -107,20 +107,20 @@
     <p>Automatiska tester körs före varje commit och push. Underkänt test = ingen release.</p>
     <h3 class="checks-h">Säkerhetskontroll</h3>
     <ul class="checks">
-      <li><b>Strikt innehållspolicy</b><span>ingen kod utifrån, inga inline-skript.</span></li>
-      <li><b>Bara godkänd källa</b><span>ESPN:s värdar, utan cookies och referer, med tidsgräns och storlekstak.</span></li>
-      <li><b>Bara egen lagring</b><span>egna nycklar i telefonen, inga farliga API:er som eval.</span></li>
-      <li><b>Service worker</b><span>cachar bara appens egna filer.</span></li>
-      <li><b>Krypterad backup</b><span>AES-256-GCM, PBKDF2 600 000 varv, lösenordet sparas aldrig.</span></li>
+      <li><b>Bara appens egen kod körs</b><span>webbläsaren blockerar allt annat, även om någon försöker smyga in något.</span></li>
+      <li><b>Hämtar bara resultat från ESPN</b><span>skickar inget om dig, och stoppar svar som är för långsamma eller för stora.</span></li>
+      <li><b>Din data stannar hos dig</b><span>sparas bara i telefonen; appen rör bara sina egna uppgifter.</span></li>
+      <li><b>Fungerar utan nät</b><span>med bara appens egna filer – inget hämtas utifrån i smyg.</span></li>
+      <li><b>Låst backup</b><span>bara ditt lösenord öppnar filen – samma typ av kryptering som banker använder. Lösenordet sparas aldrig.</span></li>
     </ul>
     <h3 class="checks-h">Funktionstester</h3>
     <ul class="checks">
-      <li><b>Import valideras</b><span>fel app, fel format och manipulerade fält avvisas.</span></li>
-      <li><b>Text, aldrig HTML</b><span>data visas som text – inget kan köras via innehåll.</span></li>
-      <li><b>ESPN-svar kontrolleras</b><span>okända tävlingar, felaktiga lag-id, färger och klubbmärken från andra värdar stoppas.</span></li>
+      <li><b>Trasiga filer stoppas</b><span>en backup från fel app, eller som någon ändrat i, läses inte in.</span></li>
+      <li><b>Inget innehåll kan bli kod</b><span>allt visas som vanlig text, även konstiga namn.</span></li>
+      <li><b>Resultaten kontrolleras</b><span>allt från ESPN granskas innan det visas; det som ser fel ut slängs.</span></li>
       <li><b>Fel och offline</b><span>sparad data visas, aldrig en blank skärm.</span></li>
       <li><b>Export och radering</b><span>bara inställningar i backupen; radera tar bara appens egna data.</span></li>
-      <li><b>Inget nät i testerna</b><span>ESPN fejkas – testerna går aldrig ut på nätet.</span></li>
+      <li><b>Testas utan nät</b><span>testerna använder påhittade matcher, så de kan köras när som helst.</span></li>
     </ul>
   </section>
 
