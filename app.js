@@ -372,6 +372,22 @@ async function showMore() {
   renderLeagueMatches();
 }
 $('more').addEventListener('click', showMore);
+// Swedish ordinal: 1:a, 2:a, 3:e … 11:e, 12:e, 21:a, 22:a.
+const ordinal = (n) => `${n}:${[1, 2].includes(n % 10) && ![11, 12].includes(n % 100) ? 'a' : 'e'}`;
+// Swipe left/right on the list → next/previous tab (only clearly horizontal swipes, ≥ 50 px).
+function swipeTab(dir) {
+  const ids = MTABS.map(([id]) => id), cur = mtab || (matchLists(L(league).league || []).now.length ? 'now' : 'next');
+  const next = ids[ids.indexOf(cur) + dir];
+  if (next) { mtab = next; renderLeagueMatches(); }
+}
+let touch0 = null;
+$('card-matches').addEventListener('touchstart', (e) => { const t = e.touches[0]; touch0 = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
+$('card-matches').addEventListener('touchend', (e) => {
+  if (!touch0) return;
+  const t = e.changedTouches[0], dx = t.clientX - touch0.x, dy = t.clientY - touch0.y;
+  touch0 = null;
+  if (Math.abs(dx) >= 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) swipeTab(dx < 0 ? 1 : -1);
+}, { passive: true });
 function renderTeam() {
   $('teambar').hidden = !team;
   $('team-empty').hidden = !!team;
@@ -394,12 +410,11 @@ function renderTeam() {
     fill($('team-last-list'), teamMatchList(past.slice(1, 1 + CONFIG.recentCount), true));
   }
   const lid = team.leagueId, rows = L(lid).table;
-  $('team-table-title').textContent = leagueById(lid).name;
-  if (!rows || !rows.length) { fill($('team-table'), noTable()); return; }
-  const me = rows.find((r) => r.id === team.id);
-  const full = el('details', { class: 'more' }, el('summary', { class: 'more-sum', text: 'Hela tabellen' }), fullTable(rows, lid), tableLegend(lid));
-  fill($('team-table'), me ? el('table', null, tableHead(), el('tbody', null, tableRow(me, lid, rows.length, false))) : el('p', { class: 'muted pad-x', text: `${team.name} finns inte i tabellen.` }),
-    formDots(td && td.matches), full);
+  // One line: placing and points in the team's own league + form (no table here; it is under Tabell).
+  const me = rows && rows.find((r) => r.id === team.id), name = leagueById(lid).name;
+  const text = me && me.rank != null ? `${ordinal(me.rank)} i ${name}${me.pts != null ? ` · ${me.pts} p` : ''}` : `${name}: ingen placering`;
+  const dots = formDots(td && td.matches);
+  fill($('team-table'), el('div', { class: 'standing' }, el('span', { text }), dots ? [...dots.children].slice(1) : null));
 }
 function renderRecent() {
   const list = recent.filter((t) => !team || t.id !== team.id);

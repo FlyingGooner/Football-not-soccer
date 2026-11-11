@@ -9,7 +9,7 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Följa ett lag
 
-- Tryck på ett lag i tabellen och sedan Följ. Under Lag visas lagets nästa och senaste match i alla turneringar, lagets rad i tabellen och formen i de fem senaste ligamatcherna.
+- Tryck på ett lag i tabellen och sedan Följ. Under Lag visas lagets nästa och senaste match i alla turneringar, lagets placering och poäng och formen i de fem senaste ligamatcherna.
 - ✕ bredvid lagets namn slutar följa laget. Appen öppnas på samma flik nästa gång.
 
 ## Senast följda lag

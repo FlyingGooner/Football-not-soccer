@@ -32,9 +32,11 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 ```
 ┌──────────────────────────────┐
 │ Football, not soccer  v0.13.0│
-│ [ PL | LaLiga | Serie A | CL ]│
-│ ┌ MATCHER ─────────────────┐ │
-│ │[Aktuella|Kommande|Spelade]│ │
+│ PL  LaLiga  Serie A  CL      │
+│ ━━                           │
+│ ┌──────────────────────────┐ │
+│ │Aktuella Kommande Spelade │ │
+│ │━━━━━━━━                  │ │
 │ │ PÅGÅR NU                 │ │
 │ │ Arsenal   2–1   Chelsea  │ │
 │ │       LIVE 45'+3         │ │
@@ -46,12 +48,13 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 │ ⚽Matcher 📋Tabell ⭐Lag ⚙️Inst.│
 └──────────────────────────────┘
 ```
-- **Ligaväljare** överst: segmenterad knapp *PL · LaLiga · Serie A · CL*, samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar bara det som behövs (se Datakälla och uppdatering).
-- **Kortet Matcher** ersätter korten Aktuella matcher och Senaste resultat (beslut 2026-11-11). Flikar överst i kortet:
+- **Ligaväljare** överst: textflikar *PL · LaLiga · Serie A · CL* utan ramar, vald i fetstil med tunn linje under (beslut 2026-11-11, minimalistiskt), samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar bara det som behövs (se Datakälla och uppdatering).
+- **Kortet Matcher** ersätter korten Aktuella matcher och Senaste resultat (beslut 2026-11-11). Ingen rubrik. Flikar överst i kortet, samma textflikar som ligaväljaren:
   - **Aktuella**: pågående matcher ("Pågår nu") och resten av dagens matcher ("Idag"). Förvald om det finns sådana, annars Kommande.
   - **Kommande**: matcher efter i dag, per dag ("I morgon", datum), äldst först.
   - **Spelade**: resultat per dag, nyaste först.
   - Vald flik gäller bara under sessionen (ingen ny lagring).
+  - **Svep** åt vänster/höger på listan byter till nästa/föregående flik (Aktuella → Kommande → Spelade). Bara tydligt vågräta svep (minst 50 px, mer vågrätt än lodrätt), så att lodrät scroll inte påverkas.
 - **Längd:** listan fyller skärmen ner till menyn (så många rader som får plats, minst 5) och slutar med **Visa fler**. Visa fler visar fler rader ur cachen; när cachen är slut hämtas en vecka till åt det hållet (Kommande framåt, Spelade bakåt). Aktuella har ingen Visa fler. Utfällt läge gäller bara under sessionen.
 - **Tomt läge:** "Inga matcher i dag", "Inga kommande matcher", "Inga spelade matcher".
 - **Matchrad, ihopfälld:** hemmalag (märke, namn), mitten, bortalag. Namn kortas med ellips, mitten står alltid centrerad. Radhöjd som i Tabell.
@@ -68,7 +71,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Valt lag: rad med märke, namn och **✕** (slutar följa, utan bekräftelse).
 - **Nästa match**: motståndare, hemma/borta, turnering, datum och tid, nedräkning; pågående match med ställning och LIVE. Under: de 5 därefter kommande.
 - **Senaste match**: resultat, turnering, datum, V/O/F och mål. Under: de 5 matcherna innan.
-- **Tabell**: lagets rad i lagets egen liga, form (5 senaste ligamatcher) och "Hela tabellen" som fälls ut med laget markerat.
+- **Placering och form** (beslut 2026-11-11, ersätter kortet Tabell): en rad med placering och poäng i lagets egen liga (t.ex. "3:a i Premier League · 26 p") och formen (5 senaste ligamatcher). Ingen tabell under Lag – den finns under Tabell.
 - **Senast följda lag** längst ned.
 - Inget lag valt: "Inget lag valt" och en knapp till Tabell.
 
@@ -93,7 +96,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Är inte "flera lag samtidigt": bara ett lag är valt åt gången.
 
 ### Kortordning
-- Som simple-nutrition: Inställningar → Utseende → Kortordning har en lista per vy (Matcher: bara kortet Matcher, så listan visas inte för vyn; Lag: Nästa match, Senaste match, Tabell och form, Senast följda lag). ↑ ↓ flyttar, ●/○ visar/döljer, "Återställ" ger standard. Okända kort-id ignoreras, nya kort läggs sist.
+- Som simple-nutrition: Inställningar → Utseende → Kortordning har en lista per vy (Matcher: bara kortet Matcher, så listan visas inte för vyn; Lag: Nästa match, Senaste match, Placering och form, Senast följda lag). ↑ ↓ flyttar, ●/○ visar/döljer, "Återställ" ger standard. Okända kort-id ignoreras, nya kort läggs sist.
 
 ### Kortet Hjälp
 - Under Inställningar → Allmänt → Hjälp och manual. Samma text som `docs/MANUAL.md` (ändra båda): lägen, välja och byta lag, ligaväljaren, offline och vad ESPN ser.

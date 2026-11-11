@@ -67,11 +67,6 @@ h2 { font-size: .75rem; font-weight: 500; letter-spacing: .06em; text-transform:
 .tab.on { color: var(--text); font-weight: 700; }
 .tab.on span { background: var(--primary-container); }
 
-/* League picker (segmented button), today row, recent teams */
-.seg { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--outline); border-radius: var(--r-md); overflow: hidden; }
-.seg button { min-height: 44px; border: 0; border-left: 1px solid var(--outline); background: transparent; font-weight: 500; font-size: .875rem; }
-.seg button:first-child { border-left: 0; }
-.seg button[aria-pressed="true"] { background: var(--primary-container); color: var(--on-primary-container); }
 .today, .recent { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .chip { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: var(--r-sm); border: 1px solid var(--outline-variant); background: transparent; color: var(--muted); font-weight: 500; font-size: .8125rem; }
 .chip.on { background: var(--primary-container); color: var(--on-primary-container); border-color: transparent; }
@@ -225,9 +220,15 @@ dialog p { margin: 0 0 12px; }
 .icon-btn:disabled { opacity: .38; cursor: default; }
 .l-off .row-name { color: var(--muted); text-decoration: line-through; }
 /* Card Matcher: tabs, rows as tall as table rows, Visa fler */
-.mtabs { grid-template-columns: repeat(3, 1fr); margin-bottom: 8px; }
-.mtabs button[aria-selected="true"] { background: var(--primary-container); color: var(--on-primary-container); }
 #card-matches .lm { padding: 8px 0; min-height: 0; }
 #card-matches .lm .s { width: 64px; min-width: 64px; }
 .lm .s .end { display: block; font-size: .625rem; font-weight: 500; color: var(--muted); }
 .more-btn { width: 100%; margin-top: 4px; }
+.mtabs { margin: -4px 0 6px; }
+#match-list { touch-action: pan-y; }
+.standing { display: flex; align-items: center; gap: 4px; }
+.standing > span:first-child { margin-right: auto; font-weight: 500; }
+/* League picker and match tabs: text tabs, chosen = bold with a thin line under (minimal) */
+.seg { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+.seg button { min-height: 44px; padding: 0 2px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); font-weight: 500; font-size: .9375rem; white-space: nowrap; }
+.seg button[aria-pressed="true"] { color: var(--text); font-weight: 700; border-bottom-color: var(--primary); }

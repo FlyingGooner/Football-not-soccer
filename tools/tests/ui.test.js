@@ -46,6 +46,27 @@ T.test('Matcher: flikarna Kommande och Spelade, Visa fler', async () => {
   if (__calls.length > before) T.ok(/dates=\d{8}-\d{8}/.test(__calls[__calls.length - 1].url), 'en vecka till hämtas');
   click('#mtabs [data-mtab="now"]');
 });
+T.test('Matcher: ingen rubrik, svep byter flik', () => {
+  T.ok(!T.$('#card-matches h2'), 'ingen rubrik Matcher');
+  const sel = () => T.$('#mtabs [aria-selected="true"]').dataset.mtab;
+  const card = T.$('#card-matches');
+  const swipe = (x0, x1, y1 = 100) => {
+    const t = (x, y) => new Touch({ identifier: 1, target: card, clientX: x, clientY: y });
+    card.dispatchEvent(new TouchEvent('touchstart', { touches: [t(x0, 100)], changedTouches: [t(x0, 100)] }));
+    card.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(x1, y1)] }));
+  };
+  swipe(300, 100);
+  T.eq(sel(), 'next');
+  swipe(300, 100);
+  T.eq(sel(), 'past');
+  swipe(300, 100);
+  T.eq(sel(), 'past', 'sista fliken');
+  swipe(100, 300, 400);
+  T.eq(sel(), 'past', 'lodrätt svep ignoreras');
+  swipe(100, 300);
+  swipe(100, 300);
+  T.eq(sel(), 'now');
+});
 T.test('cache: ingen ny hämtning av tabell eller intervall vid flikbyte', async () => {
   const before = __calls.length;
   tab('table');
@@ -108,12 +129,15 @@ T.test('följa lag: dialog → fliken Lag, lagets liga och senast följda sparas
   T.ok(T.$('[data-kickoff]'), 'nedräkning');
   T.eq(document.querySelectorAll('#team-next-list li').length, 2);
   T.eq(document.querySelectorAll('#team-last-list li').length, 5);
-  T.eq(document.querySelectorAll('#team-table .form .dot').length, 5);
-  T.ok(T.$('#team-table .more tr.me'), 'laget markerat i hela tabellen');
+  T.eq(document.querySelectorAll('#team-table .standing .dot').length, 5);
+  T.eq(T.$('#team-table .standing span').textContent, '2:a i LaLiga · 39 p');
+  T.ok(!T.$('#team-table table'), 'ingen tabell under Lag');
+  T.eq([1, 2, 3, 11, 12, 21, 22].map(ordinal), ['1:a', '2:a', '3:e', '11:e', '12:e', '21:a', '22:a']);
 });
 T.test('byta lag och senast följda', async () => {
-  T.$('#team-table .more').open = true;
-  click([...document.querySelectorAll('#team-table .more tbody tr')][2]);
+  tab('table');
+  await settle();
+  click(tableRows()[2]);
   T.eq(T.$('#pick-ok').textContent, 'Byt');
   click('#pick-ok');
   await settle();
@@ -153,7 +177,7 @@ T.test('CL: lag får sin inhemska liga', async () => {
   await T.until(() => JSON.parse(localStorage.getItem('fns.team.v2')).leagueId === 'ita.1', 'inhemsk liga hittades inte');
   await T.wait(50);
   await settle();
-  T.eq(T.$('#team-table-title').textContent, 'Serie A');
+  T.ok(T.$('#team-table .standing').textContent.includes('i Serie A'), T.$('#team-table').textContent);
 });
 T.test('matchdetaljer fälls ut med målskytt', async () => {
   tab('matches');
@@ -214,10 +238,10 @@ T.test('kortordning: flytta och dölja kort, sparas och återställs', async () 
   tab('settings');
   T.ok(!T.$('.lay-list[data-view="matches"]'), 'Matcher har bara ett kort, ingen lista');
   const list = () => [...document.querySelectorAll('.lay-list[data-view="team"] li .row-name')].map((n) => n.textContent);
-  T.eq(list(), ['Nästa match', 'Senaste match', 'Tabell och form', 'Senast följda lag']);
+  T.eq(list(), ['Nästa match', 'Senaste match', 'Placering och form', 'Senast följda lag']);
   click(T.$('.lay-list[data-view="team"] [aria-label="Flytta upp Senaste match"]'));
-  T.eq(list(), ['Senaste match', 'Nästa match', 'Tabell och form', 'Senast följda lag']);
-  click(T.$('.lay-list[data-view="team"] [aria-label="Dölj Tabell och form"]'));
+  T.eq(list(), ['Senaste match', 'Nästa match', 'Placering och form', 'Senast följda lag']);
+  click(T.$('.lay-list[data-view="team"] [aria-label="Dölj Placering och form"]'));
   T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).team, { order: ['last', 'next', 'table', 'recent'], hidden: ['table'] });
   T.eq(T.$('#hint-layout').textContent, 'Egen');
   T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['last', 'next', 'table', 'recent']);
