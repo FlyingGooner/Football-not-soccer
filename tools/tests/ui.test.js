@@ -331,3 +331,9 @@ T.test('Lag: all-schema (2 anrop), vänskapsmatcher bort, live var 60:e sekund',
   T.ok(urls.length > 0 && urls.every((u) => /soccer\/all\/teams\/\d+\/schedule/.test(u) || /soccer\/[a-z.]+\/teams\/\d+$/.test(u)), urls.join());
   T.ok(Object.values(cache.teams).every((t) => t.matches.every((m) => m.leagueId !== 'club.friendly' && m.id !== '1')), 'vänskapsmatch borttagen');
 });
+
+T.test('lag-hero visar bara mål; vyn spränger inte bredden', () => {
+  const m = { home: { id: '1' }, away: { id: '2' }, events: [{ kind: 'goal', min: "10'", name: 'G', teamId: '1' }, { kind: 'yellow', min: "20'", name: 'Y', teamId: '2' }] };
+  T.eq(eventsView(m, true).querySelectorAll('.ev').length, 1);
+  T.eq(getComputedStyle(T.$('#view-matches')).gridTemplateColumns.split(' ').length, 1);
+});

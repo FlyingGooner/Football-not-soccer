@@ -223,8 +223,8 @@ function formDots(matches) {
 }
 
 // ---------- Rendering: matches ----------
-function eventsView(m) {
-  const evs = m.events;
+function eventsView(m, goalsOnly) {
+  const evs = m.events && goalsOnly ? m.events.filter((e) => e.kind === 'goal') : m.events;
   if (!evs) return el('div', { class: 'evs muted small', text: 'Ingen matchinfo tillgänglig.' });
   if (!evs.length) return el('div', { class: 'evs muted small', text: 'Inga mål eller kort.' });
   const icon = (e, i) => (e.kind === 'goal' ? '⚽ ' : e.kind === 'yellow' ? '🟨 '
@@ -247,7 +247,7 @@ function matchHero(m, kind) {
   const side = (t) => el('div', { class: 'side' }, logo(t.logo), el('span', { text: t.name }));
   return el('div', { class: 'hero' },
     el('div', { class: 'match-main' }, side(m.home), mid, side(m.away)),
-    m.state !== 'pre' && m.events && m.events.length ? eventsView(m) : null,
+    m.state !== 'pre' && m.events && m.events.some((e) => e.kind === 'goal') ? eventsView(m, true) : null,
     el('div', { class: 'meta' }, `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`, m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
       m.state === 'pre' && kind === 'next' ? el('span', { class: 'countdown', 'data-kickoff': m.date, text: countdown(d - Date.now()) }) : null));
 }

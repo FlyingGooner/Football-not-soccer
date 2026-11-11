@@ -52,7 +52,7 @@ button { cursor: pointer; }
 .version { font-size: .7rem; font-weight: 500; padding: 4px 10px; border-radius: var(--r-sm); color: var(--on-primary-container); background: var(--primary-container); }
 
 /* Views and cards */
-.view { display: grid; gap: 10px; margin-top: 8px; }
+.view { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 8px; }
 .card { background: var(--card); border-radius: var(--r-lg); padding: 12px 14px; }
 .card.flush { padding: 12px 0 4px; }
 .card.flush > h2 { padding: 0 14px; }
