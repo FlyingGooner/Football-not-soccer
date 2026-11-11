@@ -48,8 +48,8 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 │ ⚽Matcher 📋Tabell ⭐Lag ⚙️Inst.│
 └──────────────────────────────┘
 ```
-- **Ligaväljare** överst: textflikar *PL · LaLiga · Serie A · CL* utan ramar, vald i fetstil med tunn linje under (beslut 2026-11-11, minimalistiskt), samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar bara det som behövs (se Datakälla och uppdatering).
-- **Kortet Matcher** ersätter korten Aktuella matcher och Senaste resultat (beslut 2026-11-11). Ingen rubrik. Flikar överst i kortet, samma textflikar som ligaväljaren:
+- **Ligaväljare** överst: små centrerade lådor (segmenterad knapp, beslut 2026-11-11), vald med `--primary-container`; många ligor → raden scrollar i sidled, samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar bara det som behövs (se Datakälla och uppdatering).
+- **Kortet Matcher** ersätter korten Aktuella matcher och Senaste resultat (beslut 2026-11-11). Ingen rubrik. Flikar överst i kortet, samma små centrerade lådor som ligaväljaren:
   - **Aktuella**: pågående matcher ("Pågår nu") och resten av dagens matcher ("Idag"). Matcher öppnas alltid på **Kommande** (beslut 2026-11-11).
   - **Kommande**: matcher efter i dag, per dag ("I morgon", datum), äldst först.
   - **Spelade**: resultat per dag, nyaste först.
