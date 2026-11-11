@@ -1,28 +1,28 @@
-/* Material 3 – shared creator style (see ../STIL.md), same structure as simple-nutrition. Seed colour: #4b1d6e (dark plum). */
+/* Material 3 – shared creator style (see ../STIL.md), same structure as simple-nutrition. Seed colour: #4c8c2b (grass green). */
 :root {
   --r-xs: 2px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px;
   color-scheme: light dark;
-  --primary: #6d3f8f; --on-primary: #ffffff;
-  --primary-container: #f3daff; --on-primary-container: #2c0049;
-  --surface: #fff7fd; --surface-container: #f5ebf6; --surface-container-high: #efe5f0;
-  --on-surface: #1e1a20; --on-surface-variant: #4c4452; --outline: #7e7483; --outline-variant: #cfc3d4;
+  --primary: #3a6a1e; --on-primary: #ffffff;
+  --primary-container: #bbf296; --on-primary-container: #0a2100;
+  --surface: #f8fbf1; --surface-container: #ecefe5; --surface-container-high: #e6e9df;
+  --on-surface: #191d16; --on-surface-variant: #43483e; --outline: #73796d; --outline-variant: #c3c8bb;
   --error: #ba1a1a; --error-container: #ffdad6; --on-error-container: #410002;
   /* Semantic (results + table zones) */
-  --win: #1b6d3c; --draw: #7e7483; --loss: #ba1a1a;
-  --zone-cl: #1b6d3c; --zone-eu: #00658e; --zone-rel: #ba1a1a;
-  --sel: #6d3f8f; /* overridden from JS with the chosen team's colour (strict #rrggbb) */
+  --win: #1b6d3c; --draw: #73796d; --loss: #ba1a1a;
+  --zone-cl: #006a60; --zone-eu: #00658e; --zone-rel: #ba1a1a;
+  --sel: #3a6a1e; /* overridden from JS with the chosen team's colour (strict #rrggbb) */
   --bg: var(--surface); --card: var(--surface-container); --text: var(--on-surface); --muted: var(--on-surface-variant); --line: var(--outline-variant);
   --font: Roboto, "Roboto Flex", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary: #e1b6ff; --on-primary: #44105f;
-    --primary-container: #5c2c7e; --on-primary-container: #f3daff;
-    --surface: #161218; --surface-container: #221e24; --surface-container-high: #2d282e;
-    --on-surface: #e9e0e8; --on-surface-variant: #cfc3d4; --outline: #988d9d; --outline-variant: #4c4452;
+    --primary: #a0d57d; --on-primary: #173800;
+    --primary-container: #235104; --on-primary-container: #bbf296;
+    --surface: #11140e; --surface-container: #1d2119; --surface-container-high: #272b23;
+    --on-surface: #e1e4d9; --on-surface-variant: #c3c8bb; --outline: #8d9286; --outline-variant: #43483e;
     --error: #ffb4ab; --error-container: #93000a; --on-error-container: #ffdad6;
-    --win: #8bd8a0; --draw: #988d9d; --loss: #ffb4ab;
-    --zone-cl: #8bd8a0; --zone-eu: #84cfff; --zone-rel: #ffb4ab;
+    --win: #8bd8a0; --draw: #8d9286; --loss: #ffb4ab;
+    --zone-cl: #53dbc9; --zone-eu: #84cfff; --zone-rel: #ffb4ab;
   }
 }
 * { box-sizing: border-box; }
@@ -224,3 +224,10 @@ dialog p { margin: 0 0 12px; }
 .icon-btn.sm { min-width: 40px; min-height: 40px; }
 .icon-btn:disabled { opacity: .38; cursor: default; }
 .l-off .row-name { color: var(--muted); text-decoration: line-through; }
+/* Card Matcher: tabs, rows as tall as table rows, Visa fler */
+.mtabs { grid-template-columns: repeat(3, 1fr); margin-bottom: 8px; }
+.mtabs button[aria-selected="true"] { background: var(--primary-container); color: var(--on-primary-container); }
+#card-matches .lm { padding: 8px 0; min-height: 0; }
+#card-matches .lm .s { width: 64px; min-width: 64px; }
+.lm .s .end { display: block; font-size: .625rem; font-weight: 500; color: var(--muted); }
+.more-btn { width: 100%; margin-top: 4px; }

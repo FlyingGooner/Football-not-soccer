@@ -20,7 +20,8 @@
   const ev = (lid, id, h, a, t, state, hs, as) => ({ id: String(id), date: new Date(t).toISOString(), competitions: [{
     status: { displayClock: state === 'in' ? "67'" : '', type: { state, shortDetail: state === 'post' ? 'FT' : '' } },
     competitors: [{ homeAway: 'home', team: team(h), score: state === 'pre' ? undefined : String(hs) }, { homeAway: 'away', team: team(a), score: state === 'pre' ? undefined : String(as) }],
-    details: state === 'pre' ? [] : [{ scoringPlay: true, type: { text: 'Goal' }, clock: { displayValue: "12'" }, team: { id: h.id }, athletesInvolved: [{ shortName: 'A. Skytt' }] }] }] });
+    details: state === 'pre' ? [] : [{ scoringPlay: true, type: { text: 'Goal' }, clock: { displayValue: "12'" }, team: { id: h.id }, athletesInvolved: [{ shortName: 'A. Skytt' }] },
+      { yellowCard: true, type: { text: 'Yellow Card' }, clock: { displayValue: "30'" }, team: { id: a.id }, athletesInvolved: [{ shortName: 'B. Gul' }] }] }] });
   function scoreboard(lid) {
     if (!P[lid] && lid !== 'uefa.champions') return { events: [] };
     const ts = teamsOf(lid), n = ts.length, base = (P[lid] || 400) * 1000, out = [];

@@ -31,23 +31,35 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 ### 1. Matcher
 ```
 ┌──────────────────────────────┐
-│ Football, not soccer  v0.11.0│
+│ Football, not soccer  v0.13.0│
 │ [ PL | LaLiga | Serie A | CL ]│
-│ Idag  PL 3  LaLiga 2         │
-│ AKTUELLA MATCHER             │
-│  PÅGÅR NU                    │
-│  Arsenal    2–1   Chelsea    │
-│  IDAG                        │
-│  Spurs     17:30  Liverpool  │
-│ SENASTE RESULTAT             │
-│  Everton    0–0   Fulham     │
+│ ┌ MATCHER ─────────────────┐ │
+│ │[Aktuella|Kommande|Spelade]│ │
+│ │ PÅGÅR NU                 │ │
+│ │ Arsenal   2–1   Chelsea  │ │
+│ │       LIVE 45'+3         │ │
+│ │ IDAG                     │ │
+│ │ Spurs    17:30  Liverpool│ │
+│ │ [ Visa fler ]            │ │
+│ └──────────────────────────┘ │
 ├──────────────────────────────┤
 │ ⚽Matcher 📋Tabell ⭐Lag ⚙️Inst.│
 └──────────────────────────────┘
 ```
-- **Ligaväljare** överst: segmenterad knapp *PL · LaLiga · Serie A · CL*, samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar färsk.
-- **Aktuella matcher**: pågående under "Pågår nu" (ställning, minut, LIVE), sedan kommande, upp till två omgångar (20), grupperat per dag ("Idag", "I morgon", datum).
-- **Senaste resultat**: upp till två omgångar (20), nyaste först.
+- **Ligaväljare** överst: segmenterad knapp *PL · LaLiga · Serie A · CL*, samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar bara det som behövs (se Datakälla och uppdatering).
+- **Kortet Matcher** ersätter korten Aktuella matcher och Senaste resultat (beslut 2026-11-11). Flikar överst i kortet:
+  - **Aktuella**: pågående matcher ("Pågår nu") och resten av dagens matcher ("Idag"). Förvald om det finns sådana, annars Kommande.
+  - **Kommande**: matcher efter i dag, per dag ("I morgon", datum), äldst först.
+  - **Spelade**: resultat per dag, nyaste först.
+  - Vald flik gäller bara under sessionen (ingen ny lagring).
+- **Längd:** listan fyller skärmen ner till menyn (så många rader som får plats, minst 5) och slutar med **Visa fler**. Visa fler visar fler rader ur cachen; när cachen är slut hämtas en vecka till åt det hållet (Kommande framåt, Spelade bakåt). Aktuella har ingen Visa fler. Utfällt läge gäller bara under sessionen.
+- **Tomt läge:** "Inga matcher i dag", "Inga kommande matcher", "Inga spelade matcher".
+- **Matchrad, ihopfälld:** hemmalag (märke, namn), mitten, bortalag. Namn kortas med ellips, mitten står alltid centrerad. Radhöjd som i Tabell.
+  - Kommande: avsparkstid.
+  - Pågående: ställning, LIVE och tid med tilläggstid, t.ex. `45'+3` (första halvleken, tre tilläggsminuter) eller `67'`; `HT` i paus. Halvleken framgår av tiden, ingen egen etikett.
+  - Spelad: ställning och `Slut`.
+- **Matchrad, utfälld** (pågående och spelade, tryck på raden): se Matchdetaljer.
+- Raden "Idag i alla ligor" är borttagen (beslut 2026-11-11).
 
 ### 2. Tabell
 - Hela tabellen för vald liga (placering, lag, M, V, O, F, MS, P) med zonfärger och förklaring. På smal skärm döljs V/O/F. Raderna är tryckbara för att följa laget.
@@ -68,23 +80,20 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Valt lags rad markeras med lagets egen färg från datakällan (vänsterkant och svag bakgrundston). Saknas färg används primärfärgen.
 
 ### Matchdetaljer
-- Pågående och spelade matcher i listorna är tryckbara och fäller ut målen: minut, ⚽ och målskytt per lag (hemma vänster, borta höger), "(str.)" för straff, "(sj.)" för självmål och 🟥 för röda kort. Saknas data: "Ingen matchinfo tillgänglig."
-- I lagläge visas målen direkt under ställningen i Nästa/Senaste match.
-- Datan kommer från scoreboardens `details`, inga extra anrop. Utfällt läge gäller bara under sessionen.
+- Pågående och spelade matcher är tryckbara och fäller ut händelserna i tidsordning per lag (hemma vänster, borta höger): minut, ⚽ och målskytt, "(str.)" för straff, "(sj.)" för självmål, 🟨 gult kort och 🟥 rött kort (andra gula: 🟨🟥) med spelare. Saknas data: "Ingen matchinfo tillgänglig."
+- I lagläge visas samma händelser direkt under ställningen i Nästa/Senaste match.
+- Datan kommer från scoreboardens `details` (mål, gula och röda kort), inga extra anrop. Utfällt läge gäller bara under sessionen.
 
 ### Champions League i ligaväljaren
-- Ligaväljaren har ett fjärde läge, *CL*. Det visar Aktuella matcher, Senaste resultat och ligafasens tabell (`uefa.champions`) med zonerna Åttondelsfinal (1–8) och Playoff (9–24), utan nedflyttning. Inget slutspelsträd.
+- Ligaväljaren har ett fjärde läge, *CL*. Det visar kortet Matcher och ligafasens tabell (`uefa.champions`) med zonerna Åttondelsfinal (1–8) och Playoff (9–24), utan nedflyttning. Inget slutspelsträd.
 - Lag i CL-tabellen kan följas; laget får då sin inhemska liga om den är en av de tre (från lagets schema), annars visas bara CL-tabellen.
-
-### Idag i alla ligor
-- Matcher, under ligaväljaren: en rad "Idag: PL 3 · LaLiga 2 · Serie A 4 · CL 0" med antal matcher idag per liga, byggd **bara av data som redan finns i cachen** (inga extra anrop). Ligor utan färsk data (äldre än i dag) visas inte. Tryck byter liga.
 
 ### Senast följda lag
 - Längst ned under Lag: rad med upp till 5 senast följda lag (märke + kort namn), samma lag som har sparad data (`CONFIG.teamCacheMax`). Ett tryck byter lag direkt utan dialog. Under Inställningar → Lag tar ✕ bort laget ur listan och dess cache.
 - Är inte "flera lag samtidigt": bara ett lag är valt åt gången.
 
 ### Kortordning
-- Som simple-nutrition: Inställningar → Utseende → Kortordning har en lista per vy (Matcher: Idag i alla ligor, Aktuella matcher, Senaste resultat; Lag: Nästa match, Senaste match, Tabell och form, Senast följda lag). ↑ ↓ flyttar, ●/○ visar/döljer, "Återställ" ger standard. Okända kort-id ignoreras, nya kort läggs sist.
+- Som simple-nutrition: Inställningar → Utseende → Kortordning har en lista per vy (Matcher: bara kortet Matcher, så listan visas inte för vyn; Lag: Nästa match, Senaste match, Tabell och form, Senast följda lag). ↑ ↓ flyttar, ●/○ visar/döljer, "Återställ" ger standard. Okända kort-id ignoreras, nya kort läggs sist.
 
 ### Kortet Hjälp
 - Under Inställningar → Allmänt → Hjälp och manual. Samma text som `docs/MANUAL.md` (ändra båda): lägen, välja och byta lag, ligaväljaren, offline och vad ESPN ser.
@@ -98,7 +107,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 ## Datamodell (endast localStorage)
 | Nyckel | Innehåll |
 |---|---|
-| `fns.cache.v3` | Senast hämtad data (se nedan) |
+| `fns.cache.v4` | Senast hämtad data (se nedan) |
 | `fns.recent.v1` | Senast följda lag, upp till 5: `[{ id, name, logo, color, leagueId }]`, nyast först |
 | `fns.team.v2` | Valt lag `{ id, name, logo, color, leagueId }` eller saknas (= ligaläge). `.v1` (utan `leagueId`) läses en gång som `eng.1` |
 | `fns.league.v1` | Vald liga i ligaläge, ett id ur `CONFIG.leagues` |
@@ -113,28 +122,35 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
                "state": "post", "detail": "FT", "clock": "90'",
                "home": { "id": "359", "name": "Arsenal", "logo": "…", "color": "#ef0107" },
                "away": { "…": "…" }, "homeScore": 2, "awayScore": 1,
-               "events": [{ "kind": "goal", "min": "12'", "name": "B. Saka", "teamId": "359", "pen": false, "og": false }] }],
+               "events": [{ "kind": "goal", "min": "12'", "name": "B. Saka", "teamId": "359", "pen": false, "og": false },
+                          { "kind": "yellow", "min": "40'", "name": "M. Caicedo", "teamId": "363" }] }],
   "leagueFull": false,
+  "range": { "from": "2026-11-04", "to": "2026-11-18" },
   "colors": { "359": "#ef0107" },
   "teams": { "359": { "matches": ["…"], "color": "#ef0107", "ts": 1762500000000 } },
   "updatedAt": { "table": 1762500000000, "league": 1762500000000, "359": 1762500000000 }
 }
 ```
-- Cachen (`fns.cache.v3`) har `table`, `league`, `leagueFull` och `updatedAt` per liga-id: `{ "leagues": { "esp.1": { … } }, "colors": …, "teams": … }`. Gammal `.v2` ignoreras.
+- Cachen (`fns.cache.v4`) har `table`, `league`, `leagueFull`, `range` (hämtat datumintervall) och `updatedAt` per liga-id: `{ "leagues": { "esp.1": { … } }, "colors": …, "teams": … }`. `kind` är `goal`, `yellow` eller `red`. Gammal `.v3` ignoreras (en första hämtning per liga).
 - All cachad data valideras fält för fält vid läsning (`store.js`), eftersom den kan vara gammal eller manipulerad.
 - Sparad data för de 5 senast valda lagen behålls (`CONFIG.teamCacheMax`).
-- Ny struktur → ny nyckelversion (`.v3`); gammal data ignoreras.
+- Ny struktur → ny nyckelversion (`.v4`); gammal data ignoreras.
 
 ## Datakälla och uppdatering
 - **ESPN:s öppna JSON-API** (`site.api.espn.com`), inofficiellt, gratis, ingen nyckel.
   - Samma host för alla ligor och Champions League; bara `{liga}` i sökvägen skiljer (`eng.1`, `esp.1`, `ita.1`, `uefa.champions`, `uefa.europa`, `uefa.europa.conf`).
   - Tabell: `/apis/v2/sports/soccer/{liga}/standings`
-  - Ligans matcher: `/apis/site/v2/sports/soccer/{liga}/scoreboard?dates=YYYYMMDD-YYYYMMDD` i intervall om en vecka (3 veckor bakåt, 5 framåt) plus dagens scoreboard.
+  - Ligans matcher: `/apis/site/v2/sports/soccer/{liga}/scoreboard?dates=YYYYMMDD-YYYYMMDD` i intervall om en vecka: först 1 vecka bakåt och 1 framåt plus dagens scoreboard; Visa fler hämtar en vecka till åt gången (högst 5 bakåt, 5 framåt).
   - Lagets matcher: `/apis/site/v2/sports/soccer/{turnering}/teams/{lag-id}/schedule` (+ `?fixture=true` för kommande), per turnering.
   - Live: scoreboard för pågående matchers turnering.
   - Reserv: ger scoreboard för få matcher byggs ligans matcher av varje lags schema. Live faller på samma sätt tillbaka till hemmalagets schema.
 - All åtkomst via adapterfunktioner (`fetchTable()`, `fetchTeamMatches()`, `fetchLeagueMatches()`, `fetchLive()`) i `app.js`, så att källan kan bytas.
-- **När data hämtas:** bara det den öppna fliken visar – när appen öppnas, när den visas igen eller fliken byts (om datan är äldre än 1 minut), när nätet kommer tillbaka och vid byte av liga eller lag. Inställningar hämtar inget. Inga anrop i bakgrunden.
+- **När data hämtas:** bara det den öppna fliken visar – när appen öppnas, när den visas igen, när fliken byts, när nätet kommer tillbaka och vid byte av liga eller lag – och bara om cachen inte längre gäller (nedan). Inställningar hämtar inget. Inga anrop i bakgrunden.
+- **Cache per liga till nästa avspark (beslut 2026-11-11):** ligans data hämtas inte igen så länge ingen match i ligan har börjat eller pågår sedan förra hämtningen (en `pre`-match med avsparkstid ≤ nu, eller en `in`-match). Då hämtas bara dagens scoreboard, inte hela intervallet.
+  - Spelade matcher (`post`) hämtas aldrig igen.
+  - Tabellen hämtas bara när en match i ligan har gått till `post` efter förra tabellhämtningen.
+  - Säkerhetsgräns: data äldre än 6 timmar hämtas ändå (flyttade matcher, nya tider).
+  - Lag: samma regel för lagets schema (nästa match i lagets cache).
 - **Live:** under pågående match, med appen synlig, uppdateras ställningen var 30:e sekund. Matcher: alla pågående ligamatcher; Lag: lagets match.
 - Cachad data visas direkt vid start och ersätts sedan av färsk data. Har ligadatan byggts av alla lags scheman och är nyare än 10 minuter visas ett nyvalt lags ligamatcher direkt därifrån och hämtas inte igen.
 
@@ -145,6 +161,8 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Content-Security-Policy i `index.html`: skript och stil bara från egen origin, anrop bara till `site.api.espn.com`, bilder bara över https.
 - Arbetsytans agent `granskning` bestämmer över säkerheten (undantag U5, U6 – godkänt 2026-11-11, villkor i dess tabell). CSP: `connect-src https://site.api.espn.com; img-src 'self' https://a.espncdn.com` (inga `https:`/`data:`); beslutet "Avböjt – smalare `img-src`" nedan är upphävt.
 - Exponering vid hämtning (kontrollerat 2026-11-11): ESPN ser IP, `User-Agent`, `Accept-Language`, `Origin` och vilka ligor/lag som hämtas. Ingen referer, inga cookies (API: `credentials:'omit'`; klubbmärken: `img.crossOrigin='anonymous'`, ESPN svarar `Access-Control-Allow-Origin: *`), ingen användardata. Ligor hämtas först när de öppnas. Fler ligor ändrar varken host eller CSP (`connect-src https://site.api.espn.com`), bara sökvägar. Liga-id i URL:er kommer alltid från `CONFIG`, aldrig från lagrad data eller API-svar; lagrat `leagueId` valideras mot `CONFIG.leagues`.
+- Cache `.v4` (2026-11-11): nya fält `range` och händelsetypen `yellow` (spelarnamn och minut från API:t) valideras i `store.js` som övriga fält och renderas som text. Ingen ny host, ingen ändrad CSP, inget nytt undantag. Färre anrop än tidigare.
+- `<head>` (2026-11-11): `viewport-fit=cover` och ändrade `theme-color`-värden (se PWA-krav). Ingen ändring av CSP eller anrop.
 - Ombyggnad enligt `template/` (2026-11-11): appen är undantaget från regeln om inga nätverksanrop. Innan bygget kontrolleras att undantaget för ESPN finns kvar i `granskning`-tabellen och `tools/check.ps1`; saknas det → förhandsprövning.
 
 #### Härdning (beslut 2026-11-07)
@@ -153,11 +171,17 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - **Avböjt – smalare `img-src`:** kräver verifiering mot ESPN och körtest; `logo()` kräver redan `https://`.
 - **Infört vid ombygget (2026-11-11) – central tolkning av API-svar:** `store.js` tolkar ESPN-svaren och kör samma validering som för cachen (`cleanMatch`, `cleanRow`): id `^\d+$`, färg strikt `#rrggbb`, klubbmärken bara `https://a.espncdn.com/…`, text utan styr- och riktningstecken, max 60 tecken. Ersätter det tidigare avböjda beslutet.
 - URL:er byggs bara av `espnUrl()` i `store.js` (turnering ur `LEAGUES`/`EUROPE`, lag-id `^\d{1,10}$`, datum `^\d{8}-\d{8}$`; annars kastas fel). `fetch` alltid med `credentials:'omit'`, `cache:'no-store'`, `referrerPolicy:'no-referrer'`.
-- Ny lagring: `fns.team.v2`, `fns.league.v1`, `fns.recent.v1`, `fns.cache.v3` (se Datamodell); **Radera all data** tar bort alla `fns.*` och inget annat. Backup-fil enligt U5 (krypterad), bara inställningar.
+- Ny lagring: `fns.team.v2`, `fns.league.v1`, `fns.recent.v1`, `fns.cache.v4` (se Datamodell); **Radera all data** tar bort alla `fns.*` och inget annat. Backup-fil enligt U5 (krypterad), bara inställningar.
 - Tester (`tools/tests/`): flödestesterna kör mot en fejkad `fetch` (`ui-before.js`, laddas av `tools/test.ps1` före appen) och använder aldrig nätet. De kontrollerar CSP:ns nätverksdirektiv, att alla anrop går till `site.api.espn.com` med rätt fetch-inställningar, att märken från andra värdar inte laddas och att data från källan renderas som text. Exakt CSP i `index.html` kontrolleras av `tools/check.ps1`.
 
 ## PWA-krav
 - `manifest.webmanifest`: `name`, `short_name`, `id`, `start_url: "./"`, `scope: "./"`, `display: "standalone"`, `theme_color`, `background_color`, ikoner 192 & 512 (any + maskable). `icons/icon-180.png` som `apple-touch-icon` för iOS.
+- **Systemfälten följer temat (beslut 2026-11-11):** installerad via Chrome på Android är systemets navigeringsfält under menyn i dag ljust (`#fff7fd` från manifestet) även i mörkt tema. Krav: fältet har samma färg som menyn nertill i båda temana.
+  - `<meta name="viewport" … viewport-fit=cover>` så att sidan ritas under systemfälten; menyn nertill får `padding-bottom: env(safe-area-inset-bottom)` och dess bakgrund fyller ut till skärmkanten. Statusraden överst får på samma sätt `env(safe-area-inset-top)`.
+  - `theme-color` (ljus/mörk, redan i `index.html`) ska vara menyns färg, inte sidans bakgrund, så att fälten smälter ihop med menyn.
+  - Manifestet kan inte välja färg efter tema: `background_color`/`theme_color` sätts till det mörka temats färger (splash och reserv, se Design), eftersom ett ljust fält i mörkt läge syns mest. Ljust tema täcks av meta-taggen och `viewport-fit`.
+  - Kontrolleras med skärmbild i båda temana i installerad app; ingen säkerhetsändring (bara `<head>`-meta utan CSP-ändring – noteras ändå i infor-push eftersom `<head>` ändras).
+  - Gäller alla appar; förs över till `template/` vid nästa större release.
 - `sw.js`: precache av appens egna filer, cache-first, cachenamn `fns-<version>`. Rensar bara sina egna gamla cacher (apparna delar origin på GitHub Pages). API-anrop och klubbmärken går förbi service workern; matchdata cachas i `localStorage`.
 - Serveras över HTTPS via GitHub Pages: https://flyinggooner.github.io/Football-not-soccer/
 - Versionsnummer i `version.js` visas uppe till höger och styr cachenamnet.
@@ -166,9 +190,25 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Testfil för `file://`: `dist/football-not-soccer.html`, byggs med `tools/build-single.ps1` (ingen installation eller offline i den).
 
 ## Design
-- Material Design 3 enligt den gemensamma stilen i `../CLAUDE.md`, nyckelfärg mörkt plommonlila `#4b1d6e`. Inte Premier Leagues färger, logotyper eller typsnitt (klubbmärken från datakällan är ok).
-- Ljust och mörkt tema via `prefers-color-scheme`; `color-scheme: light dark` så att tvingat mörkt läge inte färgar om sidan.
-- Resultatfärger: vinst grön, oavgjort grå, förlust röd. Zoner: CL grön, Europa blå, nedflyttning röd.
+- Material Design 3 enligt `../STIL.md`, samma stil som simple-nutrition. **Nyckelfärg gräsgrön `#4c8c2b`** (beslut 2026-11-11, ersätter plommonlila `#4b1d6e`). Gulare än simple-nutritions blågröna `#2f7d5b`, så att apparna skiljs åt på hemskärmen. Inte ligornas färger, logotyper eller typsnitt (klubbmärken från datakällan är ok).
+- **Ljust och mörkt tema** följer telefonens inställning (`prefers-color-scheme`), inget eget val i appen. `color-scheme: light dark` så att tvingat mörkt läge inte färgar om sidan. Färger bara som variabler i `styles.css` (samma namn som simple-nutrition):
+
+| Variabel | Ljust | Mörkt |
+|---|---|---|
+| `--primary` / `--on-primary` | `#3a6a1e` / `#ffffff` | `#a0d57d` / `#173800` |
+| `--primary-container` / `--on-primary-container` | `#bbf296` / `#0a2100` | `#235104` / `#bbf296` |
+| `--surface` (bakgrund) | `#f8fbf1` | `#11140e` |
+| `--surface-container` (kort, menyn nertill) | `#ecefe5` | `#1d2119` |
+| `--surface-container-high` | `#e6e9df` | `#272b23` |
+| `--on-surface` / `--on-surface-variant` | `#191d16` / `#43483e` | `#e1e4d9` / `#c3c8bb` |
+| `--outline` | `#73796d` | `#8d9286` |
+
+  - Vald flik, segmenterad knapp och menyns aktiva ikon: `--primary-container` med `--on-primary-container`. Versionsetiketten likadant.
+  - `theme-color` = `--surface-container` (ljust `#ecefe5`, mörkt `#1d2119`); manifest `theme_color #1d2119`, `background_color #11140e` (se PWA-krav).
+  - Ikonerna (`icons/`) görs om i den nya gröna färgen.
+  - Kontrast minst 4.5:1 för text i båda temana (kontrolleras med skärmbild ljust och mörkt).
+  - Vid bygget uppdateras nyckelfärgen också i `../CLAUDE.md` och projektets `CLAUDE.md`.
+- Resultatfärger: vinst grön, oavgjort grå, förlust röd. Zoner: CL grön, Europa blå, nedflyttning röd. CL-zonens grön ska skilja sig tydligt från temats grön (blågrönare ton), så att zonen inte ser ut som ett valt element.
 - Siffror med `tabular-nums`.
 - **Layout:** bara mobil (som simple-nutrition), en kolumn max 520 px, test 390 px. Menyn nertill, tryckytor ≥ 48 px, animation ≤ 200 ms, avstängd vid `prefers-reduced-motion`.
 - Fungerar i aktuell Safari (iOS) och Chrome (Android).

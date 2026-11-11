@@ -6,8 +6,8 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://site.api.espn.com; img-src 'self' https://a.espncdn.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#fff7fd" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#161218" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ecefe5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1d2119" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,17 +28,12 @@
   <!-- Matcher: vald liga -->
   <section class="view" id="view-matches">
     <div class="seg league-picker" role="group" aria-label="Liga"></div>
-    <div class="arr" id="arr-matches">
-    <div class="today" id="today" data-card="today" hidden></div>
-    <section class="card" data-card="next">
-      <h2 id="next-title">Aktuella matcher</h2>
-      <div id="next-list"><span class="muted">Laddar…</span></div>
+    <section class="card" id="card-matches">
+      <h2>Matcher</h2>
+      <div class="seg mtabs" id="mtabs" role="tablist" aria-label="Matcher"></div>
+      <div id="match-list"><span class="muted">Laddar…</span></div>
+      <button type="button" class="btn text more-btn" id="more" hidden>Visa fler</button>
     </section>
-    <section class="card" data-card="last">
-      <h2>Senaste resultat</h2>
-      <div id="last-list"><span class="muted">Laddar…</span></div>
-    </section>
-    </div>
   </section>
 
   <!-- Tabell: vald liga -->
@@ -126,17 +121,17 @@
         <summary class="sec-sum"><span class="set-title">Hjälp och manual</span><span class="set-hint">Så funkar appen</span></summary>
         <div class="set-body">
           <details><summary>Matcher och tabell</summary>
-            <p>Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher syns pågående och kommande matcher och de senaste resultaten, under Tabell hela tabellen.</p>
-            <p>Raden Idag visar hur många matcher som spelas idag i de ligor du redan har öppnat. Tryck för att byta liga.</p></details>
+            <p>Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher finns flikarna Aktuella (pågående och dagens matcher), Kommande och Spelade, under Tabell hela tabellen.</p>
+            <p>Listan fyller skärmen. Visa fler visar fler matcher och hämtar en vecka till när det behövs.</p></details>
           <details><summary>Följa ett lag</summary>
             <p>Tryck på ett lag i tabellen och sedan Följ. Under Lag visas lagets nästa och senaste match i alla turneringar, lagets rad i tabellen och formen i de fem senaste ligamatcherna.</p>
             <p>✕ bredvid lagets namn slutar följa laget. Appen öppnas på samma flik nästa gång.</p></details>
           <details><summary>Senast följda lag</summary>
             <p>De fem senast följda lagen visas under Lag. Ett tryck byter lag direkt. Under Inställningar → Lag tar du bort ett lag ur listan.</p></details>
           <details><summary>Flytta kort</summary>
-            <p>Under Inställningar → Utseende → Kortordning väljer du ordningen på korten under Matcher och Lag. ↑ ↓ flyttar ett kort, ● visar och ○ döljer det. Återställ ger standardordningen.</p></details>
+            <p>Under Inställningar → Utseende → Kortordning väljer du ordningen på korten under Lag. ↑ ↓ flyttar ett kort, ● visar och ○ döljer det. Återställ ger standardordningen.</p></details>
           <details><summary>Matcher och live</summary>
-            <p>Tryck på en spelad eller pågående match för att se målskyttar och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen.</p></details>
+            <p>Tryck på en spelad eller pågående match för att se målskyttar, gula och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen. Övrig data hämtas bara igen när en match har börjat.</p></details>
           <details><summary>Offline och data</summary>
             <p>Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.</p>
             <p>Under Inställningar → Data sparar du en krypterad backup-fil med valt lag, liga och senast följda lag. Matchdata ingår inte, den hämtas igen.</p></details>

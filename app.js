@@ -10,13 +10,13 @@ const CONFIG = {
   upcomingCount: 5,
   recentCount: 5,
   roundSize: 10,
-  leagueDaysBack: 21,
-  leagueDaysAhead: 35,
+  weeksMax: 5,                  // Visa fler fetches one week at a time, at most 5 back and 5 ahead
+  minRows: 5,
   livePollMs: 30000,
   teamCacheMax: RECENT_MAX,
   leagueReuseMs: 600000,
-  staleMs: 60000,
-  keys: { cache: 'fns.cache.v3', team: 'fns.team.v2', teamV1: 'fns.team.v1', league: 'fns.league.v1', recent: 'fns.recent.v1', tab: 'fns.tab.v1', layout: 'fns.layout.v1' },
+  maxAgeMs: 6 * 3600e3,         // cache valid until next kickoff, but never longer than this
+  keys: { cache: 'fns.cache.v4', team: 'fns.team.v2', teamV1: 'fns.team.v1', league: 'fns.league.v1', recent: 'fns.recent.v1', tab: 'fns.tab.v1', layout: 'fns.layout.v1' },
   prefix: 'fns.',
   slug: 'football-not-soccer',
 };
@@ -95,13 +95,21 @@ async function fetchTeamMatches(teamId, leagueId, known, knownColor) {
   const ok = settled.filter((s) => s.status === 'fulfilled').map((s) => s.value);
   return { matches: mergeMatches(ok.map((o) => o.list)), color: (ok.find((o) => o.color) || {}).color || null };
 }
-// League matches around today: current scoreboard + one-week ranges; few results → every team's schedule.
-async function fetchLeagueMatches(leagueId, table) {
-  const now = Date.now(), day = 864e5;
-  const urls = [espnUrl('scoreboard', leagueId)];
-  for (let from = -CONFIG.leagueDaysBack; from < CONFIG.leagueDaysAhead; from += 7) urls.push(espnUrl('scoreboard', leagueId, { dates: `${ymd(now + from * day)}-${ymd(now + (from + 6) * day)}` }));
+// Day offsets ↔ ISO days (local), for the fetched range.
+const DAY = 864e5;
+const isoAt = (off) => { const t = new Date(Date.now() + off * DAY); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
+const offOf = (iso) => Math.round((new Date(iso + 'T12:00') - new Date(isoAt(0) + 'T12:00')) / DAY);
+// Scoreboards for day offsets [from, to] in one-week ranges (+ today's scoreboard when today = true; from > to = only today).
+async function fetchScoreboards(leagueId, from, to, today) {
+  const urls = today ? [espnUrl('scoreboard', leagueId)] : [];
+  for (let a = from; a <= to; a += 7) urls.push(espnUrl('scoreboard', leagueId, { dates: `${ymd(Date.now() + a * DAY)}-${ymd(Date.now() + Math.min(a + 6, to) * DAY)}` }));
   const settled = await Promise.allSettled(urls.map((u) => getJSON(u).then((d) => parseEvents(d, leagueId))));
-  const merged = mergeMatches(settled.filter((x) => x.status === 'fulfilled').map((x) => x.value));
+  if (settled.every((x) => x.status === 'rejected')) throw settled[0].reason;
+  return mergeMatches(settled.filter((x) => x.status === 'fulfilled').map((x) => x.value));
+}
+// League matches for day offsets [from, to]; few results in the first fetch → every team's schedule.
+async function fetchLeagueMatches(leagueId, table, from = -7, to = 7) {
+  const merged = await fetchScoreboards(leagueId, from, to, true).catch(() => []);
   const n = CONFIG.roundSize;
   if (merged.filter((m) => m.state === 'pre').length >= n && merged.filter((m) => m.state === 'post').length >= n) return { matches: merged, full: false, colors: {} };
   try {
@@ -139,6 +147,9 @@ let recent = [];
 let layout = {};               // card order per view (Inställningar → Utseende)
 let view = 'matches';
 let liveTimer = null;
+const tableDue = new Set();     // leagues where a match finished but the table is not refetched yet
+// A match has kicked off or is live since the data was fetched → the cache is no longer valid.
+const started = (list) => (list || []).some((m) => m.state === 'in' || (m.state === 'pre' && new Date(m.date) <= Date.now()));
 // The Lag tab shows the team; the other tabs show the chosen league.
 const teamView = () => view === 'team' && !!team;
 const viewLeague = () => (teamView() ? team.leagueId : league);
@@ -184,16 +195,6 @@ const scoreText = (a, b) => `${a ?? '–'}–${b ?? '–'}`;
 function renderPickers() {
   document.querySelectorAll('.league-picker').forEach((p) => fill(p, CONFIG.leagues.map((l) => el('button', { type: 'button',
     'aria-pressed': String(l.id === league), 'data-league': l.id, text: l.short, on: { click: () => setLeague(l.id) } }))));
-  // Today in all leagues: only from cached data fetched today (no extra requests).
-  const today = fmtDayKey.format(Date.now());
-  const items = CONFIG.leagues.map((l) => {
-    const e = cache.leagues[l.id];
-    if (!e || !e.updatedAt.league || fmtDayKey.format(e.updatedAt.league) !== today || !e.league) return null;
-    const n = e.league.filter((m) => fmtDayKey.format(m.date) === today).length;
-    return el('button', { type: 'button', class: 'chip' + (l.id === league ? ' on' : ''), 'data-today': l.id, text: `${l.short} ${n}`, on: { click: () => setLeague(l.id) } });
-  }).filter(Boolean);
-  $('today').hidden = !items.length;
-  fill($('today'), items.length ? [el('span', { class: 'small muted', text: 'Idag' }), items] : []);
 }
 
 // ---------- Rendering: table ----------
@@ -244,8 +245,10 @@ function formDots(matches) {
 function eventsView(m) {
   const evs = m.events;
   if (!evs) return el('div', { class: 'evs muted small', text: 'Ingen matchinfo tillgänglig.' });
-  if (!evs.length) return el('div', { class: 'evs muted small', text: 'Inga mål.' });
-  const line = (e) => el('div', { class: 'ev' }, el('span', { class: 'm', text: e.min }), e.kind === 'goal' ? '⚽ ' : '🟥 ',
+  if (!evs.length) return el('div', { class: 'evs muted small', text: 'Inga mål eller kort.' });
+  const icon = (e, i) => (e.kind === 'goal' ? '⚽ ' : e.kind === 'yellow' ? '🟨 '
+    : evs.some((x, j) => j < i && x.kind === 'yellow' && x.name === e.name && x.teamId === e.teamId) ? '🟨🟥 ' : '🟥 ');   // second yellow
+  const line = (e) => el('div', { class: 'ev' }, el('span', { class: 'm', text: e.min }), icon(e, evs.indexOf(e)),
     el('span', { text: e.name }), e.pen ? el('span', { class: 'muted', text: ' (str.)' }) : null, e.og ? el('span', { class: 'muted', text: ' (sj.)' }) : null);
   const col = (id, cls) => el('div', { class: cls }, evs.filter((e) => e.teamId === id).map(line));
   return el('div', { class: 'evs' }, col(m.home.id, 'h'), col(m.away.id, 'a'));
@@ -258,7 +261,7 @@ function matchHero(m, kind) {
   else {
     const r = resultOf(m);
     mid = el('div', { class: 'mid' }, el('span', { class: 'score', text: scoreText(m.homeScore, m.awayScore) }),
-      m.state === 'in' ? el('span', { class: 'live', text: `LIVE ${m.clock || m.detail}`.trim() }) : (r ? el('span', { class: `badge ${r}`, text: RESULT_LONG[r] }) : null));
+      m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : (r ? el('span', { class: `badge ${r}`, text: RESULT_LONG[r] }) : null));
   }
   const side = (t) => el('div', { class: 'side' }, logo(t.logo), el('span', { text: t.name }));
   return el('div', { class: 'hero' },
@@ -285,15 +288,22 @@ function dayLabel(date) {
   if (key === fmtDayKey.format(Date.now() - d)) return 'I går';
   return fmtDate.format(date);
 }
-function leagueMatchList(list, past) {
-  if (!list.length) return el('p', { class: 'muted', text: past ? 'Inga spelade matcher.' : 'Inga inplanerade matcher.' });
+// Live time: "45'+3" (added time), "67'", "HT" at half time.
+function liveText(m) {
+  if (/^(HT|half ?time)$/i.test(m.detail || '') || /^HT$/i.test(m.clock || '')) return 'HT';
+  const c = (m.clock || '').replace(/'\+(\d+)'?$/, "'+$1");
+  return `LIVE ${c}`.trim();
+}
+function leagueMatchList(list, emptyText) {
+  if (!list.length) return el('p', { class: 'muted', text: emptyText });
   const wrap = el('div');
   let lastDay = null, group = null;
   for (const m of list) {
     const key = m.state === 'in' ? 'live' : fmtDayKey.format(m.date);
     if (key !== lastDay) { group = el('div', { class: 'dgroup' }, el('div', { class: 'day', text: m.state === 'in' ? 'Pågår nu' : dayLabel(m.date) })); wrap.append(group); lastDay = key; }
     const mid = m.state === 'pre' ? el('span', { class: 's', text: fmtTime.format(m.date) })
-      : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore), m.state === 'in' ? el('span', { class: 'live', text: `LIVE ${m.clock || ''}`.trim() }) : null);
+      : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore),
+        m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : el('span', { class: 'end', text: 'Slut' }));
     const row = el('div', { class: 'lm', 'data-match': m.id },
       el('span', { class: 't h' }, el('span', { text: m.home.name }), logo(m.home.logo)), mid,
       el('span', { class: 't' }, logo(m.away.logo), el('span', { text: m.away.name })));
@@ -309,14 +319,59 @@ function leagueMatchList(list, past) {
   }
   return wrap;
 }
-function renderLeagueMatches() {
-  const ms = L(league).league;
-  if (!ms) { fill($('next-list'), el('p', { class: 'muted', text: 'Inga matcher tillgängliga.' })); fill($('last-list'), el('p', { class: 'muted', text: 'Inga matcher tillgängliga.' })); return; }
-  const n = 2 * CONFIG.roundSize;   // up to two rounds each
-  const live = ms.filter((m) => m.state === 'in');
-  fill($('next-list'), leagueMatchList([...live, ...ms.filter((m) => m.state === 'pre')].slice(0, Math.max(n, live.length)), false));
-  fill($('last-list'), leagueMatchList(ms.filter((m) => m.state === 'post').reverse().slice(0, n), true));
+// ---------- Card Matcher: tabs Aktuella / Kommande / Spelade (session only) ----------
+const MTABS = [['now', 'Aktuella', 'Inga matcher i dag'], ['next', 'Kommande', 'Inga kommande matcher'], ['past', 'Spelade', 'Inga spelade matcher']];
+let mtab = null;                  // null = default (Aktuella if there are matches today)
+let extra = { next: 0, past: 0 }; // rows added with Visa fler
+let loadingMore = false;
+function matchLists(ms) {
+  const today = fmtDayKey.format(Date.now()), isToday = (m) => fmtDayKey.format(m.date) === today;
+  return {
+    now: [...ms.filter((m) => m.state === 'in'), ...ms.filter((m) => m.state !== 'in' && isToday(m))],
+    next: ms.filter((m) => m.state === 'pre' && !isToday(m) && new Date(m.date) > Date.now()),
+    past: ms.filter((m) => m.state === 'post').reverse(),
+  };
 }
+// Rows that fit down to the bottom menu (at least CONFIG.minRows).
+function fitRows() {
+  const top = $('match-list').getBoundingClientRect().top, bar = $('tabbar').getBoundingClientRect().height || 80;
+  return Math.max(CONFIG.minRows, Math.floor((innerHeight - Math.max(top, 0) - bar - 72) / 44));
+}
+const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? offOf(r.from) <= -7 * CONFIG.weeksMax : offOf(r.to) >= 7 * CONFIG.weeksMax); };
+function renderLeagueMatches() {
+  const ms = L(league).league || [], lists = matchLists(ms);
+  const tab = mtab || (lists.now.length ? 'now' : 'next');
+  fill($('mtabs'), MTABS.map(([id, name]) => el('button', { type: 'button', role: 'tab', 'aria-selected': String(id === tab), 'aria-pressed': String(id === tab), 'data-mtab': id, text: name,
+    on: { click: () => { mtab = id; renderLeagueMatches(); } } })));
+  const [, , empty] = MTABS.find(([id]) => id === tab), list = lists[tab];
+  if (tab === 'now') { fill($('match-list'), leagueMatchList(list, empty)); $('more').hidden = true; return; }
+  const n = fitRows() + extra[tab], dir = tab === 'past' ? -1 : 1;
+  fill($('match-list'), leagueMatchList(list.slice(0, n), L(league).league ? empty : 'Laddar…'));
+  $('more').hidden = !L(league).league || (list.length <= n && rangeEnd(dir));
+  $('more').disabled = loadingMore;
+  $('more').dataset.dir = String(dir);
+}
+// Visa fler: more rows from the cache; when it runs out, one more week from ESPN in that direction.
+async function showMore() {
+  const tab = mtab || (matchLists(L(league).league || []).now.length ? 'now' : 'next');
+  if (tab === 'now' || loadingMore) return;
+  const step = fitRows(), dir = tab === 'past' ? -1 : 1, lid = league;
+  extra[tab] += step;
+  const have = matchLists(L(lid).league || [])[tab].length;
+  if (have < fitRows() + extra[tab] && !rangeEnd(dir)) {
+    const e = L(lid), a = dir < 0 ? offOf(e.range.from) - 7 : offOf(e.range.to) + 1, b = a + 6;
+    loadingMore = true; renderLeagueMatches();
+    try {
+      const got = await fetchScoreboards(lid, a, b, false);
+      e.league = mergeMatches([e.league, got]);
+      e.range = dir < 0 ? { from: isoAt(a), to: e.range.to } : { from: e.range.from, to: isoAt(b) };
+      saveCache();
+    } catch { renderStatus(navigator.onLine ? 'Kunde inte hämta fler matcher' : 'Offline – visar sparad data', true); }
+    loadingMore = false;
+  }
+  renderLeagueMatches();
+}
+$('more').addEventListener('click', showMore);
 function renderTeam() {
   $('teambar').hidden = !team;
   $('team-empty').hidden = !!team;
@@ -426,8 +481,7 @@ function go(v, fetch = true) {
   renderStatus();
   scrollTo(0, 0);
   if (!fetch || view === 'settings' || (view === 'team' && !team)) { scheduleLive(); return; }
-  const t = lastUpdated();
-  if (!t || Date.now() - t > CONFIG.staleMs) refresh(); else scheduleLive();
+  refresh();   // fetches only what is no longer valid in the cache
 }
 $('tabbar').addEventListener('click', (ev) => {
   const t = ev.target.closest('[data-view]');
@@ -441,6 +495,7 @@ addEventListener('hashchange', () => { const v = loadTab(location.hash.slice(1))
 function setLeague(id) {
   if (!isLeague(id) || id === league) return;
   league = id;
+  extra = { next: 0, past: 0 };
   store.set(CONFIG.keys.league, league);
   render();
   renderStatus(lastUpdated() ? 'Hämtar ny data…' : '');
@@ -511,7 +566,8 @@ function scheduleLive() {
       if (view === 'team' && team && cache.teams[team.id]) cache.teams[team.id].matches = upd(cache.teams[team.id].matches);
       else if (L(league).league) L(league).league = upd(L(league).league);
       saveCache();
-      if (live.some((m) => (byId.get(m.id) || m).state === 'post')) { await refresh(); return; }
+      const done = live.filter((m) => (byId.get(m.id) || m).state === 'post');
+      if (done.length) { done.forEach((m) => tableDue.add(m.leagueId)); await refresh(); return; }
       render();
     } catch { /* keep showing last known */ }
     scheduleLive();
@@ -532,16 +588,39 @@ async function refresh() {
   busy = true;
   try {
     const forTeam = teamView() ? team : null, lid = viewLeague(), e = L(lid), onlyTable = view === 'table';
-    const known = forTeam && Date.now() - (e.updatedAt.league || 0) < CONFIG.leagueReuseMs ? leagueMatchesFor(lid, forTeam.id) : null;
-    const jobs = [fetchTable(lid)];
-    if (forTeam) jobs.push(fetchTeamMatches(forTeam.id, lid, known, cache.colors[forTeam.id]));
-    else if (!onlyTable) jobs.push(fetchLeagueMatches(lid, e.table));
-    const [t, m] = await Promise.allSettled(jobs);
-    const now = Date.now();
-    if (t.status === 'fulfilled') { e.table = t.value; e.updatedAt.table = now; }
+    const now = Date.now(), old = (forTeam ? (cache.teams[forTeam.id] || {}).matches : e.league) || [];
+    const prev = new Map(old.map((x) => [x.id, x.state]));
+    // Matches: cached until the next kickoff (or maxAgeMs); a started match → only today's scoreboard.
+    let mJob = null, kind = null;
+    if (forTeam) {
+      const td = cache.teams[forTeam.id];
+      if (!td || now - (td.ts || 0) > CONFIG.maxAgeMs || started(td.matches)) {
+        const known = now - (e.updatedAt.league || 0) < CONFIG.leagueReuseMs && !started(e.league) ? leagueMatchesFor(lid, forTeam.id) : null;
+        mJob = fetchTeamMatches(forTeam.id, lid, known, cache.colors[forTeam.id]); kind = 'team';
+      }
+    } else if (!e.league || !e.range || now - (e.updatedAt.league || 0) > CONFIG.maxAgeMs) {
+      if (!onlyTable || e.league) { mJob = fetchLeagueMatches(lid, e.table); kind = 'full'; }
+    } else if (started(e.league)) { mJob = fetchScoreboards(lid, 1, 0, true).then((matches) => ({ matches })); kind = 'today'; }
+    const [m] = mJob ? await Promise.allSettled([mJob]) : [null];
     if (m && m.status === 'fulfilled') {
-      if (forTeam) cache.teams[forTeam.id] = { matches: m.value.matches, color: m.value.color, ts: now };
-      else { e.league = m.value.matches; e.leagueFull = m.value.full; e.updatedAt.league = now; for (const [k, v] of Object.entries(m.value.colors)) if (validId(k) && color(v)) cache.colors[k] = v; }
+      const v = m.value;
+      if (kind === 'team') cache.teams[forTeam.id] = { matches: v.matches, color: v.color, ts: now };
+      else {
+        e.league = mergeMatches([e.league, v.matches]);
+        e.updatedAt.league = now;
+        if (kind === 'full') {
+          e.leagueFull = v.full;
+          e.range = { from: e.range && e.range.from < isoAt(-7) ? e.range.from : isoAt(-7), to: e.range && e.range.to > isoAt(7) ? e.range.to : isoAt(7) };
+          for (const [k, c] of Object.entries(v.colors)) if (validId(k) && color(c)) cache.colors[k] = c;
+        }
+      }
+      if (v.matches.some((x) => x.state === 'post' && x.leagueId === lid && prev.has(x.id) && prev.get(x.id) !== 'post')) tableDue.add(lid);
+    }
+    // Table: only when a match in the league has finished since the last table fetch (or missing/old).
+    let t = null;
+    if (!e.table || now - (e.updatedAt.table || 0) > CONFIG.maxAgeMs || tableDue.has(lid)) {
+      [t] = await Promise.allSettled([fetchTable(lid)]);
+      if (t.status === 'fulfilled') { e.table = t.value; e.updatedAt.table = Date.now(); tableDue.delete(lid); }
     }
     trimCache();
     saveCache();
@@ -554,7 +633,7 @@ async function refresh() {
         : (failed === all.length ? 'Kunde inte hämta data – visar sparad data' : 'Viss data kunde inte hämtas'), true);
       if (nothing) {
         const msg = () => el('p', { class: 'error', text: 'Kunde inte hämta data. Kontrollera nätet och öppna appen igen.' });
-        for (const id of ['table-full', 'next-list', 'last-list', 'team-next']) fill($(id), msg());
+        for (const id of ['table-full', 'match-list', 'team-next']) fill($(id), msg());
       }
     } else renderStatus();
   } catch {

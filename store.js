@@ -64,7 +64,7 @@ function cleanTeam(t, fallbackLeague = null) {
 }
 const cleanRef = (t) => (isObj(t) ? { id: validId(t.id) || '', name: cleanText(t.name) || '?', logo: logoUrl(t.logo), color: color(t.color) } : null);
 function cleanEvent(e) {
-  if (!isObj(e) || (e.kind !== 'goal' && e.kind !== 'red')) return null;
+  if (!isObj(e) || !['goal', 'yellow', 'red'].includes(e.kind)) return null;
   return { kind: e.kind, min: cleanText(e.min, 10), name: cleanText(e.name) || '?', teamId: validId(e.teamId) || '', pen: e.pen === true, og: e.og === true };
 }
 const STATES = ['pre', 'in', 'post'];
@@ -94,11 +94,13 @@ function idMap(obj, fn) {
   return out;
 }
 
-// ---------- Cache (fns.cache.v3) ----------
-// { leagues: { [leagueId]: { table, league, leagueFull, updatedAt: { table, league } } },
+// ---------- Cache (fns.cache.v4) ----------
+// { leagues: { [leagueId]: { table, league, leagueFull, range: { from, to }, updatedAt: { table, league } } },
 //   colors: { [teamId]: "#rrggbb" }, teams: { [teamId]: { matches, color, ts } } }
 const emptyCache = () => ({ leagues: Object.create(null), colors: Object.create(null), teams: Object.create(null) });
-const emptyLeague = () => ({ table: null, league: null, leagueFull: false, updatedAt: { table: null, league: null } });
+const emptyLeague = () => ({ table: null, league: null, leagueFull: false, range: null, updatedAt: { table: null, league: null } });
+const isoDay = (v) => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(new Date(v)) ? v : null);
+const cleanRange = (r) => (isObj(r) && isoDay(r.from) && isoDay(r.to) && r.from <= r.to ? { from: r.from, to: r.to } : null);
 function loadCache(c) {
   if (!isObj(c)) return emptyCache();
   return {
@@ -106,6 +108,7 @@ function loadCache(c) {
       table: Array.isArray(v.table) ? v.table.map(cleanRow).filter(Boolean).slice(0, 60) : null,
       league: cleanMatches(v.league),
       leagueFull: v.leagueFull === true,
+      range: cleanRange(v.range),
       updatedAt: { table: ts(isObj(v.updatedAt) && v.updatedAt.table), league: ts(isObj(v.updatedAt) && v.updatedAt.league) },
     } : null)),
     colors: idMap(c.colors, (k, v) => (validId(k) ? color(v) : null)),
@@ -214,9 +217,10 @@ function keyEvents(details) {
     const t = (str(d.type && d.type.text) || '').toLowerCase();
     const goal = d.scoringPlay === true || t.includes('goal') || t === 'penalty - scored';
     const red = d.redCard === true || t.includes('red card');
-    if (!goal && !red) continue;
+    const yellow = !red && (d.yellowCard === true || t.includes('yellow card'));
+    if (!goal && !red && !yellow) continue;
     const a = Array.isArray(d.athletesInvolved) && d.athletesInvolved[0];
-    out.push({ kind: goal ? 'goal' : 'red', min: str(d.clock && d.clock.displayValue) || '',
+    out.push({ kind: goal ? 'goal' : red ? 'red' : 'yellow', min: str(d.clock && d.clock.displayValue) || '',
       name: str(a && (a.shortName || a.displayName)) || '?', teamId: String((d.team && d.team.id) ?? ''),
       pen: goal && (d.penaltyKick === true || t.includes('penalty')), og: goal && (d.ownGoal === true || t.includes('own goal')) });
   }
@@ -278,10 +282,9 @@ function zoneOf(leagueId, rank, rows) {
 // ---------- Card order per view (as simple-nutrition): { [view]: { order: [id], hidden: [id] } } ----------
 // Ids are fixed; unknown ids are dropped and new cards go last, so a saved order never breaks.
 const LAYOUT = Object.freeze({
-  matches: [['today', 'Idag i alla ligor'], ['next', 'Aktuella matcher'], ['last', 'Senaste resultat']],
   team: [['next', 'Nästa match'], ['last', 'Senaste match'], ['table', 'Tabell och form'], ['recent', 'Senast följda lag']],
 });
-const LAYOUT_VIEWS = Object.freeze({ matches: 'Matcher', team: 'Lag' });
+const LAYOUT_VIEWS = Object.freeze({ team: 'Lag' });   // Matcher has one card only, so no list
 function layoutOf(layout, v) {
   const def = LAYOUT[v].map(([id]) => id), L = (isObj(layout) && isObj(layout[v]) && layout[v]) || {};
   const ids = (a) => (Array.isArray(a) ? a : []);

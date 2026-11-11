@@ -4,8 +4,8 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Matcher och tabell
 
-- Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher syns pågående och kommande matcher och de senaste resultaten, under Tabell hela tabellen.
-- Raden Idag visar hur många matcher som spelas idag i de ligor du redan har öppnat. Tryck för att byta liga.
+- Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher finns flikarna Aktuella (pågående och dagens matcher), Kommande och Spelade, under Tabell hela tabellen.
+- Listan fyller skärmen. Visa fler visar fler matcher och hämtar en vecka till när det behövs.
 
 ## Följa ett lag
 
@@ -18,11 +18,11 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Flytta kort
 
-- Under Inställningar → Utseende → Kortordning väljer du ordningen på korten under Matcher och Lag. ↑ ↓ flyttar ett kort, ● visar och ○ döljer det. Återställ ger standardordningen.
+- Under Inställningar → Utseende → Kortordning väljer du ordningen på korten under Lag. ↑ ↓ flyttar ett kort, ● visar och ○ döljer det. Återställ ger standardordningen.
 
 ## Matcher och live
 
-- Tryck på en spelad eller pågående match för att se målskyttar och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen.
+- Tryck på en spelad eller pågående match för att se målskyttar, gula och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen. Övrig data hämtas bara igen när en match har börjat.
 
 ## Offline och data
 

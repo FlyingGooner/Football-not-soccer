@@ -107,8 +107,18 @@ T.test('flik: bara kända flikar', () => {
   T.eq(loadTab('evil'), null);
 });
 T.test('kortordning: okända id bort, nya kort sist, standard sparas inte', () => {
-  T.eq(layoutOf({ matches: { order: ['last', 'evil', 'last'], hidden: ['today', 'x'] } }, 'matches'), { order: ['last', 'today', 'next'], hidden: ['today'] });
-  T.eq(loadLayout({ matches: { order: ['today', 'next', 'last'], hidden: [] }, evil: { order: [] } }), {});
+  T.eq(layoutOf({ team: { order: ['last', 'evil', 'last'], hidden: ['table', 'x'] } }, 'team'), { order: ['last', 'next', 'table', 'recent'], hidden: ['table'] });
+  T.eq(loadLayout({ matches: { order: ['today', 'next', 'last'], hidden: ['today'] }, evil: { order: [] } }), {});   // old Matcher layout dropped
+});
+T.test('cache v4: datumintervall valideras, gula kort tolkas och behålls', () => {
+  const c = loadCache({ leagues: { 'eng.1': { range: { from: '2026-11-04', to: '2026-11-18' } }, 'esp.1': { range: { from: '2026-11-18', to: '2026-11-04' } }, 'ita.1': { range: { from: 'x', to: '2026-11-04' } } } });
+  T.eq([c.leagues['eng.1'].range, c.leagues['esp.1'].range, c.leagues['ita.1'].range], [{ from: '2026-11-04', to: '2026-11-18' }, null, null]);
+  const ms = parseEvents({ events: [{ id: '2', date: '2026-11-07T15:00Z', competitions: [{ status: { type: { state: 'post' } },
+    competitors: [{ homeAway: 'home', score: '0', team: { id: '1' } }, { homeAway: 'away', score: '0', team: { id: '2' } }],
+    details: [{ yellowCard: true, type: { text: 'Yellow Card' }, clock: { displayValue: "30'" }, team: { id: '2' }, athletesInvolved: [{ shortName: 'G' }] },
+      { redCard: true, type: { text: 'Red Card' }, clock: { displayValue: "80'" }, team: { id: '2' }, athletesInvolved: [{ shortName: 'G' }] }] }] }] }, 'eng.1');
+  T.eq(ms[0].events.map((e) => e.kind), ['yellow', 'red']);
+  T.eq(loadCache({ leagues: { 'eng.1': { league: ms } } }).leagues['eng.1'].league[0].events.length, 2);
   T.eq(Object.keys(loadLayout({ team: { hidden: ['recent'] } })), ['team']);
   const s = loadSettings({ league: 'eng.1', layout: { team: { order: ['table'] } } });
   T.eq(importText(exportText(s, '2026-11-11')).data.layout, s.layout);

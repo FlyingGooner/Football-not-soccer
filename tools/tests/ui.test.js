@@ -25,9 +25,36 @@ T.test('första start: Matcher i PL, pågående överst, resultat', async () => 
   T.eq(view, 'matches');
   T.ok(!T.$('#view-matches').hidden && T.$('#view-table').hidden, 'bara Matcher syns');
   T.eq(T.$('#tabbar .tab.on').dataset.view, 'matches');
-  T.ok(T.$('#next-list').textContent.includes('Pågår nu'), 'pågående match överst');
-  T.ok(T.$('#next-list').textContent.includes('LIVE'), 'LIVE visas');
-  T.eq(document.querySelectorAll('#last-list .lm').length, 10);
+  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'now');
+  T.ok(T.$('#match-list').textContent.includes('Pågår nu'), 'pågående match överst');
+  T.ok(T.$('#match-list').textContent.includes("LIVE 67'"), 'LIVE med minut');
+  T.ok(T.$('#more').hidden, 'Aktuella har ingen Visa fler');
+  T.ok(!T.$('#today'), 'Idag-raden borttagen');
+});
+T.test('Matcher: flikarna Kommande och Spelade, Visa fler', async () => {
+  click('#mtabs [data-mtab="next"]');
+  T.ok(!T.$('#match-list').textContent.includes('Idag'), 'Kommande har inte dagens matcher');
+  T.ok(document.querySelectorAll('#match-list .lm').length >= 5, 'minst 5 rader');
+  click('#mtabs [data-mtab="past"]');
+  const rows = () => document.querySelectorAll('#match-list .lm').length, n = rows();
+  T.ok(n >= 5 && T.$('#match-list .end').textContent === 'Slut', 'spelade med Slut');
+  T.ok(!T.$('#more').hidden, 'Visa fler');
+  const before = __calls.length;
+  click('#more');
+  await T.until(() => !loadingMore, 'Visa fler blev inte klar');
+  T.ok(rows() >= n, 'inte färre rader');
+  if (__calls.length > before) T.ok(/dates=\d{8}-\d{8}/.test(__calls[__calls.length - 1].url), 'en vecka till hämtas');
+  click('#mtabs [data-mtab="now"]');
+});
+T.test('cache: ingen ny hämtning av tabell eller intervall vid flikbyte', async () => {
+  const before = __calls.length;
+  tab('table');
+  await settle();
+  tab('matches');
+  await settle();
+  const urls = __calls.slice(before).map((c) => c.url);
+  T.ok(!urls.some((u) => u.includes('standings')), 'tabellen hämtas inte igen: ' + urls.join());
+  T.ok(urls.every((u) => !u.includes('dates=')), 'bara dagens scoreboard (pågående match)');
 });
 T.test('säkerhet: bara ESPN:s API, utan cookies och referer', () => {
   T.ok(__calls.length > 0, 'inga anrop');
@@ -60,10 +87,6 @@ T.test('ligaväljare: LaLiga sparas och visas på båda flikarna', async () => {
 T.test('säkerhet: data från källan renderas som text, aldrig HTML', () => {
   T.ok(T.$('#table-full').textContent.includes('<img src=x onerror=alert(1)>'), 'namnet visas som text');
   T.eq(document.querySelectorAll('img[src="x"]').length, 0);
-});
-T.test('Idag-raden byggs bara av cachen: PL och LaLiga, inte Serie A', () => {
-  T.eq([...document.querySelectorAll('#today [data-today]')].map((b) => b.dataset.today), ['eng.1', 'esp.1']);
-  T.ok(/LaLiga \d+/.test(T.$('#today').textContent), 'antal visas');
 });
 T.test('Lag utan valt lag: tom vy med knapp till tabellen', () => {
   tab('team');
@@ -107,7 +130,7 @@ T.test('Inst.: grupper, ta bort ur senast följda tar bort lagets cache', () => 
   T.eq(T.$('#hint-recent').textContent, '2 av 5');
   click(document.querySelectorAll('#recent-list .rdel')[1]);
   T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
-  T.ok(!('203' in JSON.parse(localStorage.getItem('fns.cache.v3')).teams), 'cachen borttagen');
+  T.ok(!('203' in JSON.parse(localStorage.getItem('fns.cache.v4')).teams), 'cachen borttagen');
   T.ok(T.$('#foot').textContent.includes('v' + self.APP_VERSION), 'version i foten');
 });
 T.test('fliken sparas och appen öppnas på den', () => {
@@ -135,10 +158,19 @@ T.test('CL: lag får sin inhemska liga', async () => {
 T.test('matchdetaljer fälls ut med målskytt', async () => {
   tab('matches');
   await settle();
-  const row = T.$('#last-list .lm.tap');
+  click('#mtabs [data-mtab="past"]');
+  const row = T.$('#match-list .lm.tap');
   click(row);
-  T.ok(T.$('#last-list .evs').textContent.includes('A. Skytt'), 'målskytt');
+  T.ok(T.$('#match-list .evs').textContent.includes('A. Skytt'), 'målskytt');
+  T.ok(T.$('#match-list .evs').textContent.includes('🟨'), 'gult kort');
   T.eq(row.getAttribute('aria-expanded'), 'true');
+});
+T.test('matchdetaljer: andra gula visas 🟨🟥, live-tid med tilläggstid och HT', () => {
+  const m = { home: { id: '1' }, away: { id: '2' }, events: [{ kind: 'yellow', min: "20'", name: 'X', teamId: '1' }, { kind: 'red', min: "70'", name: 'X', teamId: '1' }, { kind: 'red', min: "80'", name: 'Y', teamId: '2' }] };
+  const t = [...eventsView(m).querySelectorAll('.ev')].map((n) => n.textContent);
+  T.eq(t, ["20'🟨 X", "70'🟨🟥 X", "80'🟥 Y"]);
+  T.eq(liveText({ clock: "45'+3'", detail: '' }), "LIVE 45'+3");
+  T.eq(liveText({ clock: "45'", detail: 'HT' }), 'HT');
 });
 T.test('export: bara inställningar, ingen matchdata', () => {
   const t = exportText(settings(), '2026-11-11');
@@ -180,17 +212,16 @@ T.test('radera all data: alla fns.*-nycklar, andra appars nycklar kvar', () => {
 });
 T.test('kortordning: flytta och dölja kort, sparas och återställs', async () => {
   tab('settings');
-  const list = () => [...document.querySelectorAll('.lay-list[data-view="matches"] li .row-name')].map((n) => n.textContent);
-  T.eq(list(), ['Idag i alla ligor', 'Aktuella matcher', 'Senaste resultat']);
-  click(T.$('.lay-list[data-view="matches"] [aria-label="Flytta upp Senaste resultat"]'));
-  T.eq(list(), ['Idag i alla ligor', 'Senaste resultat', 'Aktuella matcher']);
-  click(T.$('.lay-list[data-view="matches"] [aria-label="Dölj Idag i alla ligor"]'));
-  T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).matches, { order: ['today', 'last', 'next'], hidden: ['today'] });
+  T.ok(!T.$('.lay-list[data-view="matches"]'), 'Matcher har bara ett kort, ingen lista');
+  const list = () => [...document.querySelectorAll('.lay-list[data-view="team"] li .row-name')].map((n) => n.textContent);
+  T.eq(list(), ['Nästa match', 'Senaste match', 'Tabell och form', 'Senast följda lag']);
+  click(T.$('.lay-list[data-view="team"] [aria-label="Flytta upp Senaste match"]'));
+  T.eq(list(), ['Senaste match', 'Nästa match', 'Tabell och form', 'Senast följda lag']);
+  click(T.$('.lay-list[data-view="team"] [aria-label="Dölj Tabell och form"]'));
+  T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).team, { order: ['last', 'next', 'table', 'recent'], hidden: ['table'] });
   T.eq(T.$('#hint-layout').textContent, 'Egen');
-  const cards = [...T.$('#arr-matches').children].map((n) => n.dataset.card);
-  T.eq(cards, ['today', 'last', 'next']);
-  T.ok(T.$('#today').classList.contains('lay-off'), 'dolt');
-  click('[data-reset="matches"]');
+  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['last', 'next', 'table', 'recent']);
+  click('[data-reset="team"]');
   T.eq(localStorage.getItem('fns.layout.v1'), null);
-  T.eq([...T.$('#arr-matches').children].map((n) => n.dataset.card), ['today', 'next', 'last']);
+  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['next', 'last', 'table', 'recent']);
 });
