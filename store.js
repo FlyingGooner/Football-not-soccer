@@ -115,20 +115,23 @@ function idMap(obj, fn) {
 }
 
 // ---------- Cache (fns.cache.v4) ----------
-// { leagues: { [leagueId]: { table, league, leagueFull, range: { from, to }, updatedAt: { table, league } } },
+// { leagues: { [leagueId]: { table, league, range: { from: "YYYY-MM", to }, used, updatedAt: { table, league } } },
 //   colors: { [teamId]: "#rrggbb" }, teams: { [teamId]: { matches, color, ts } } }
 const emptyCache = () => ({ leagues: Object.create(null), colors: Object.create(null), teams: Object.create(null) });
-const emptyLeague = () => ({ table: null, league: null, leagueFull: false, range: null, updatedAt: { table: null, league: null } });
-const isoDay = (v) => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(new Date(v)) ? v : null);
-const cleanRange = (r) => (isObj(r) && isoDay(r.from) && isoDay(r.to) && r.from <= r.to ? { from: r.from, to: r.to } : null);
+const emptyLeague = () => ({ table: null, league: null, range: null, used: null, updatedAt: { table: null, league: null } });
+const isoMonth = (v) => (typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : null);
+const cleanRange = (r) => (isObj(r) && isoMonth(r.from) && isoMonth(r.to) && r.from <= r.to ? { from: r.from, to: r.to } : null);
+// Months as "YYYY-MM": n months after key; all months from a to b.
+const monthAdd = (key, n) => { const [y, m] = key.split('-').map(Number), d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
+function monthsBetween(a, b) { const out = []; for (let k = a; k <= b && out.length < 24; k = monthAdd(k, 1)) out.push(k); return out; }
 function loadCache(c) {
   if (!isObj(c)) return emptyCache();
   return {
     leagues: idMap(c.leagues, (k, v) => (isLeague(k) && isObj(v) ? {
       table: Array.isArray(v.table) ? v.table.map(cleanRow).filter(Boolean).slice(0, 80) : null,
       league: cleanMatches(v.league),
-      leagueFull: v.leagueFull === true,
       range: cleanRange(v.range),
+      used: ts(v.used),
       updatedAt: { table: ts(isObj(v.updatedAt) && v.updatedAt.table), league: ts(isObj(v.updatedAt) && v.updatedAt.league) },
     } : null)),
     colors: idMap(c.colors, (k, v) => (validId(k) ? color(v) : null)),
@@ -199,13 +202,22 @@ function importText(text) {
 // ---------- ESPN URLs (only from LEAGUES/EUROPE ids, validated team ids and fixed date ranges) ----------
 const API_BASE = 'https://site.api.espn.com/apis';
 function espnUrl(kind, compId, opt = {}) {
+  // A team's schedule in all competitions at once (fixed path "all"; unknown competitions are dropped by cleanMatch).
+  if (kind === 'teamAll') {
+    if (!validId(opt.team)) throw new Error('espnUrl: ogiltigt lag-id');
+    return `${API_BASE}/site/v2/sports/soccer/all/teams/${opt.team}/schedule${opt.fixture ? '?fixture=true' : ''}`;
+  }
   if (!compById(compId)) throw new Error('espnUrl: okänd turnering');
   const site = `${API_BASE}/site/v2/sports/soccer/${compId}`;
   if (kind === 'standings') return `${API_BASE}/v2/sports/soccer/${compId}/standings`;
   if (kind === 'scoreboard') {
     if (opt.dates == null) return `${site}/scoreboard`;
-    if (!/^\d{8}-\d{8}$/.test(opt.dates)) throw new Error('espnUrl: ogiltigt datumintervall');
+    if (!/^\d{6}$/.test(opt.dates)) throw new Error('espnUrl: ogiltig månad');   // YYYYMM (ESPN gives 400 for day ranges)
     return `${site}/scoreboard?dates=${opt.dates}`;
+  }
+  if (kind === 'team') {
+    if (!validId(opt.team)) throw new Error('espnUrl: ogiltigt lag-id');
+    return `${site}/teams/${opt.team}`;
   }
   if (kind === 'schedule') {
     if (!validId(opt.team)) throw new Error('espnUrl: ogiltigt lag-id');
@@ -263,7 +275,15 @@ function parseEvent(ev, compId) {
     events: keyEvents(c0.details),
   });
 }
-const parseEvents = (data, compId) => (Array.isArray(data && data.events) ? data.events : []).map((ev) => parseEvent(ev, compId)).filter(Boolean);
+// compId null (the "all" schedule): each event's own league slug, kept only if it is one of COMPS.
+const parseEvents = (data, compId) => (Array.isArray(data && data.events) ? data.events : [])
+  .map((ev) => parseEvent(ev, compId || (isObj(ev) && isObj(ev.league) && str(ev.league.slug)) || null)).filter(Boolean);
+// /teams/{id} → the team's domestic league, only if it is one of our leagues.
+function parseDefaultLeague(data) {
+  const slug = isObj(data) && isObj(data.team) && isObj(data.team.defaultLeague) ? data.team.defaultLeague.slug : null;
+  const l = leagueById(slug);
+  return l && l.kind === 'league' ? l.id : null;
+}
 // One table, or one per group (World Cup, Euro …): rows get `group` when there are several.
 function parseStandings(data) {
   const kids = isObj(data) && Array.isArray(data.children) ? data.children.filter(isObj) : [];

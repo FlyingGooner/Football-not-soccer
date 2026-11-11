@@ -133,14 +133,13 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
                "away": { "…": "…" }, "homeScore": 2, "awayScore": 1,
                "events": [{ "kind": "goal", "min": "12'", "name": "B. Saka", "teamId": "359", "pen": false, "og": false },
                           { "kind": "yellow", "min": "40'", "name": "M. Caicedo", "teamId": "363" }] }],
-  "leagueFull": false,
-  "range": { "from": "2026-11-04", "to": "2026-11-18" },
+  "range": { "from": "2026-10", "to": "2026-12" }, "used": 1762500000000,
   "colors": { "359": "#ef0107" },
   "teams": { "359": { "matches": ["…"], "color": "#ef0107", "ts": 1762500000000 } },
   "updatedAt": { "table": 1762500000000, "league": 1762500000000, "359": 1762500000000 }
 }
 ```
-- Cachen (`fns.cache.v4`) har `table`, `league`, `leagueFull`, `range` (hämtat datumintervall) och `updatedAt` per liga-id: `{ "leagues": { "esp.1": { … } }, "colors": …, "teams": … }`. `kind` är `goal`, `yellow` eller `red`. Gammal `.v3` ignoreras (en första hämtning per liga).
+- Cachen (`fns.cache.v4`) har `table`, `league`, `range` (hämtade månader `YYYY-MM`), `used` (senast använd) och `updatedAt` per liga-id: `{ "leagues": { "esp.1": { … } }, "colors": …, "teams": … }`. `kind` är `goal`, `yellow` eller `red`. Gammal `.v3` ignoreras (en första hämtning per liga).
 - All cachad data valideras fält för fält vid läsning (`store.js`), eftersom den kan vara gammal eller manipulerad.
 - Sparad data för de 5 senast valda lagen behålls (`CONFIG.teamCacheMax`).
 - Ny struktur → ny nyckelversion (`.v4`); gammal data ignoreras.
@@ -149,19 +148,23 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - **ESPN:s öppna JSON-API** (`site.api.espn.com`), inofficiellt, gratis, ingen nyckel.
   - Samma host för alla ligor och turneringar; bara `{liga}` i sökvägen skiljer (id enligt Ligor och turneringar).
   - Tabell: `/apis/v2/sports/soccer/{liga}/standings`
-  - Ligans matcher: `/apis/site/v2/sports/soccer/{liga}/scoreboard?dates=YYYYMMDD-YYYYMMDD` i intervall om en vecka: först 1 vecka bakåt och 1 framåt plus dagens scoreboard; Visa fler hämtar en vecka till åt gången (högst 5 bakåt, 5 framåt).
-  - Lagets matcher: `/apis/site/v2/sports/soccer/{turnering}/teams/{lag-id}/schedule` (+ `?fixture=true` för kommande), per turnering.
-  - Live: scoreboard för pågående matchers turnering.
-  - Reserv: ger scoreboard för få matcher byggs ligans matcher av varje lags schema. Live faller på samma sätt tillbaka till hemmalagets schema.
-- All åtkomst via adapterfunktioner (`fetchTable()`, `fetchTeamMatches()`, `fetchLeagueMatches()`, `fetchLive()`) i `app.js`, så att källan kan bytas.
+  - Ligans matcher (beslut 2026-11-11): `/apis/site/v2/sports/soccer/{liga}/scoreboard?dates=YYYYMM`, en hel månad per anrop. Först förra, denna och nästa månad parallellt (3 anrop); Visa fler hämtar en månad till åt gången (högst 3 bakåt och 3 framåt från denna månad). Dagintervall (`YYYYMMDD-YYYYMMDD`) ger HTTP 400 hos ESPN och används inte. Ingen reserv via varje lags schema.
+  - Lagets matcher: `/apis/site/v2/sports/soccer/all/teams/{lag-id}/schedule` (+ `?fixture=true` för kommande) – alla tävlingar i 2 anrop; varje matchs `league.slug` mappas till ett id i `COMPS`, övriga (vänskapsmatcher, ligacuper) tas bort. Schemat saknar mål och kort; de fylls i från ligans månadscache (samma match-id).
+  - Hemmaliga för ett lag som följs från en turneringstabell: `/apis/site/v2/sports/soccer/{turnering}/teams/{lag-id}` → `defaultLeague.slug` (1 anrop), godtas bara om det är en liga i `LEAGUES`. Finns laget redan i en cachad tabell används den.
+  - Live: dagens scoreboard för pågående matchers turnering.
+- All åtkomst via adapterfunktioner (`fetchTable()`, `fetchTeamMatches()`, `fetchMonths()`, `fetchLive()`) i `app.js`, så att källan kan bytas.
 - **När data hämtas:** bara det den öppna fliken visar – när appen öppnas, när den visas igen, när fliken byts, när nätet kommer tillbaka och vid byte av liga eller lag – och bara om cachen inte längre gäller (nedan). Inställningar hämtar inget. Inga anrop i bakgrunden.
-- **Cache per liga till nästa avspark (beslut 2026-11-11):** ligans data hämtas inte igen så länge ingen match i ligan har börjat eller pågår sedan förra hämtningen (en `pre`-match med avsparkstid ≤ nu, eller en `in`-match). Då hämtas bara dagens scoreboard, inte hela intervallet.
-  - Spelade matcher (`post`) hämtas aldrig igen.
-  - Tabellen hämtas bara när en match i ligan har gått till `post` efter förra tabellhämtningen.
-  - Säkerhetsgräns: data äldre än 6 timmar hämtas ändå (flyttade matcher, nya tider).
-  - Lag: samma regel för lagets schema (nästa match i lagets cache).
-- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 30:e sekund. Matcher: alla pågående ligamatcher; Lag: lagets match.
-- Cachad data visas direkt vid start och ersätts sedan av färsk data. Har ligadatan byggts av alla lags scheman och är nyare än 10 minuter visas ett nyvalt lags ligamatcher direkt därifrån och hämtas inte igen.
+  - Byte av liga (knapp eller svep) väntar 0,4 s innan något hämtas, så ligor man sveper förbi hämtas inte.
+  - Samma URL hämtas högst en gång per minut (svaret återanvänds), utom live-uppdateringen.
+  - Tabell och matcher hämtas parallellt.
+- **Cache per liga till nästa avspark (beslut 2026-11-11):** ligans data hämtas inte igen så länge ingen match i ligan har börjat eller pågår sedan förra hämtningen (en `pre`-match med avsparkstid ≤ nu, eller en `in`-match). Då hämtas bara dagens scoreboard.
+  - Passerade månader hämtas aldrig igen. Denna månad hämtas igen efter 6 timmar (flyttade matcher, nya tider); börjar en ny månad hämtas bara den som saknas.
+  - Tabellen hämtas bara när en match i ligan har gått till `post` efter förra tabellhämtningen (eller saknas/är äldre än 6 timmar).
+  - Lag: ligans matcher tas ur ligacachen (fliken Lag hämtar lagets liga som ovan); lagets schema för alla tävlingar högst en gång per dygn eller när en av lagets matcher har börjat.
+  - Cachen behåller högst 6 ligor (de senast använda, plus vald liga och lagets liga), för att inte fylla `localStorage`.
+- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 60:e sekund. Matcher: alla pågående ligamatcher; Lag: lagets match. Uppdateringen skrivs till både ligans och lagens cache.
+- ESPN:s `Cache-Control` är bara 3–18 s, så webbläsarens HTTP-cache hjälper inte: `cache:'no-store'`, appens egen cache i `localStorage` gäller.
+- Cachad data visas direkt vid start och ersätts sedan av färsk data.
 
 ### Integritet och säkerhet
 - Anropen görs direkt från mobilen till ESPN; ESPN ser IP-adress, webbläsare och vad som hämtas. `no-referrer` gör att ESPN inte får veta sidans adress.
@@ -174,13 +177,14 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Fler ligor och turneringar (2026-11-11): bara nya sökvägar på samma host, id ur `LEAGUES`. Ingen ny host, ingen ändrad CSP, inget nytt undantag, ingen ny nyckel. Ny lagrad del `layout.leagues` (id valideras mot `LEAGUES`), nytt cachefält `group` i tabellrader (text, max 60 tecken, renderas som text).
 - `<head>` (2026-11-11): `viewport-fit=cover` och ändrade `theme-color`-värden (se PWA-krav). Ingen ändring av CSP eller anrop.
 - Ombyggnad enligt `template/` (2026-11-11): appen är undantaget från regeln om inga nätverksanrop. Innan bygget kontrolleras att undantaget för ESPN finns kvar i `granskning`-tabellen och `tools/check.ps1`; saknas det → förhandsprövning.
+- Anrop per månad (2026-11-11): nya sökvägar på samma host – `scoreboard?dates=YYYYMM`, `all/teams/{id}/schedule` (fast `all`, lag-id validerat) och `{turnering}/teams/{id}`. Ligor från `all`-schemat godtas bara om `league.slug` finns i `COMPS`; `defaultLeague.slug` bara om den finns i `LEAGUES` (slug från API:t hamnar aldrig i en URL). Ny lagrad del `used` (tidsstämpel) och `range` som månader, validerade i `store.js`. Ingen ny host, ingen ändrad CSP, inget nytt undantag. Färre anrop: inga scheman per lag i ligan, 1 anrop i stället för 8 tabeller för hemmaliga.
 
 #### Härdning (beslut 2026-11-07)
 - **Infört – Trusted Types:** CSP har `require-trusted-types-for 'script'`. Appen använder inte `innerHTML`, så ingen policy behövs. Safari ignorerar direktivet.
 - **Infört – presentationen utan `'unsafe-inline'`:** CSS och JS ligger i `docs/presentation.css` och `docs/presentation.js`, inga `style`-attribut. CSP `script-src 'self'; style-src 'self'`.
 - **Avböjt – smalare `img-src`:** kräver verifiering mot ESPN och körtest; `logo()` kräver redan `https://`.
 - **Infört vid ombygget (2026-11-11) – central tolkning av API-svar:** `store.js` tolkar ESPN-svaren och kör samma validering som för cachen (`cleanMatch`, `cleanRow`): id `^\d+$`, färg strikt `#rrggbb`, klubbmärken bara `https://a.espncdn.com/…`, text utan styr- och riktningstecken, max 60 tecken. Ersätter det tidigare avböjda beslutet.
-- URL:er byggs bara av `espnUrl()` i `store.js` (turnering ur `LEAGUES`/`EUROPE`, lag-id `^\d{1,10}$`, datum `^\d{8}-\d{8}$`; annars kastas fel). `fetch` alltid med `credentials:'omit'`, `cache:'no-store'`, `referrerPolicy:'no-referrer'`.
+- URL:er byggs bara av `espnUrl()` i `store.js` (turnering ur `LEAGUES`/`EUROPE`, lag-id `^\d{1,10}$`, månad `^\d{6}$`, fasta sökvägen `all` bara för lagschema; annars kastas fel). `fetch` alltid med `credentials:'omit'`, `cache:'no-store'`, `referrerPolicy:'no-referrer'`.
 - Ny lagring: `fns.team.v2`, `fns.league.v1`, `fns.recent.v1`, `fns.cache.v4` (se Datamodell); **Radera all data** tar bort alla `fns.*` och inget annat. Backup-fil enligt U5 (krypterad), bara inställningar.
 - Tester (`tools/tests/`): flödestesterna kör mot en fejkad `fetch` (`ui-before.js`, laddas av `tools/test.ps1` före appen) och använder aldrig nätet. De kontrollerar CSP:ns nätverksdirektiv, att alla anrop går till `site.api.espn.com` med rätt fetch-inställningar, att märken från andra värdar inte laddas och att data från källan renderas som text. Exakt CSP i `index.html` kontrolleras av `tools/check.ps1`.
 

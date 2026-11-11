@@ -10,11 +10,14 @@ const CONFIG = {
   upcomingCount: 2,             // Lag: rows under Nästa match before Visa fler
   recentCount: 3,               // Lag: rows under Senaste match before Visa fler
   roundSize: 10,
-  weeksMax: 5,                  // Visa fler fetches one week at a time, at most 5 back and 5 ahead
+  monthsMax: 3,                 // Visa fler fetches one month at a time, at most 3 back and 3 ahead of the current month
   minRows: 5,
-  livePollMs: 30000,
+  livePollMs: 60000,
   teamCacheMax: RECENT_MAX,
-  leagueReuseMs: 600000,
+  leagueCacheMax: 6,            // leagues kept in the cache (most recently used)
+  teamAllMs: 24 * 3600e3,       // a team's all-competition schedule: at most once a day (or when its match has started)
+  sameUrlMs: 60000,             // the same URL at most once a minute (not the live poll)
+  leagueDebounceMs: 400,        // league switch/swipe: wait before fetching, so passed leagues are not fetched
   maxAgeMs: 6 * 3600e3,         // cache valid until next kickoff, but never longer than this
   keys: { cache: 'fns.cache.v4', team: 'fns.team.v2', teamV1: 'fns.team.v1', league: 'fns.league.v1', recent: 'fns.recent.v1', tab: 'fns.tab.v1', layout: 'fns.layout.v1' },
   prefix: 'fns.',
@@ -71,72 +74,42 @@ function countdown(ms) {
 }
 
 // ---------- Data adapter (ESPN) – URLs only from espnUrl() in store.js ----------
-async function getJSON(url) {
-  const res = await fetch(url, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', mode: 'cors' });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+// The same URL at most once per CONFIG.sameUrlMs (the answer is reused); fresh = live poll.
+const recentUrls = new Map();
+function getJSON(url, fresh = false) {
+  const now = Date.now(), hit = recentUrls.get(url);
+  if (!fresh && hit && now - hit.t < CONFIG.sameUrlMs) return hit.p;
+  const p = fetch(url, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', mode: 'cors' })
+    .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); });
+  recentUrls.set(url, { t: now, p });
+  p.catch(() => { if (recentUrls.get(url) && recentUrls.get(url).p === p) recentUrls.delete(url); });
+  return p;
 }
 async function fetchTable(leagueId) { return parseStandings(await getJSON(espnUrl('standings', leagueId))); }
 
-// A team's results and fixtures in one competition (two requests). Resolves to { list, color }.
-async function fetchSchedule(compId, teamId) {
-  const settled = await Promise.allSettled([getJSON(espnUrl('schedule', compId, { team: teamId })), getJSON(espnUrl('schedule', compId, { team: teamId, fixture: true }))]);
+// A team's results and fixtures in all competitions (two requests). Resolves to { matches, color }.
+async function fetchTeamMatches(teamId) {
+  const settled = await Promise.allSettled([getJSON(espnUrl('teamAll', null, { team: teamId })), getJSON(espnUrl('teamAll', null, { team: teamId, fixture: true }))]);
   const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
   if (!ok.length) throw settled[0].reason;
   const c = ok.map((d) => hexColor(d && d.team && d.team.color)).find(Boolean) || null;
-  return { list: mergeMatches(ok.map((d) => parseEvents(d, compId))), color: c };
+  return { matches: mergeMatches(ok.map((d) => parseEvents(d, null))), color: c };
 }
-// All matches for one team: its league plus the European competitions. known = league matches already in hand.
-async function fetchTeamMatches(teamId, leagueId, known, knownColor) {
-  const comps = national(leagueId) ? [leagueId] : [leagueId, ...CONFIG.europe.map((e) => e.id).filter((id) => id !== leagueId)];
-  const jobs = comps.map((id) => (known && id === leagueId ? Promise.resolve({ list: known, color: knownColor || null }) : fetchSchedule(id, teamId)));
-  const settled = await Promise.allSettled(jobs);
-  if (settled.every((s) => s.status === 'rejected')) throw settled[0].reason;
-  const ok = settled.filter((s) => s.status === 'fulfilled').map((s) => s.value);
-  return { matches: mergeMatches(ok.map((o) => o.list)), color: (ok.find((o) => o.color) || {}).color || null };
-}
-// Day offsets ↔ ISO days (local), for the fetched range.
-const DAY = 864e5;
-const isoAt = (off) => { const t = new Date(Date.now() + off * DAY); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
-const offOf = (iso) => Math.round((new Date(iso + 'T12:00') - new Date(isoAt(0) + 'T12:00')) / DAY);
-// Scoreboards for day offsets [from, to] in one-week ranges (+ today's scoreboard when today = true; from > to = only today).
-async function fetchScoreboards(leagueId, from, to, today) {
-  const urls = today ? [espnUrl('scoreboard', leagueId)] : [];
-  for (let a = from; a <= to; a += 7) urls.push(espnUrl('scoreboard', leagueId, { dates: `${ymd(Date.now() + a * DAY)}-${ymd(Date.now() + Math.min(a + 6, to) * DAY)}` }));
-  const settled = await Promise.allSettled(urls.map((u) => getJSON(u).then((d) => parseEvents(d, leagueId))));
+// Current month as "YYYY-MM" (local), n months away.
+const monthAt = (n = 0) => { const d = new Date(); return monthAdd(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, n); };
+// League matches for whole months, in parallel. ok = every month came back (only then is the range extended).
+async function fetchMonths(leagueId, months) {
+  const settled = await Promise.allSettled(months.map((k) => getJSON(espnUrl('scoreboard', leagueId, { dates: k.replace('-', '') })).then((d) => parseEvents(d, leagueId))));
   if (settled.every((x) => x.status === 'rejected')) throw settled[0].reason;
-  return mergeMatches(settled.filter((x) => x.status === 'fulfilled').map((x) => x.value));
+  return { matches: mergeMatches(settled.filter((x) => x.status === 'fulfilled').map((x) => x.value)), ok: settled.every((x) => x.status === 'fulfilled') };
 }
-// League matches for day offsets [from, to]; few results in the first fetch → every team's schedule.
-async function fetchLeagueMatches(leagueId, table, from = -7, to = 7) {
-  const merged = await fetchScoreboards(leagueId, from, to, true).catch(() => []);
-  const n = CONFIG.roundSize;
-  if (!domestic(leagueId) || (merged.filter((m) => m.state === 'pre').length >= n && merged.filter((m) => m.state === 'post').length >= n)) return { matches: merged, full: false, colors: {} };
-  try {
-    const viaTeams = await fetchLeagueMatchesViaTeams(leagueId, table);
-    return { ...viaTeams, matches: mergeMatches([viaTeams.matches, merged]) };
-  } catch (e) { if (merged.length) return { matches: merged, full: false, colors: {} }; throw e; }
-}
-async function fetchLeagueMatchesViaTeams(leagueId, table) {
-  const rows = table && table.length ? table : await fetchTable(leagueId);
-  const ids = rows.map((r) => r.id).filter(validId);
-  const settled = await Promise.allSettled(ids.map((id) => fetchSchedule(leagueId, id)));
-  const colors = {}, lists = [];
-  settled.forEach((x, i) => { if (x.status !== 'fulfilled') return; lists.push(x.value.list); if (x.value.color) colors[ids[i]] = x.value.color; });
-  if (!lists.length) throw settled[0] ? settled[0].reason : new Error('no teams');
-  return { matches: mergeMatches(lists), full: true, colors };
-}
-// Live: scoreboard per competition, the home team's schedule as fallback.
+const fetchToday = async (leagueId, fresh = false) => parseEvents(await getJSON(espnUrl('scoreboard', leagueId), fresh), leagueId);
+// Live: today's scoreboard per competition, always fresh.
 async function fetchLive(live) {
   const comps = [...new Set(live.map((m) => m.leagueId))];
-  const out = [];
-  await Promise.all(comps.map(async (compId) => {
-    try { out.push(...parseEvents(await getJSON(espnUrl('scoreboard', compId)), compId)); return; } catch { /* fall back below */ }
-    const homes = [...new Set(live.filter((m) => m.leagueId === compId).map((m) => m.home.id).filter(validId))];
-    const res = await Promise.allSettled(homes.map((id) => fetchSchedule(compId, id)));
-    for (const r of res) if (r.status === 'fulfilled') out.push(...r.value.list);
-  }));
-  return mergeMatches([out]);
+  const res = await Promise.allSettled(comps.map((id) => fetchToday(id, true)));
+  if (res.every((r) => r.status === 'rejected')) throw res[0].reason;
+  return mergeMatches(res.filter((r) => r.status === 'fulfilled').map((r) => r.value));
 }
 
 // ---------- State ----------
@@ -144,7 +117,7 @@ let cache = emptyCache();
 let team = null;                 // { id, name, logo, color, leagueId } or null
 let league = DEFAULT_LEAGUE;     // chosen league for Matcher and Tabell
 let recent = [];
-let layout = {};               // card order per view (Inställningar → Utseende)
+let layout = {};              // card order per view (Inställningar → Utseende)
 let view = 'matches';
 let liveTimer = null;
 const tableDue = new Set();     // leagues where a match finished but the table is not refetched yet
@@ -166,18 +139,19 @@ function saveSettings() {
 function trimCache(max = CONFIG.teamCacheMax) {
   const keep = new Set([...recent.slice(0, max).map((t) => t.id), team && team.id].filter(Boolean));
   for (const id of Object.keys(cache.teams)) if (!keep.has(id)) delete cache.teams[id];
+  // Leagues: the open ones plus the most recently used, at most CONFIG.leagueCacheMax (localStorage size).
+  const open = new Set([league, team && team.leagueId].filter(Boolean));
+  const ids = Object.keys(cache.leagues).sort((a, b) => (cache.leagues[b].used || 0) - (cache.leagues[a].used || 0));
+  let n = 0;
+  for (const id of ids) if (!open.has(id) && ++n > Math.max(0, CONFIG.leagueCacheMax - open.size)) delete cache.leagues[id];
 }
-function leagueMatchesFor(lid, id) {
-  const e = cache.leagues[lid];
-  if (!e || !e.leagueFull || !Array.isArray(e.league)) return null;
-  const list = e.league.filter((m) => m.home.id === id || m.away.id === id);
-  return list.length ? list : null;
-}
+// The team's matches: its own schedule (all competitions) plus every cached league month, which has goals and cards.
 function teamData() {
   if (!team) return null;
-  if (cache.teams[team.id]) return cache.teams[team.id];
-  const known = leagueMatchesFor(team.leagueId, team.id);
-  return known ? { matches: known, color: cache.colors[team.id] || null } : null;
+  const td = cache.teams[team.id], id = team.id;
+  const fromLeagues = Object.values(cache.leagues).map((e) => (e.league || []).filter((m) => m.home.id === id || m.away.id === id));
+  if (!td && !fromLeagues.some((l) => l.length)) return null;
+  return { matches: mergeMatches([td ? td.matches : [], ...fromLeagues]), color: (td && td.color) || cache.colors[id] || null };
 }
 
 // ---------- Perspective helpers (Lag) ----------
@@ -346,7 +320,7 @@ function fitRows() {
   const top = $('match-list').getBoundingClientRect().top, bar = $('tabbar').getBoundingClientRect().height || 80;
   return Math.max(CONFIG.minRows, Math.floor((innerHeight - Math.max(top, 0) - bar - 72) / 44));
 }
-const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? offOf(r.from) <= -7 * CONFIG.weeksMax : offOf(r.to) >= 7 * CONFIG.weeksMax); };
+const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? r.from <= monthAt(-CONFIG.monthsMax) : r.to >= monthAt(CONFIG.monthsMax)); };
 function renderLeagueMatches() {
   const ms = L(league).league || [], lists = matchLists(ms);
   const tab = curTab();
@@ -360,7 +334,7 @@ function renderLeagueMatches() {
   $('more').disabled = loadingMore;
   $('more').dataset.dir = String(dir);
 }
-// Visa fler: more rows from the cache; when it runs out, one more week from ESPN in that direction.
+// Visa fler: more rows from the cache; when it runs out, one more month from ESPN in that direction.
 async function showMore() {
   const tab = curTab();
   if (tab === 'now' || loadingMore) return;
@@ -368,12 +342,12 @@ async function showMore() {
   extra[tab] += step;
   const have = matchLists(L(lid).league || [])[tab].length;
   if (have < fitRows() + extra[tab] && !rangeEnd(dir)) {
-    const e = L(lid), a = dir < 0 ? offOf(e.range.from) - 7 : offOf(e.range.to) + 1, b = a + 6;
+    const e = L(lid), k = dir < 0 ? monthAdd(e.range.from, -1) : monthAdd(e.range.to, 1);
     loadingMore = true; renderLeagueMatches();
     try {
-      const got = await fetchScoreboards(lid, a, b, false);
-      e.league = mergeMatches([e.league, got]);
-      e.range = dir < 0 ? { from: isoAt(a), to: e.range.to } : { from: e.range.from, to: isoAt(b) };
+      const got = await fetchMonths(lid, [k]);
+      e.league = mergeMatches([e.league, got.matches]);
+      if (got.ok && e.range) e.range = dir < 0 ? { from: k, to: e.range.to } : { from: e.range.from, to: k };
       saveCache();
     } catch { renderStatus(navigator.onLine ? 'Kunde inte hämta fler matcher' : 'Offline – visar sparad data', true); }
     loadingMore = false;
@@ -542,8 +516,11 @@ function setLeague(id) {
   store.set(CONFIG.keys.league, league);
   render();
   renderStatus(lastUpdated() ? 'Hämtar ny data…' : '');
-  refresh();
+  // Debounce: swiping past several leagues only fetches the one you stop on.
+  clearTimeout(leagueTimer);
+  leagueTimer = setTimeout(() => { leagueTimer = null; refresh(); }, CONFIG.leagueDebounceMs);
 }
+let leagueTimer = null;
 let pending = null;
 function askPick(row, lid) {
   if (team && row.id === team.id) { go('team'); return; }
@@ -555,20 +532,12 @@ function askPick(row, lid) {
 $('pick-ok').addEventListener('click', () => { const r = pending; pending = null; if (r) choose(r); });
 $('pick').addEventListener('click', (e) => { if (e.target === $('pick')) $('pick').close(); });
 $('team-pick').addEventListener('click', () => go('table'));
-// A team from the CL table gets its domestic league if it is one of ours (from cached or fetched tables).
-async function domesticLeagueOf(id) {
+// A team from a cup table gets its domestic league if it is one of ours: cached tables first, else /teams/{id} (one call).
+async function domesticLeagueOf(id, compId) {
   const doms = CONFIG.leagues.filter((l) => l.kind === 'league');
   const hit = doms.find((l) => (L(l.id).table || []).some((r) => r.id === id));
   if (hit) return hit.id;
-  const res = await Promise.allSettled(doms.map((l) => fetchTable(l.id)));
-  let found = null;
-  res.forEach((r, i) => {
-    if (r.status !== 'fulfilled') return;
-    const e = L(doms[i].id); e.table = r.value; e.updatedAt.table = Date.now();
-    if (r.value.some((x) => x.id === id)) found = doms[i].id;
-  });
-  saveCache();
-  return found;
+  return parseDefaultLeague(await getJSON(espnUrl('team', compId, { team: id })));
 }
 async function choose(row) {
   const t = cleanTeam(row);
@@ -578,7 +547,7 @@ async function choose(row) {
   saveSettings();
   go('team', false);
   if (!domestic(team.leagueId) && !national(team.leagueId)) {
-    const lid = await domesticLeagueOf(team.id).catch(() => null);
+    const lid = await domesticLeagueOf(team.id, team.leagueId).catch(() => null);
     if (lid && team && team.id === t.id) { team = { ...team, leagueId: lid }; recent = addRecent(recent, team); saveSettings(); render(); }
   }
   refresh();
@@ -605,9 +574,10 @@ function scheduleLive() {
     try {
       const fresh = await fetchLive(live);
       const byId = new Map(fresh.map((m) => [m.id, m]));
-      const upd = (list) => list.map((m) => byId.get(m.id) || m);
-      if (view === 'team' && team && cache.teams[team.id]) cache.teams[team.id].matches = upd(cache.teams[team.id].matches);
-      else if (L(league).league) L(league).league = upd(L(league).league);
+      // Written to every cached league and team, so Matcher and Lag agree.
+      const upd = (list) => (Array.isArray(list) ? list.map((m) => byId.get(m.id) || m) : list);
+      for (const e of Object.values(cache.leagues)) e.league = upd(e.league);
+      for (const t of Object.values(cache.teams)) t.matches = upd(t.matches);
       saveCache();
       const done = live.filter((m) => (byId.get(m.id) || m).state === 'post');
       if (done.length) { done.forEach((m) => tableDue.add(m.leagueId)); await refresh(); return; }
@@ -626,50 +596,63 @@ document.addEventListener('visibilitychange', () => {
 
 // ---------- Refresh: what the open tab shows ----------
 let busy = false, again = false;
+// League matches: three months at first; past months are never fetched again; the current month after maxAgeMs;
+// a started match → only today's scoreboard. Returns a job resolving to a function that applies the result, or null.
+function leagueJob(lid, now) {
+  const e = L(lid), want = { from: monthAt(-1), to: monthAt(1) };
+  if (e.range && (e.range.to < want.from || e.range.from > want.to)) { e.league = null; e.range = null; }   // long away: start over
+  const months = [];
+  if (!e.league || !e.range) months.push(...monthsBetween(want.from, want.to));
+  else {
+    if (e.range.to < want.to) months.push(...monthsBetween(monthAdd(e.range.to, 1), want.to));   // a new month has begun
+    if (now - (e.updatedAt.league || 0) > CONFIG.maxAgeMs && !months.includes(monthAt(0))) months.unshift(monthAt(0));
+  }
+  if (months.length) {
+    return fetchMonths(lid, months).then((v) => () => {
+      e.league = mergeMatches([e.league, v.matches]); e.updatedAt.league = now;
+      const lo = months[0], hi = months[months.length - 1];
+      if (v.ok) e.range = { from: e.range && e.range.from < lo ? e.range.from : lo, to: e.range && e.range.to > hi ? e.range.to : hi };
+      return v.matches;
+    });
+  }
+  if (started(e.league)) return fetchToday(lid).then((list) => () => { e.league = mergeMatches([e.league, list]); e.updatedAt.league = now; return list; });
+  return null;
+}
 async function refresh() {
   if (busy) { again = true; return; }
   busy = true;
   try {
     const forTeam = teamView() ? team : null, lid = viewLeague(), e = L(lid), onlyTable = view === 'table';
-    const now = Date.now(), old = (forTeam ? (cache.teams[forTeam.id] || {}).matches : e.league) || [];
-    const prev = new Map(old.map((x) => [x.id, x.state]));
-    // Matches: cached until the next kickoff (or maxAgeMs); a started match → only today's scoreboard.
-    let mJob = null, kind = null;
+    const now = Date.now();
+    e.used = now;
+    const prev = new Map([...(e.league || []), ...((forTeam && (cache.teams[forTeam.id] || {}).matches) || [])].map((x) => [x.id, x.state]));
+    // Matches, the team's schedule and the table in parallel.
+    const jobs = [];
+    const lj = onlyTable && !e.league ? null : leagueJob(lid, now);
+    if (lj) jobs.push(lj);
     if (forTeam) {
-      const td = cache.teams[forTeam.id];
-      if (!td || now - (td.ts || 0) > CONFIG.maxAgeMs || started(td.matches)) {
-        const known = now - (e.updatedAt.league || 0) < CONFIG.leagueReuseMs && !started(e.league) ? leagueMatchesFor(lid, forTeam.id) : null;
-        mJob = fetchTeamMatches(forTeam.id, lid, known, cache.colors[forTeam.id]); kind = 'team';
-      }
-    } else if (!e.league || !e.range || now - (e.updatedAt.league || 0) > CONFIG.maxAgeMs) {
-      if (!onlyTable || e.league) { mJob = fetchLeagueMatches(lid, e.table); kind = 'full'; }
-    } else if (started(e.league)) { mJob = fetchScoreboards(lid, 1, 0, true).then((matches) => ({ matches })); kind = 'today'; }
-    const [m] = mJob ? await Promise.allSettled([mJob]) : [null];
-    if (m && m.status === 'fulfilled') {
-      const v = m.value;
-      if (kind === 'team') cache.teams[forTeam.id] = { matches: v.matches, color: v.color, ts: now };
-      else {
-        e.league = mergeMatches([e.league, v.matches]);
-        e.updatedAt.league = now;
-        if (kind === 'full') {
-          e.leagueFull = v.full;
-          e.range = { from: e.range && e.range.from < isoAt(-7) ? e.range.from : isoAt(-7), to: e.range && e.range.to > isoAt(7) ? e.range.to : isoAt(7) };
-          for (const [k, c] of Object.entries(v.colors)) if (validId(k) && color(c)) cache.colors[k] = c;
-        }
-      }
-      if (v.matches.some((x) => x.state === 'post' && x.leagueId === lid && prev.has(x.id) && prev.get(x.id) !== 'post')) tableDue.add(lid);
+      const td = cache.teams[forTeam.id], id = forTeam.id;
+      if (!td || now - (td.ts || 0) > CONFIG.teamAllMs || started(td.matches))
+        jobs.push(fetchTeamMatches(id).then((v) => () => { cache.teams[id] = { matches: v.matches, color: v.color, ts: now }; return v.matches; }));
     }
-    // Table: only when a match in the league has finished since the last table fetch (or missing/old).
-    let t = null;
-    if (!e.table || now - (e.updatedAt.table || 0) > CONFIG.maxAgeMs || tableDue.has(lid)) {
-      [t] = await Promise.allSettled([fetchTable(lid)]);
-      if (t.status === 'fulfilled') { e.table = t.value; e.updatedAt.table = Date.now(); tableDue.delete(lid); }
+    const tableJob = () => fetchTable(lid).then((rows) => () => { e.table = rows; e.updatedAt.table = Date.now(); tableDue.delete(lid); return []; });
+    const tableFirst = !e.table || now - (e.updatedAt.table || 0) > CONFIG.maxAgeMs || tableDue.has(lid);
+    if (tableFirst) jobs.push(tableJob());
+    const all = await Promise.allSettled(jobs);
+    for (const r of all) if (r.status === 'fulfilled') {
+      const got = r.value();
+      if (got.some((x) => x.state === 'post' && x.leagueId === lid && prev.has(x.id) && prev.get(x.id) !== 'post')) tableDue.add(lid);
+    }
+    // A match finished just now → the table once more (only then after the matches).
+    if (tableDue.has(lid) && !tableFirst) {
+      const [t] = await Promise.allSettled([tableJob()]);
+      if (t.status === 'fulfilled') t.value(); else all.push(t);
     }
     trimCache();
     saveCache();
     if ((teamView() ? team : null) !== forTeam || viewLeague() !== lid) { again = true; return; }
     render();
-    const all = [t, m].filter(Boolean), failed = all.filter((x) => x.status === 'rejected').length;
+    const failed = all.filter((x) => x.status === 'rejected').length;
     if (failed) {
       const nothing = failed === all.length && !e.table && !currentMatches().length;
       renderStatus(nothing ? (navigator.onLine ? 'Kunde inte hämta data' : 'Offline') : !navigator.onLine ? 'Offline – visar sparad data'

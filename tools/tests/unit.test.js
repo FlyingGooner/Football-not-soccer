@@ -10,10 +10,12 @@ T.test('ligor: 16 ligor och turneringar, standard PL först', () => {
 });
 T.test('URL-byggare: bara kända turneringar, lag-id och datum', () => {
   T.eq(espnUrl('standings', 'esp.1'), 'https://site.api.espn.com/apis/v2/sports/soccer/esp.1/standings');
-  T.eq(espnUrl('scoreboard', 'ita.1', { dates: '20261101-20261107' }), 'https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=20261101-20261107');
+  T.eq(espnUrl('scoreboard', 'ita.1', { dates: '202611' }), 'https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard?dates=202611');
+  T.eq(espnUrl('teamAll', null, { team: '359', fixture: true }), 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/359/schedule?fixture=true');
+  T.eq(espnUrl('team', 'uefa.champions', { team: '359' }), 'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/teams/359');
   T.eq(espnUrl('schedule', 'uefa.europa', { team: '359', fixture: true }), 'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/teams/359/schedule?fixture=true');
   for (const bad of [() => espnUrl('standings', '../x'), () => espnUrl('schedule', 'eng.1', { team: '1/../2' }),
-    () => espnUrl('scoreboard', 'eng.1', { dates: '2026&x=1' }), () => espnUrl('other', 'eng.1')]) {
+    () => espnUrl('scoreboard', 'eng.1', { dates: '2026&x=1' }), () => espnUrl('scoreboard', 'eng.1', { dates: '20261101-20261107' }), () => espnUrl('teamAll', null, { team: '1/2' }), () => espnUrl('team', 'evil', { team: '1' }), () => espnUrl('other', 'eng.1')]) {
     let threw = false; try { bad(); } catch { threw = true; }
     T.ok(threw, 'ska kasta');
   }
@@ -111,9 +113,9 @@ T.test('kortordning: okända id bort, nya kort sist, standard sparas inte', () =
   T.eq(layoutOf({ team: { order: ['last', 'evil', 'last'], hidden: ['recent', 'table'] } }, 'team'), { order: ['last', 'next', 'recent'], hidden: ['recent'] });
   T.eq(loadLayout({ matches: { order: ['today', 'next', 'last'], hidden: ['today'] }, evil: { order: [] } }), {});   // old Matcher layout dropped
 });
-T.test('cache v4: datumintervall valideras, gula kort tolkas och behålls', () => {
-  const c = loadCache({ leagues: { 'eng.1': { range: { from: '2026-11-04', to: '2026-11-18' } }, 'esp.1': { range: { from: '2026-11-18', to: '2026-11-04' } }, 'ita.1': { range: { from: 'x', to: '2026-11-04' } } } });
-  T.eq([c.leagues['eng.1'].range, c.leagues['esp.1'].range, c.leagues['ita.1'].range], [{ from: '2026-11-04', to: '2026-11-18' }, null, null]);
+T.test('cache v4: månadsintervall valideras, gula kort tolkas och behålls', () => {
+  const c = loadCache({ leagues: { 'eng.1': { range: { from: '2026-10', to: '2026-12' } }, 'esp.1': { range: { from: '2026-12', to: '2026-10' } }, 'ita.1': { range: { from: '2026-11-04', to: '2026-11-18' } } } });
+  T.eq([c.leagues['eng.1'].range, c.leagues['esp.1'].range, c.leagues['ita.1'].range], [{ from: '2026-10', to: '2026-12' }, null, null]);
   const ms = parseEvents({ events: [{ id: '2', date: '2026-11-07T15:00Z', competitions: [{ status: { type: { state: 'post' } },
     competitors: [{ homeAway: 'home', score: '0', team: { id: '1' } }, { homeAway: 'away', score: '0', team: { id: '2' } }],
     details: [{ yellowCard: true, type: { text: 'Yellow Card' }, clock: { displayValue: "30'" }, team: { id: '2' }, athletesInvolved: [{ shortName: 'G' }] },
@@ -138,4 +140,14 @@ T.test('ESPN-tolkning: grupptabeller får gruppnamn, en tabell får inget', () =
   const g = parseStandings({ children: [{ name: 'Group A', standings: { entries: [e('1')] } }, { name: 'Group B', standings: { entries: [e('2')] } }] });
   T.eq(g.map((r) => r.group), ['Group A', 'Group B']);
   T.eq(parseStandings({ children: [{ name: 'Bundesliga', standings: { entries: [e('3')] } }] })[0].group, null);
+});
+T.test('månader och all-schema: liga ur händelsen, okända tävlingar bort, hemmaliga ur /teams', () => {
+  T.eq(monthAdd('2026-12', 1), '2027-01');
+  T.eq(monthAdd('2026-01', -1), '2025-12');
+  T.eq(monthsBetween('2026-11', '2027-01'), ['2026-11', '2026-12', '2027-01']);
+  const e = (id, slug) => ({ id, date: '2026-11-07T15:00Z', league: { slug }, competitions: [{ status: { type: { state: 'pre' } },
+    competitors: [{ homeAway: 'home', team: { id: '1' } }, { homeAway: 'away', team: { id: '2' } }] }] });
+  T.eq(parseEvents({ events: [e('1', 'eng.1'), e('2', 'uefa.champions'), e('3', 'club.friendly'), e('4', 'eng.league_cup')] }, null).map((m) => m.leagueId), ['eng.1', 'uefa.champions']);
+  T.eq(parseDefaultLeague({ team: { defaultLeague: { slug: 'esp.1' } } }), 'esp.1');
+  T.eq([parseDefaultLeague({ team: { defaultLeague: { slug: 'uefa.champions' } } }), parseDefaultLeague({ team: { defaultLeague: { slug: '../x' } } }), parseDefaultLeague(null)], [null, null, null]);
 });

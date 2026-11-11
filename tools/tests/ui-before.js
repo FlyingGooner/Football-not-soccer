@@ -45,11 +45,16 @@
     seq++;
     if (self.__fail) return Promise.reject(new TypeError('Failed to fetch'));
     const u = new URL(String(url));
+    const ofTeam = (id) => Object.keys(P).find((k) => Math.floor(Number(id) / 100) * 100 === P[k]) || null;
+    const a = u.pathname.match(/soccer\/all\/teams\/(\d+)\/schedule$/), t = u.pathname.match(/soccer\/[a-z.0-9_]+\/teams\/(\d+)$/);
     const m = u.pathname.match(/soccer\/([a-z.0-9_]+)\/(standings|scoreboard|teams\/(\d+)\/schedule)$/);
     let body = { events: [] };
-    if (m && m[2] === 'standings') body = standings(m[1]);
-    else if (m && m[2] === 'scoreboard') body = scoreboard(m[1]);
-    else if (m) body = schedule(m[1], m[3], u.searchParams.get('fixture') === 'true');
+    if (u.searchParams.has("dates") && !/^\d{6}$/.test(u.searchParams.get("dates"))) return Promise.resolve(new Response("{}", { status: 400 }));   // as ESPN: day ranges give 400
+    if (a) { const lid = ofTeam(a[1]); body = schedule(lid, a[1], u.searchParams.get("fixture") === "true"); body.events.forEach((e) => { e.league = { slug: lid }; }); body.events.push({ ...ev("eng.1", 1, { id: a[1], name: "X" }, { id: "999", name: "Vän" }, now - 3 * day, "post", 1, 0), league: { slug: "club.friendly" } }); }
+    else if (t) body = { team: { id: t[1], defaultLeague: { slug: ofTeam(t[1]) || "zzz.1" } } };
+    else if (m && m[2] === "standings") body = standings(m[1]);
+    else if (m && m[2] === "scoreboard") body = scoreboard(m[1]);
+    else if (m) body = schedule(m[1], m[3], u.searchParams.get("fixture") === "true");
     return Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } }));
   };
 })();

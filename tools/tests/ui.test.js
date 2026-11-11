@@ -2,7 +2,7 @@
 const CSP = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://site.api.espn.com; img-src 'self' https://a.espncdn.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'";
 const click = (s) => { const n = typeof s === 'string' ? T.$(s) : s; T.ok(n, `saknas: ${s}`); n.click(); };
 const tab = (v) => click(`#tabbar [data-view="${v}"]`);
-const settle = () => T.until(() => !busy && !again, 'refresh blev inte klar');
+const settle = () => T.until(() => !busy && !again && !leagueTimer, 'refresh blev inte klar');
 const tableRows = () => [...document.querySelectorAll('#table-full tbody tr')];
 const pickLeague = (id) => click(`#view-${view} [data-league="${id}"]`);
 
@@ -44,7 +44,7 @@ T.test('Matcher: flikarna Kommande och Spelade, Visa fler', async () => {
   click('#more');
   await T.until(() => !loadingMore, 'Visa fler blev inte klar');
   T.ok(rows() >= n, 'inte färre rader');
-  if (__calls.length > before) T.ok(/dates=\d{8}-\d{8}/.test(__calls[__calls.length - 1].url), 'en vecka till hämtas');
+  if (__calls.length > before) T.ok(/dates=\d{6}$/.test(__calls[__calls.length - 1].url), 'en månad till hämtas');
   click('#mtabs [data-mtab="now"]');
 });
 T.test('Matcher: ingen rubrik, svep byter flik', () => {
@@ -158,7 +158,7 @@ T.test('följa lag: dialog → fliken Lag, lagets liga och senast följda sparas
   T.eq(T.$('#teambar-name').textContent, 'Esp 2');
   T.eq(JSON.parse(localStorage.getItem('fns.team.v2')).leagueId, 'esp.1');
   T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
-  T.ok(T.$('[data-kickoff]'), 'nedräkning');
+  T.ok(T.$('[data-kickoff]') || T.$('#view-team').textContent.includes('LIVE'), 'nedräkning eller live (ligans pågående match syns i Lag)');
   T.eq(document.querySelectorAll('#team-next-list li').length, 2);
   T.eq(document.querySelectorAll('#team-last-list li').length, 3);
   T.eq(document.querySelectorAll('#team-form .dot').length, 5);
@@ -250,7 +250,7 @@ T.test('import: dialog, ersätt och ångra', async () => {
 T.test('offline: sparad data och felmeddelande, aldrig blank skärm', async () => {
   tab('table');
   await settle();
-  __fail = true;
+  __fail = true; recentUrls.clear();   // otherwise the answer from under a minute ago is reused
   refresh();
   await settle();
   T.ok(T.$('#status').classList.contains('error'), 'statusraden visar fel');
@@ -303,4 +303,30 @@ T.test('Matcher utan matcher i dag öppnas på Kommande', () => {
   T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'next');
   e.league = saved;
   renderLeagueMatches();
+});
+T.test('anrop: ligor per månad (3 parallellt), inga lagscheman per lag, CL har kommande', async () => {
+  tab('matches');
+  await settle();
+  const before = __calls.length;
+  pickLeague('uefa.champions');
+  await settle();
+  const urls = __calls.slice(before).map((c) => c.url);
+  T.ok(!urls.some((u) => /\/teams\//.test(u)), 'inga lagscheman: ' + urls.join());
+  T.ok(urls.every((u) => !u.includes('dates=') || /dates=\d{6}$/.test(u)), 'bara månader');
+  click('#mtabs [data-mtab="next"]');
+  T.ok(document.querySelectorAll('#match-list .lm').length > 0, 'CL: kommande matcher');
+});
+T.test('anrop: snabbt ligabyte hämtar bara sista ligan, samma URL högst en gång per minut', async () => {
+  const before = __calls.length;
+  pickLeague('eng.1'); pickLeague('esp.1'); pickLeague('ita.1');
+  await settle();
+  const urls = __calls.slice(before).map((c) => c.url);
+  T.ok(!urls.some((u) => u.includes('/esp.1/')), 'passerad liga hämtas inte: ' + urls.join());
+  T.eq(new Set(urls).size, urls.length, 'ingen URL två gånger');
+});
+T.test('Lag: all-schema (2 anrop), vänskapsmatcher bort, live var 60:e sekund', async () => {
+  T.eq(CONFIG.livePollMs, 60000);
+  const urls = __calls.map((c) => c.url).filter((u) => u.includes('/teams/'));
+  T.ok(urls.length > 0 && urls.every((u) => /soccer\/all\/teams\/\d+\/schedule/.test(u) || /soccer\/[a-z.]+\/teams\/\d+$/.test(u)), urls.join());
+  T.ok(Object.values(cache.teams).every((t) => t.matches.every((m) => m.leagueId !== 'club.friendly' && m.id !== '1')), 'vänskapsmatch borttagen');
 });
