@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; require-trusted-types-for 'script'; img-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../icons/icon-192.png">
+<title>Små appar, hög nivå</title>
+<link rel="stylesheet" href="presentation.css">
+</head>
+<body>
+<!-- Gemensam sida för alla appar. Ändras bara i template/docs/standard.html (sync-shared.ps1 kopierar ut den). Färgen kommer från appens presentation.css. -->
+
+<main class="deck" id="deck">
+
+  <section class="title">
+    <div class="glow"></div><div class="glow g2"></div>
+    <div class="hero">
+      <div class="icons"><img src="../icons/icon-192.png" alt=""></div>
+      <span class="eyebrow">flyinggooner · Appar</span>
+      <h1>Små appar,<br>hög nivå</h1>
+      <p class="lead">Den här appen är byggd från samma mall som alla mina appar. Här är vad det betyder för dig.</p>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Filosofi</span>
+    <h2>Tre principer bakom varje app</h2>
+    <div class="cols">
+      <div class="card"><div class="ic" aria-hidden="true">🎯</div><h3>Ett tydligt fokus</h3><p>Varje app svarar på en enda fråga. Allt annat väljs aktivt bort.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🔒</div><h3>Integritet först</h3><p>Ingen inloggning, ingen spårning. Data stannar på telefonen, och webbläsaren stänger ute allt som inte är appens eget.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">⚡</div><h3>Ren webb</h3><p>Inga ramverk, inga beroenden. Liten, snabb och lätt att granska – hela appen ryms i en enda fil.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Det du får</span>
+    <h2>Varje app har det här från dag ett</h2>
+    <div class="cols">
+      <div class="card"><div class="ic" aria-hidden="true">📱</div><h3>En riktig app i mobilen</h3><p>Installeras från webben på 30 sekunder, startar i eget fönster och fungerar utan nät.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🔐</div><h3>Låst backup</h3><p>Spara allt som en fil som bara ditt lösenord öppnar – samma typ av kryptering som banker använder. Byt telefon utan att tappa något.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🏠</div><h3>Din data stannar hos dig</h3><p>Inget konto, ingen server, ingen reklam, inga spårare.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🎨</div><h3>Snygg och lätt att använda</h3><p>Meny nertill för tummen, stora knappar, ljust och mörkt tema som följer telefonen.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">📖</div><h3>Hjälp inbyggd</h3><p>Manual i appen, en presentation och en beskrivning av hur den fungerar.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">✅</div><h3>Testad före varje version</h3><p>Automatiska tester kontrollerar säkerhet och funktioner. Underkänt test = ingen ny version.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Automatiska tester</span>
+    <h2>Ett tryck – och allt kontrolleras</h2>
+    <p>Varje ändring går genom samma PowerShell-skript. Inget steg kan glömmas, och inget släpps om något är fel.</p>
+    <div class="flow">
+      <div class="fbox"><b>1 · Säkerhetskontroll</b>Letar igenom all kod efter sådant som inte får finnas: kod utifrån, anrop till okända servrar, osäker lagring. Hittas något stoppas allt.</div>
+      <div class="farr" aria-hidden="true">↓</div>
+      <div class="fbox"><b>2 · Funktionstester</b>Appen startas i en riktig webbläsare och används som en människa skulle: knappar trycks, data sparas, backup läses in.</div>
+      <div class="farr" aria-hidden="true">↓</div>
+      <div class="fbox"><b>3 · Ny version</b>Först när allt är grönt får appen ett nytt versionsnummer. Innan den laddas upp körs allt en gång till.</div>
+      <div class="farr" aria-hidden="true">↓</div>
+      <div class="fbox"><b>4 · Granskning</b>Ändringar som rör säkerheten granskas dessutom separat innan de publiceras.</div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Kvalitetsstämpel</span>
+    <h2>Säkerhetstestad – i alla appar</h2>
+    <h3 class="checks-h">Säkerhetskontroll</h3>
+    <ul class="checks">
+      <li><b>Bara appens egen kod körs</b><span>webbläsaren blockerar allt annat.</span></li>
+      <li><b>Inget lämnar telefonen</b><span>appen pratar inte med servrar – undantag bara efter granskning, t.ex. fotbollsresultat.</span></li>
+      <li><b>Din data stannar hos dig</b><span>appen rör bara sina egna uppgifter.</span></li>
+      <li><b>Låst backup</b><span>lösenordet sparas aldrig.</span></li>
+    </ul>
+    <h3 class="checks-h">Funktionstester</h3>
+    <ul class="checks">
+      <li><b>Trasiga filer stoppas</b><span>en backup som någon ändrat i läses inte in.</span></li>
+      <li><b>Inget innehåll kan bli kod</b><span>allt visas som vanlig text.</span></li>
+      <li><b>Backup tur och retur</b><span>det du sparar är exakt det du får tillbaka.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <span class="eyebrow">Design</span>
+    <h2>Samma formspråk, egen färg</h2>
+    <div class="card">
+      <h3>Material Design 3, byggd för mobilen</h3>
+      <p>Varje app har en egen nyckelfärg som styr allt. Nästan kantigt och tätt, ljust och mörkt tema.</p>
+      <div class="palette"><div class="sw p">primary</div><div class="sw c">container</div><div class="sw s">surface</div><div class="sw d">dark</div></div>
+      <div class="shapes"><div class="shape r8">Kort · 8 px</div><div class="shape r4">Chip · 4 px</div><div class="shape r6">Knapp · 6 px</div><div class="shape r12">Dialog · 12 px</div></div>
+      <p class="note">Bottenmeny för tummen · tryckytor ≥ 48 px · systemtypsnitt</p>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Struktur</span>
+    <h2>Samma struktur, varje gång</h2>
+<pre><em>index.html</em>  styles.css  app.js
+store.js  backup.js  <em>sw.js</em>
+<em>docs/</em>   SPEC · MANUAL · presentation
+<em>tools/</em>  tester · bygge
+<em>dist/</em>   testfil med allt inbakat</pre>
+    <ol class="steps">
+      <li>Ny app startas från en gemensam mall</li>
+      <li>Spec först – idé, mål och det som medvetet inte byggs</li>
+      <li>Säkerhet prövas före bygget och granskas före uppladdning</li>
+      <li>Det som blir bättre i en app förs in i alla</li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Apparna</span>
+    <h2>Byggda på samma grund</h2>
+    <div class="flow">
+      <div class="fbox"><b>Simple nutrition</b>Vanor först – kalorier som stöd när du vill. Livsmedelsverkets data.<span class="kv"><span class="url">flyinggooner.github.io/simple-nutrition</span></span></div>
+      <div class="fbox"><b>Budget buddy</b>Planera ekonomin månad för månad – inte varje kvitto.<span class="kv"><span class="url">flyinggooner.github.io/Budget-buddy</span></span></div>
+      <div class="fbox"><b>Football, not soccer</b>Tabellen, matcherna och ditt lag – 16 ligor och turneringar.<span class="kv"><span class="url">flyinggooner.github.io/Football-not-soccer</span></span></div>
+    </div>
+  </section>
+
+  <section class="title">
+    <div class="glow"></div><div class="glow g2"></div>
+    <div class="hero">
+      <span class="eyebrow">Sammanfattning</span>
+      <h1>Små appar,<br>hög nivå.</h1>
+      <p class="lead">Nästa app – kanske din – byggs från samma mall: låst backup, din data hos dig, testad före varje version och genomtänkt från dag ett.</p>
+    </div>
+  </section>
+
+</main>
+<nav class="nav" aria-label="Bläddra">
+  <button type="button" class="prev" id="prev">‹ Föregående</button>
+  <span class="count" id="count" aria-live="polite"></span>
+  <button type="button" class="next" id="next">Nästa ›</button>
+</nav>
+
+<script src="presentation.js"></script>
+</body>
+</html>
