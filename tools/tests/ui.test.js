@@ -25,7 +25,7 @@ T.test('första start: Matcher i PL, pågående överst, resultat', async () => 
   T.eq(view, 'matches');
   T.ok(!T.$('#view-matches').hidden && T.$('#view-table').hidden, 'bara Matcher syns');
   T.eq(T.$('#tabbar .tab.on').dataset.view, 'matches');
-  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'next', 'öppnas på Kommande');
+  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'now', 'Aktuella när det finns pågående matcher');
   click('#mtabs [data-mtab="now"]');
   T.ok(T.$('#match-list').textContent.includes('Pågår nu'), 'pågående match överst');
   T.ok(T.$('#match-list').textContent.includes("LIVE 67'"), 'LIVE med minut');
@@ -291,7 +291,16 @@ T.test('byte av vy: Matcher öppnas på Kommande, utfällda matcher återställs
   tab('table');
   tab('matches');
   await settle();
-  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'next');
+  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'now');
   click('#mtabs [data-mtab="past"]');
   T.ok(!T.$('#match-list .evs'), 'ihopfälld igen');
+});
+T.test('Matcher utan matcher i dag öppnas på Kommande', () => {
+  const e = L(league), saved = e.league;
+  e.league = saved.filter((m) => m.state === 'pre' && new Date(m.date) - Date.now() > 2 * 864e5);
+  mtab = null;
+  renderLeagueMatches();
+  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'next');
+  e.league = saved;
+  renderLeagueMatches();
 });
