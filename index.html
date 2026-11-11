@@ -3,173 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://site.api.espn.com; img-src 'self' https: data:; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://site.api.espn.com; img-src 'self' https://a.espncdn.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#37003C">
+<meta name="theme-color" content="#fff7fd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161218" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
 <title>Football, not soccer</title>
-<style>
-:root {
-  color-scheme: light dark;
-  --purple: #37003C;
-  --green: #00FF85;
-  --pink: #E90052;
-  --cyan: #04F5FF;
-  --sel: #37003C;
-  --bg: #F2F2F2;
-  --card: #FFFFFF;
-  --text: #1A001D;
-  --muted: #6B5B6E;
-  --line: #E6E0E7;
-  --head-text: #FFFFFF;
-  --draw: #9A8F9C;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1A001D;
-    --card: #2A002E;
-    --text: #F7F2F8;
-    --muted: #B9A9BC;
-    --line: #42104A;
-    --draw: #8A7A8D;
-  }
-}
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-variant-numeric: tabular-nums;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-.acc-toggle:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
-#status { padding: calc(env(safe-area-inset-top) + 6px) 16px 0; font-size: 12px; color: var(--muted); min-height: 20px; }
-#status.offline { color: var(--pink); font-weight: 600; }
-main { padding: 6px 12px 16px; max-width: 640px; margin: 0 auto; display: grid; gap: 10px; }
-.card { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(55,0,60,.12); }
-.card h2 {
-  margin: 0; padding: 7px 16px;
-  background: var(--purple); color: var(--head-text);
-  font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px;
-}
-.summary { padding: 8px 16px; }
-.acc-toggle {
-  width: 100%; min-height: 44px;
-  display: flex; align-items: center; justify-content: space-between;
-  border: 0; border-top: 1px solid var(--line);
-  background: transparent; color: var(--text);
-  padding: 0 16px; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
-}
-.chev { width: 10px; height: 10px; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor; transform: rotate(45deg); transition: transform .2s; margin-top: -4px; }
-.acc-toggle[aria-expanded="true"] .chev { transform: rotate(225deg); margin-top: 4px; }
-.acc-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .2s ease; }
-.acc-panel.open { grid-template-rows: 1fr; }
-.acc-panel > div { overflow: hidden; }
-@media (prefers-reduced-motion: reduce) { .chev, .acc-panel { transition: none; } }
-
-.muted { color: var(--muted); }
-.small { font-size: 13px; }
-.error { color: var(--pink); font-weight: 600; }
-
-/* Table */
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 6px 4px; text-align: center; white-space: nowrap; }
-th { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
-td.team, th.team { text-align: left; width: 100%; white-space: normal; }
-td.pos { font-weight: 800; width: 32px; border-left: 4px solid transparent; }
-td.pts { font-weight: 800; }
-tbody tr { border-top: 1px solid var(--line); }
-tr.zone-cl td.pos { border-left-color: var(--green); }
-tr.zone-eu td.pos { border-left-color: var(--cyan); }
-tr.zone-rel td.pos { border-left-color: var(--pink); }
-tr.me { background: color-mix(in srgb, var(--sel) 12%, transparent); }
-tr.me td.pos { border-left-color: var(--sel); }
-tbody.pick tr { cursor: pointer; }
-tbody.pick tr:active { background: color-mix(in srgb, var(--purple) 10%, transparent); }
-tbody.pick tr:focus-visible { outline: 3px solid var(--cyan); outline-offset: -3px; }
-.summary.flush { padding: 4px 0 0; }
-tr.me td.team { font-weight: 800; }
-.tname { display: flex; align-items: center; gap: 8px; }
-.tname img { width: 20px; height: 20px; object-fit: contain; flex: none; }
-.full .wdl { }
-@media (max-width: 400px) { .full .wdl { display: none; } }
-.legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 16px 12px; font-size: 12px; color: var(--muted); }
-.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
-
-.form { display: flex; gap: 3px; align-items: center; margin-left: auto; margin-right: 12px; }
-.dot { width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; }
-.dot.W { background: #00B86B; color: #fff; }
-.dot.D { background: var(--draw); }
-.dot.L { background: var(--pink); }
-
-/* Matches */
-.match-main { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; text-align: center; }
-.side { display: grid; justify-items: center; gap: 4px; font-weight: 700; font-size: 14px; }
-.side img { width: 36px; height: 36px; object-fit: contain; }
-.side .ph { width: 36px; height: 36px; border-radius: 50%; background: var(--line); }
-.mid { display: grid; gap: 4px; justify-items: center; }
-.score { font-size: 26px; font-weight: 800; letter-spacing: 1px; }
-.time { font-size: 20px; font-weight: 800; }
-.meta { text-align: center; margin-top: 6px; font-size: 13px; color: var(--muted); }
-.countdown { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 10px; background: var(--purple); color: var(--green); font-weight: 700; font-size: 14px; }
-/* Solid badge for contrast; only the small dot pulses */
-.live { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 4px; background: var(--green); color: #1A001D; font-weight: 800; font-size: 12px; }
-.live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--pink); animation: pulse 1.2s ease-in-out infinite; }
-@keyframes pulse { 50% { transform: scale(.55); opacity: .4; } }
-@media (prefers-reduced-motion: reduce) { .live::before { animation: none; } }
-.badge { display: inline-block; min-width: 24px; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 800; color: #fff; text-align: center; }
-.badge.W { background: #00B86B; } .badge.D { background: var(--draw); } .badge.L { background: var(--pink); }
-ul.list { list-style: none; margin: 0; padding: 0; }
-ul.list li { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; padding: 10px 16px; border-top: 1px solid var(--line); min-height: 44px; }
-ul.list .d { font-size: 13px; color: var(--muted); line-height: 1.2; }
-ul.list .o { font-weight: 600; }
-ul.list .c { font-size: 12px; color: var(--muted); }
-ul.list .r { font-weight: 800; text-align: right; }
-.empty { padding: 12px 16px; }
-/* Team bar */
-#teambar { display: none; align-items: center; gap: 10px; background: var(--card); border-radius: 12px; padding: 0 0 0 12px; border-left: 5px solid var(--sel); box-shadow: 0 1px 3px rgba(55,0,60,.12); }
-#teambar.show { display: flex; }
-#teambar img, #teambar .ph { width: 24px; height: 24px; object-fit: contain; }
-#teambar .n { font-weight: 800; font-size: 16px; flex: 1; }
-#teambar button { width: 44px; height: 44px; border: 0; border-radius: 22px; background: transparent; color: var(--muted); font-size: 22px; cursor: pointer; }
-#teambar button:focus-visible { outline: 3px solid var(--cyan); }
-.acc-toggle[hidden] { display: none; }
-/* League match list */
-.day { padding: 6px 16px 2px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); border-top: 1px solid var(--line); }
-.day:first-child { border-top: 0; }
-.lm { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 6px 0; min-height: 40px; }
-#card-table:not(.expanded) tr.more { display: none; }
-.lm .t { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 15px; min-width: 0; }
-.lm .t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lm .t.h { justify-content: flex-end; text-align: right; }
-.lm .t img, .lm .t .ph { width: 20px; height: 20px; object-fit: contain; flex: none; }
-.lm .s { min-width: 58px; text-align: center; font-weight: 800; }
-.lm .s .live { display: flex; width: max-content; margin: 2px auto 0; font-size: 10px; padding: 1px 4px; }
-.acc-panel .lm, .acc-panel .day { padding-left: 16px; padding-right: 16px; }
-.summary .day { padding-left: 0; padding-right: 0; }
-/* Dialog */
-dialog { border: 0; border-radius: 14px; padding: 20px; width: min(320px, calc(100vw - 32px)); background: var(--card); color: var(--text); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
-dialog::backdrop { background: rgba(26,0,29,.55); }
-dialog p { margin: 0 0 16px; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-dialog p img, dialog p .ph { width: 32px; height: 32px; object-fit: contain; flex: none; }
-dialog .row { display: flex; gap: 10px; justify-content: flex-end; }
-dialog button { min-height: 44px; padding: 0 18px; border-radius: 22px; border: 0; font: inherit; font-weight: 700; cursor: pointer; }
-dialog .cancel { background: var(--line); color: var(--text); }
-dialog .ok { background: var(--purple); color: var(--green); }
-.lm.tap { cursor: pointer; -webkit-tap-highlight-color: transparent; border-radius: 8px; }
-.lm.tap:active { background: color-mix(in srgb, currentColor 8%, transparent); }
-.evs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; font-size: 13px; padding: 2px 0 8px; }
-.evs.muted { display: block; text-align: center; }
-.evs .h { text-align: right; }
-.ev .m { opacity: .7; margin: 0 4px; font-variant-numeric: tabular-nums; }
-#version { position: fixed; top: calc(env(safe-area-inset-top) + 4px); right: 8px; z-index: 50; font: 600 11px/1 system-ui, sans-serif; padding: 3px 6px; border-radius: 6px; background: #37003C; color: #00FF85; opacity: .85; pointer-events: none; }
-</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="version" aria-label="Version"></div>
@@ -180,10 +26,17 @@ dialog .ok { background: var(--purple); color: var(--green); }
     <button type="button" id="teambar-close" aria-label="Tillbaka till ligan">✕</button>
   </div>
 
+  <div id="leaguebar">
+    <div class="seg" id="league-picker" role="group" aria-label="Liga"></div>
+    <div class="today" id="today" hidden></div>
+  </div>
+
+  <div class="recent" id="recent" aria-label="Senast följda lag" hidden></div>
+
   <section class="card" id="card-next">
     <h2 id="next-title">Nästa match</h2>
     <div class="summary" id="next-summary"><span class="muted">Laddar…</span></div>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="next-panel" data-acc="next">
+    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="next-panel" data-acc="next" data-wide="open">
       <span id="next-toggle">Kommande matcher</span><span class="chev" aria-hidden="true"></span>
     </button>
     <div class="acc-panel" id="next-panel"><div id="next-list"></div></div>
@@ -192,7 +45,7 @@ dialog .ok { background: var(--purple); color: var(--green); }
   <section class="card" id="card-last">
     <h2 id="last-title">Senaste match</h2>
     <div class="summary" id="last-summary"><span class="muted">Laddar…</span></div>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="last-panel" data-acc="last">
+    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="last-panel" data-acc="last" data-wide="open">
       <span id="last-toggle">Tidigare matcher</span><span class="chev" aria-hidden="true"></span>
     </button>
     <div class="acc-panel" id="last-panel"><div id="last-list"></div></div>
@@ -201,710 +54,113 @@ dialog .ok { background: var(--purple); color: var(--green); }
   <section class="card" id="card-table">
     <h2 id="table-title">Premier League</h2>
     <div class="summary" id="table-summary"><span class="muted">Laddar…</span></div>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="table-panel" data-acc="table">
+    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="table-panel" data-acc="table" data-wide="open">
       <span>Hela tabellen</span><span class="chev" aria-hidden="true"></span>
     </button>
     <div class="acc-panel" id="table-panel"><div id="table-full"></div></div>
   </section>
+
+  <section class="card help" id="card-help">
+    <h2>Hjälp</h2>
+    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="help-panel" data-acc="help">
+      <span>Så använder du appen</span><span class="chev" aria-hidden="true"></span>
+    </button>
+    <div class="acc-panel" id="help-panel"><div class="pad">
+      <details><summary>Liga och lag</summary>
+        <p>Appen visar en liga i taget: aktuella matcher, senaste resultat och tabellen. Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst.</p>
+        <p>Raden Idag visar hur många matcher som spelas idag i de ligor du redan har öppnat. Tryck för att byta liga.</p></details>
+      <details><summary>Följa ett lag</summary>
+        <p>Tryck på ett lag i tabellen och sedan Följ. Då visas lagets nästa och senaste match i alla turneringar, lagets rad i tabellen och formen i de fem senaste ligamatcherna.</p>
+        <p>Tryck ✕ bredvid lagets namn för att gå tillbaka till ligan. Appen öppnas i samma läge nästa gång.</p></details>
+      <details><summary>Senast följda lag</summary>
+        <p>De fem senast följda lagen visas som en rad med märken. Ett tryck byter lag direkt. ✕ på ett lag tar bort det ur listan.</p></details>
+      <details><summary>Matcher och live</summary>
+        <p>Tryck på en spelad eller pågående match för att se målskyttar och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen.</p></details>
+      <details><summary>Offline och data</summary>
+        <p>Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.</p>
+        <p>Under Data sparar du en krypterad backup-fil med valt lag, liga och senast följda lag. Matchdata ingår inte, den hämtas igen.</p></details>
+    </div></div>
+  </section>
+
+  <section class="card" id="card-data">
+    <h2>Data</h2>
+    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="data-panel" data-acc="data">
+      <span>Backup och radera</span><span class="chev" aria-hidden="true"></span>
+    </button>
+    <div class="acc-panel" id="data-panel"><div class="pad">
+      <p class="muted">Backup-filen innehåller valt lag, vald liga och senast följda lag, och krypteras alltid med ett lösenord du väljer. Matchdata ingår inte. Läs in filen på en annan enhet för att flytta inställningarna.</p>
+      <div class="actions wrap">
+        <button type="button" class="btn filled" id="backup-save">Spara backup-fil</button>
+        <label class="btn tonal btn-file">Läs in backup-fil<input type="file" id="import-file" accept=".txt,.json"></label>
+      </div>
+      <p class="error" id="import-error" role="alert"></p>
+      <details class="data-text">
+        <summary class="data-text-title">Klistra in text</summary>
+        <label class="field"><span>Importera (ersätter inställningarna)</span><textarea id="import-text" rows="4" autocomplete="off" spellcheck="false" placeholder="Klistra in innehållet i en backup-fil"></textarea></label>
+        <div class="actions"><span class="spacer"></span><button type="button" class="btn tonal" id="import-btn">Importera</button></div>
+      </details>
+      <div class="actions"><button type="button" class="btn text danger" id="reset">Radera all data</button></div>
+    </div></div>
+  </section>
+
+  <p class="foot"><button type="button" class="btn tonal" id="install" hidden>Installera appen</button></p>
 </main>
 
-<dialog id="pick">
-  <p id="pick-text"></p>
-  <div class="row">
-    <button type="button" class="cancel" id="pick-cancel">Avbryt</button>
-    <button type="button" class="ok" id="pick-ok">Byt</button>
-  </div>
+<dialog id="pick" aria-labelledby="pick-text">
+  <form method="dialog">
+    <p class="pick-text" id="pick-text"></p>
+    <div class="actions"><span class="spacer"></span>
+      <button type="submit" class="btn text" value="cancel">Avbryt</button>
+      <button type="submit" class="btn filled" value="ok" id="pick-ok">Följ</button>
+    </div>
+  </form>
 </dialog>
 
-<script>
-'use strict';
+<dialog id="confirm-dialog" aria-labelledby="cd-title">
+  <form method="dialog">
+    <h2 id="cd-title">Radera all data?</h2>
+    <p class="muted">Valt lag, senast följda lag och all sparad matchdata tas bort från den här enheten. Det går inte att ångra.</p>
+    <div class="actions"><span class="spacer"></span>
+      <button type="submit" class="btn text" value="cancel">Avbryt</button>
+      <button type="submit" class="btn filled danger-fill" value="ok" id="cd-ok">Radera</button>
+    </div>
+  </form>
+</dialog>
 
-// ---------- Config ----------
-const CONFIG = {
-  version: '0.5.4',                                  // bump on every push (shown top right)
-  league: { id: 'eng.1', name: 'Premier League' },   // table + league mode
-  teamCompetitions: [                                // competitions collected in team mode
-    { id: 'eng.1', name: 'Premier League' },
-    { id: 'uefa.champions', name: 'Champions League' },
-    { id: 'uefa.europa', name: 'Europa League' },
-    { id: 'uefa.europa.conf', name: 'Conference League' },
-    { id: 'eng.fa', name: 'FA-cupen' },
-    { id: 'eng.league_cup', name: 'Ligacupen' },
-  ],
-  zones: { cl: [1, 4], eu: [5, 6], rel: [18, 20] },
-  upcomingCount: 5,
-  recentCount: 5,
-  roundSize: 10,
-  leaguePreviewRows: 3,       // table rows visible in collapsed league mode
-  leaguePreviewMatches: 3,    // upcoming matches visible in collapsed league mode (all live matches are always shown)
-  leaguePreviewResults: 2,    // results visible in collapsed league mode
-  leagueDaysBack: 21,
-  leagueDaysAhead: 35,
-  livePollMs: 30000,
-  teamCacheMax: 5,            // teams whose matches are kept in the cache
-  leagueReuseMs: 600000,      // reuse league data for a team's league matches if newer than this
-  staleMs: 60000,
-  apiBase: 'https://site.api.espn.com/apis',
-  cacheKey: 'fns.cache.v2',
-  teamKey: 'fns.team.v1',
-  accKey: 'fns.acc.v2',
-};
-document.getElementById('version').textContent = 'v' + CONFIG.version;
+<dialog id="pw-dialog" aria-labelledby="pw-title">
+  <form method="dialog" novalidate>
+    <h2 id="pw-title">Spara backup-fil</h2>
+    <p class="muted" id="pw-text"></p>
+    <label class="field" id="pw-1-row"><span>Lösenord</span><input type="password" id="pw-1" maxlength="200" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false"></label>
+    <label class="field" id="pw-2-row"><span>Upprepa lösenord</span><input type="password" id="pw-2" maxlength="200" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false"></label>
+    <label class="check" id="pw-show-row"><input type="checkbox" id="pw-show" autocomplete="off"> Visa lösenord</label>
+    <p class="muted small" id="pw-hint">Minst 8 tecken med stor och liten bokstav, siffra och specialtecken. Välj inte ett vanligt ord + årtal.</p>
+    <p class="muted" id="pw-warn"></p>
+    <p class="error" id="pw-error" role="alert"></p>
+    <div class="actions"><span class="spacer"></span>
+      <button type="button" class="btn text" id="pw-cancel">Avbryt</button>
+      <button type="button" class="btn filled" id="pw-ok">Spara krypterad</button>
+    </div>
+  </form>
+</dialog>
 
-// ---------- Small helpers ----------
-const $ = (id) => document.getElementById(id);
-function el(tag, attrs, ...children) {
-  const n = document.createElement(tag);
-  if (attrs) for (const [k, v] of Object.entries(attrs)) {
-    if (v == null || v === false) continue;
-    if (k === 'class') n.className = v;
-    else if (k === 'text') n.textContent = v;
-    else n.setAttribute(k, v);
-  }
-  for (const c of children) {
-    if (c == null || c === false) continue;
-    n.append(c instanceof Node ? c : document.createTextNode(String(c)));
-  }
-  return n;
-}
-const ph = () => el('span', { class: 'ph', 'aria-hidden': 'true' });
-function logo(url, alt) {
-  if (typeof url !== 'string' || !/^https:\/\//.test(url)) return ph();
-  const img = el('img', { src: url, alt: alt || '', loading: 'lazy', referrerpolicy: 'no-referrer' });
-  img.addEventListener('error', () => img.replaceWith(ph()));
-  return img;
-}
-const store = {
-  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
-  set(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore */ } },
-};
-function safeFmt(opts) {
-  const f = new Intl.DateTimeFormat('sv-SE', opts);
-  return { format: (d) => { const t = new Date(d); return isNaN(t) ? '–' : f.format(t); } };
-}
-const fmtDate = safeFmt({ weekday: 'short', day: 'numeric', month: 'short' });
-const fmtTime = safeFmt({ hour: '2-digit', minute: '2-digit' });
-const fmtShort = safeFmt({ day: 'numeric', month: 'short' });
-const fmtDayKey = safeFmt({ year: 'numeric', month: '2-digit', day: '2-digit' });
-const str = (v) => (typeof v === 'string' && v ? v : null);
-const validId = (v) => (typeof v === 'string' && /^\d{1,10}$/.test(v) ? v : null);
-const hexColor = (v) => (typeof v === 'string' && /^[0-9a-f]{6}$/i.test(v) ? `#${v}` : null);
-function countdown(ms) {
-  if (ms <= 0) return 'Snart avspark';
-  const m = Math.floor(ms / 60000), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60;
-  if (d > 0) return `om ${d} d ${h} h`;
-  if (h > 0) return `om ${h} h ${mm} min`;
-  return `om ${mm} min`;
-}
-function ymd(date) {
-  const d = new Date(date);
-  return `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
-}
+<dialog id="import-dialog" aria-labelledby="imp-title">
+  <form method="dialog">
+    <h2 id="imp-title">Ersätta inställningarna?</h2>
+    <p id="imp-sum"></p>
+    <p class="muted">Valt lag, liga och senast följda lag ersätts. Du kan ångra direkt efteråt.</p>
+    <div class="actions"><span class="spacer"></span>
+      <button type="submit" class="btn text" value="cancel">Avbryt</button>
+      <button type="submit" class="btn filled" value="ok" id="imp-ok">Ersätt</button>
+    </div>
+  </form>
+</dialog>
 
-// ---------- Data adapter (ESPN) ----------
-async function getJSON(url) {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-function num(v) {
-  if (v == null) return null;
-  if (typeof v === 'object') v = v.value ?? v.displayValue;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
-function teamOf(c) {
-  const t = (c && typeof c.team === 'object' && c.team) || {};
-  const logos = Array.isArray(t.logos) ? t.logos : (t.logo ? [{ href: t.logo }] : []);
-  return {
-    id: String(t.id ?? ''),
-    name: str(t.shortDisplayName) || str(t.displayName) || str(t.name) || '?',
-    logo: logos[0] && logos[0].href,
-    color: hexColor(t.color),
-  };
-}
-function normalizeEvent(ev, comp) {
-  if (!ev || typeof ev !== 'object' || ev.id == null) return null;
-  const c0 = (Array.isArray(ev.competitions) && ev.competitions[0]) || {};
-  const date = ev.date || c0.date;
-  if (isNaN(new Date(date))) return null;
-  const st = c0.status || ev.status || {};
-  const type = st.type || {};
-  const cs = (Array.isArray(c0.competitors) ? c0.competitors : []).filter((c) => c && typeof c === 'object');
-  const home = cs.find((c) => c.homeAway === 'home') || cs[0];
-  const away = cs.find((c) => c.homeAway === 'away') || cs[1];
-  if (!home || !away) return null;
-  return {
-    id: String(ev.id),
-    league: comp.name,
-    leagueId: comp.id,
-    date,
-    state: type.state || (type.completed ? 'post' : 'pre'),   // pre | in | post
-    detail: str(type.shortDetail) || str(type.detail) || '',
-    clock: str(st.displayClock) || '',
-    home: teamOf(home), away: teamOf(away),
-    homeScore: num(home.score), awayScore: num(away.score),
-    events: keyEvents(c0.details),
-  };
-}
-// Goals and red cards from a scoreboard competition's `details`.
-function keyEvents(details) {
-  if (!Array.isArray(details)) return null;
-  const out = [];
-  for (const d of details) {
-    if (!d || typeof d !== 'object') continue;
-    const t = (str(d.type && d.type.text) || '').toLowerCase();
-    const goal = d.scoringPlay === true || t.includes('goal') || t === 'penalty - scored';
-    const red = d.redCard === true || t.includes('red card');
-    if (!goal && !red) continue;
-    const a = Array.isArray(d.athletesInvolved) && d.athletesInvolved[0];
-    out.push({
-      kind: goal ? 'goal' : 'red',
-      min: str(d.clock && d.clock.displayValue) || '',
-      name: str(a && (a.shortName || a.displayName)) || '?',
-      teamId: String((d.team && d.team.id) ?? ''),
-      pen: goal && (d.penaltyKick === true || t.includes('penalty')),
-      og: goal && (d.ownGoal === true || t.includes('own goal')),
-    });
-  }
-  return out;
-}
-function eventsView(m) {
-  const evs = m.events;
-  if (!evs) return el('div', { class: 'evs muted small', text: 'Ingen matchinfo tillgänglig.' });
-  if (!evs.length) return el('div', { class: 'evs muted small', text: 'Inga mål.' });
-  const line = (e) => el('div', { class: 'ev' },
-    el('span', { class: 'm', text: e.min }), e.kind === 'goal' ? '⚽ ' : '🟥 ',
-    el('span', { text: e.name }), e.pen ? el('span', { class: 'muted', text: ' (str.)' }) : null, e.og ? el('span', { class: 'muted', text: ' (sj.)' }) : null);
-  const col = (id, cls) => el('div', { class: cls }, ...evs.filter((e) => e.teamId === id).map(line));
-  return el('div', { class: 'evs' }, col(m.home.id, 'h'), col(m.away.id, 'a'));
-}
-const openMatches = new Set();   // expanded match rows (session only)
-const events = (data, comp) => (Array.isArray(data && data.events) ? data.events : [])
-  .filter((ev) => ev && typeof ev === 'object').map((ev) => normalizeEvent(ev, comp)).filter(Boolean);
-const stateRank = { pre: 0, in: 1, post: 2 };
-function mergeMatches(lists) {
-  const byId = new Map();
-  for (const list of lists) for (const m of list) {
-    const prev = byId.get(m.id);
-    if (!prev || (stateRank[m.state] ?? 0) >= (stateRank[prev.state] ?? 0)) byId.set(m.id, prev && !m.events && prev.events ? { ...m, events: prev.events } : m);
-  }
-  return [...byId.values()].sort((x, y) => new Date(x.date) - new Date(y.date));
-}
+<div id="snackbar" role="status" aria-live="polite" hidden><span id="snack-text"></span><button type="button" class="btn text" id="snack-action"></button></div>
 
-async function fetchTable() {
-  const data = await getJSON(`${CONFIG.apiBase}/v2/sports/soccer/${CONFIG.league.id}/standings`);
-  const group = (Array.isArray(data.children) && data.children[0]) || data;
-  const entries = (group.standings && Array.isArray(group.standings.entries) && group.standings.entries) || [];
-  const rows = entries.filter((e) => e && typeof e === 'object').map((e) => {
-    const s = {};
-    for (const st of Array.isArray(e.stats) ? e.stats : []) if (st) s[st.name || st.type] = num(st);
-    const t = teamOf(e);
-    return {
-      id: t.id, name: t.name, logo: t.logo, color: t.color,
-      rank: s.rank, played: s.gamesPlayed, w: s.wins, d: s.ties, l: s.losses,
-      gd: s.pointDifferential ?? ((s.pointsFor ?? 0) - (s.pointsAgainst ?? 0)), pts: s.points,
-    };
-  }).filter((r) => r.id);
-  rows.sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
-  rows.forEach((r, i) => { if (r.rank == null) r.rank = i + 1; });
-  return rows;
-}
-
-const compById = (id) => CONFIG.teamCompetitions.find((c) => c.id === id) || CONFIG.league;
-// A team's results and fixtures in one competition (two requests). Resolves to { list, color }.
-async function fetchSchedule(comp, teamId) {
-  const base = `${CONFIG.apiBase}/site/v2/sports/soccer/${comp.id}/teams/${encodeURIComponent(teamId)}/schedule`;
-  const settled = await Promise.allSettled([getJSON(base), getJSON(`${base}?fixture=true`)]);
-  const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
-  if (!ok.length) throw settled[0].reason;
-  const color = ok.map((d) => hexColor(d && d.team && d.team.color)).find(Boolean) || null;
-  return { list: mergeMatches(ok.map((d) => events(d, comp))), color };
-}
-
-// All matches for one team across configured competitions, plus the team colour if the source has one.
-// With known = the team's league matches already in hand (and knownColor), the league itself is not fetched again.
-async function fetchTeamMatches(teamId, known, knownColor) {
-  const jobs = [];
-  if (known) jobs.push(Promise.resolve({ list: known, color: knownColor || null }));
-  for (const comp of CONFIG.teamCompetitions) {
-    if (known && comp.id === CONFIG.league.id) continue;
-    jobs.push(fetchSchedule(comp, teamId));
-  }
-  const settled = await Promise.allSettled(jobs);
-  if (settled.every((s) => s.status === 'rejected')) throw settled[0].reason;
-  const ok = settled.filter((s) => s.status === 'fulfilled').map((s) => s.value);
-  return { matches: mergeMatches(ok.map((o) => o.list)), color: (ok.find((o) => o.color) || {}).color || null };
-}
-
-// League matches in a window around today: { matches, full, colors }. Fetched as the current scoreboard plus
-// one-week date ranges (small ranges are more reliably accepted than one long range). Partial failures are tolerated.
-// full = true when built from every team's whole league schedule (reusable in team mode).
-async function fetchLeagueMatches(table) {
-  const now = Date.now(), day = 864e5, base = `${CONFIG.apiBase}/site/v2/sports/soccer/${CONFIG.league.id}/scoreboard`;
-  const urls = [base];
-  for (let from = -CONFIG.leagueDaysBack; from < CONFIG.leagueDaysAhead; from += 7) {
-    urls.push(`${base}?dates=${ymd(now + from * day)}-${ymd(now + (from + 6) * day)}`);
-  }
-  const settled = await Promise.allSettled(urls.map((u) => getJSON(u).then((d) => events(d, CONFIG.league))));
-  const merged = mergeMatches(settled.filter((x) => x.status === 'fulfilled').map((x) => x.value));
-  const n = CONFIG.roundSize;
-  const enough = merged.filter((m) => m.state === 'pre').length >= n && merged.filter((m) => m.state === 'post').length >= n;
-  if (enough) return { matches: merged, full: false, colors: {} };
-  // Date ranges are not always honoured; fill in from team schedules but keep fresh scoreboard data.
-  try {
-    const viaTeams = await fetchLeagueMatchesViaTeams(table);
-    return { ...viaTeams, matches: mergeMatches([viaTeams.matches, merged]) };
-  } catch (e) { if (merged.length) return { matches: merged, full: false, colors: {} }; throw e; }
-}
-
-// Fallback: build the league fixture list from every team's league schedule (the endpoint team mode uses).
-async function fetchLeagueMatchesViaTeams(table) {
-  const rows = table && table.length ? table : await fetchTable();
-  const ids = rows.map((r) => r.id).filter(validId);
-  const settled = await Promise.allSettled(ids.map((id) => fetchSchedule(CONFIG.league, id)));
-  const colors = Object.create(null), lists = [];
-  settled.forEach((x, i) => { if (x.status !== 'fulfilled') return; lists.push(x.value.list); if (x.value.color) colors[ids[i]] = x.value.color; });
-  if (!lists.length) throw settled[0] ? settled[0].reason : new Error('no teams');
-  return { matches: mergeMatches(lists), full: true, colors };
-}
-
-// Current scoreboard for a competition (used for live updates).
-async function fetchLive(compId) {
-  const comp = compById(compId);
-  return events(await getJSON(`${CONFIG.apiBase}/site/v2/sports/soccer/${comp.id}/scoreboard`), comp);
-}
-
-// Live updates for the given matches: scoreboard first, the home team's schedule as fallback.
-async function fetchLiveFor(live) {
-  const comps = [...new Set(live.map((m) => m.leagueId))];
-  const out = [];
-  await Promise.all(comps.map(async (compId) => {
-    try { out.push(...await fetchLive(compId)); return; } catch { /* fall back below */ }
-    const homes = [...new Set(live.filter((m) => m.leagueId === compId).map((m) => m.home && m.home.id).filter(validId))];
-    const res = await Promise.allSettled(homes.map((id) => fetchSchedule(compById(compId), id)));
-    for (const r of res) if (r.status === 'fulfilled') out.push(...r.value.list);
-  }));
-  return mergeMatches([out]);
-}
-
-const validMatch = (m) => m && typeof m === 'object' && m.home && m.away && typeof m.id === 'string' && !isNaN(new Date(m.date));
-function sanitizeTeams(obj) {
-  const out = Object.create(null);
-  if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) {
-    if (validId(k) && v && typeof v === 'object' && Array.isArray(v.matches)) out[k] = { ...v, matches: v.matches.filter(validMatch) };
-  }
-  return out;
-}
-function sanitizeColors(obj) {
-  const out = Object.create(null);
-  if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) if (validId(k) && typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) out[k] = v;
-  return out;
-}
-
-// ---------- State ----------
-// cache: { table, league: [matches], teams: { [id]: { matches, color } }, updatedAt: { table, league, [teamId] } }
-const emptyCache = () => ({ table: null, league: null, leagueFull: false, colors: {}, teams: {}, updatedAt: {} });
-// Cached data from localStorage, validated field by field (it may be old or tampered with).
-function loadCache(c) {
-  if (!c || typeof c !== 'object') return emptyCache();
-  return {
-    table: Array.isArray(c.table) ? c.table.filter((r) => r && validId(r.id)) : null,
-    league: Array.isArray(c.league) ? c.league.filter(validMatch) : null,
-    leagueFull: c.leagueFull === true,
-    colors: sanitizeColors(c.colors),
-    teams: sanitizeTeams(c.teams),
-    updatedAt: Object.fromEntries(Object.entries(c.updatedAt && typeof c.updatedAt === 'object' ? c.updatedAt : {}).filter(([, v]) => Number.isFinite(v))),
-  };
-}
-let cache = emptyCache();
-let team = null;   // { id, name, logo, color } or null = league mode
-let liveTimer = null;
-const mode = () => (team ? 'team' : 'league');
-// The team's league matches taken from league data, when that data covers the whole league schedule.
-function leagueMatchesFor(id) {
-  if (!cache.leagueFull || !Array.isArray(cache.league)) return null;
-  const list = cache.league.filter((m) => m && m.home && m.away && (m.home.id === id || m.away.id === id));
-  return list.length ? list : null;
-}
-const teamData = () => {
-  if (!team) return null;
-  if (cache.teams[team.id]) return cache.teams[team.id];
-  const known = leagueMatchesFor(team.id);   // instant view until the team's own data arrives
-  return known ? { matches: known, color: (cache.colors || {})[team.id] || null } : null;
-};
-const saveCache = () => store.set(CONFIG.cacheKey, cache);
-
-// ---------- Perspective helpers (team mode) ----------
-const isHomeFor = (m) => team && m.home.id === team.id;
-const opponent = (m) => (isHomeFor(m) ? m.away : m.home);
-function resultOf(m) {
-  if (!team || m.homeScore == null || m.awayScore == null) return null;
-  const home = isHomeFor(m);
-  const us = home ? m.homeScore : m.awayScore, them = home ? m.awayScore : m.homeScore;
-  return us > them ? 'W' : us < them ? 'L' : 'D';
-}
-const RESULT_SHORT = { W: 'V', D: 'O', L: 'F' }, RESULT_LONG = { W: 'Vinst', D: 'Oavgjort', L: 'Förlust' };
-const scoreText = (a, b) => `${a ?? '–'}–${b ?? '–'}`;
-
-// ---------- Rendering: table ----------
-function zoneClass(rank) {
-  const z = CONFIG.zones;
-  if (rank >= z.cl[0] && rank <= z.cl[1]) return 'zone-cl';
-  if (rank >= z.eu[0] && rank <= z.eu[1]) return 'zone-eu';
-  if (rank >= z.rel[0] && rank <= z.rel[1]) return 'zone-rel';
-  return '';
-}
-function fmtGD(n) { return n == null ? '–' : n > 0 ? `+${n}` : String(n); }
-function tableRow(r, pickable) {
-  const v = (x) => (x == null ? '–' : String(x));
-  const tr = el('tr', { class: [zoneClass(r.rank), team && r.id === team.id ? 'me' : ''].join(' ').trim() || null },
-    el('td', { class: 'pos', text: v(r.rank) }),
-    el('td', { class: 'team' }, el('span', { class: 'tname' }, logo(r.logo, ''), el('span', { text: r.name }))),
-    el('td', { text: v(r.played) }),
-    el('td', { class: 'wdl', text: v(r.w) }),
-    el('td', { class: 'wdl', text: v(r.d) }),
-    el('td', { class: 'wdl', text: v(r.l) }),
-    el('td', { text: fmtGD(r.gd) }),
-    el('td', { class: 'pts', text: v(r.pts) }));
-  if (pickable) {
-    tr.tabIndex = 0;
-    tr.setAttribute('role', 'button');
-    tr.setAttribute('aria-label', `Följ ${r.name}`);
-    tr.addEventListener('click', () => askPick(r));
-    tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); askPick(r); } });
-  }
-  return tr;
-}
-function tableHead() {
-  return el('thead', null, el('tr', null,
-    el('th', { text: '#' }), el('th', { class: 'team', text: 'Lag' }), el('th', { text: 'M' }),
-    el('th', { class: 'wdl', text: 'V' }), el('th', { class: 'wdl', text: 'O' }), el('th', { class: 'wdl', text: 'F' }),
-    el('th', { text: 'MS' }), el('th', { text: 'P' })));
-}
-function tableLegend() {
-  return el('div', { class: 'legend' },
-      el('span', null, el('i', { style: 'background:var(--green)' }), 'Champions League'),
-      el('span', null, el('i', { style: 'background:var(--cyan)' }), 'Europa'),
-      el('span', null, el('i', { style: 'background:var(--pink)' }), 'Nedflyttning'),
-      el('span', { text: 'Tryck på ett lag för att följa det' }));
-}
-function fullTable(preview) {
-  const body = el('tbody', { class: 'pick' }, ...cache.table.map((r, i) => {
-    const tr = tableRow(r, true);
-    if (preview && i >= preview) tr.classList.add('more');
-    return tr;
-  }));
-  return el('table', { class: 'full' }, tableHead(), body);
-}
-function formDots(matches) {
-  const pl = (matches || []).filter((m) => m.state === 'post' && m.leagueId === CONFIG.league.id).slice(-5);
-  if (!pl.length) return null;
-  const wrap = el('div', { class: 'form' }, el('span', { class: 'small muted', text: 'Form ' }));
-  for (const m of pl) {
-    const r = resultOf(m);
-    if (r) wrap.append(el('span', { class: `dot ${r}`, title: `${opponent(m).name} ${scoreText(m.homeScore, m.awayScore)}`, text: RESULT_SHORT[r] }));
-  }
-  return wrap;
-}
-function renderTable() {
-  const sum = $('table-summary'), full = $('table-full'), toggle = document.querySelector('[data-acc="table"]');
-  sum.replaceChildren(); full.replaceChildren();
-  toggle.querySelectorAll('.form').forEach((n) => n.remove());
-  $('table-title').textContent = CONFIG.league.name;
-  if (!cache.table || !cache.table.length) {
-    toggle.hidden = true;
-    sum.append(el('span', { class: 'muted', text: 'Ingen tabell tillgänglig.' }));
-    return;
-  }
-  toggle.hidden = false;
-  if (!team) {               // league mode: top rows visible, the rest of the same table expands
-    sum.classList.add('flush');
-    sum.append(fullTable(CONFIG.leaguePreviewRows));
-    full.append(tableLegend());
-    return;
-  }
-  sum.classList.remove('flush');
-  const me = cache.table.find((r) => r.id === team.id);
-  if (me) {
-    sum.append(el('table', null, tableHead(), el('tbody', null, tableRow(me, false))));
-    const f = formDots(teamData() && teamData().matches);
-    if (f) toggle.insertBefore(f, toggle.querySelector('.chev'));
-  } else sum.append(el('span', { class: 'muted', text: `${team.name} finns inte i tabellen.` }));
-  full.append(fullTable(0), tableLegend());
-}
-
-// ---------- Rendering: team matches ----------
-function matchHero(m, kind) {
-  const d = new Date(m.date);
-  let mid;
-  if (m.state === 'pre') {
-    mid = el('div', { class: 'mid' }, el('span', { class: 'time', text: fmtTime.format(d) }), el('span', { class: 'small muted', text: fmtDate.format(d) }));
-  } else {
-    const r = resultOf(m);
-    mid = el('div', { class: 'mid' },
-      el('span', { class: 'score', text: scoreText(m.homeScore, m.awayScore) }),
-      m.state === 'in'
-        ? el('span', { class: 'live', text: `LIVE ${m.clock || m.detail}`.trim() })
-        : (r ? el('span', { class: `badge ${r}`, text: RESULT_LONG[r] }) : null));
-  }
-  const side = (t) => el('div', { class: 'side' }, logo(t.logo, ''), el('span', { text: t.name }));
-  return el('div', null,
-    el('div', { class: 'match-main' }, side(m.home), mid, side(m.away)),
-    m.state !== 'pre' && m.events && m.events.length ? eventsView(m) : null,
-    el('div', { class: 'meta' },
-      `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`,
-      m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
-      m.state === 'pre' && kind === 'next' ? el('span', { class: 'countdown', 'data-kickoff': m.date, text: countdown(d - Date.now()) }) : null));
-}
-function teamMatchList(list, past) {
-  if (!list.length) return el('div', { class: 'empty muted small', text: past ? 'Inga tidigare matcher.' : 'Inga fler inplanerade matcher.' });
-  return el('ul', { class: 'list' }, ...list.map((m) => {
-    const d = new Date(m.date), o = opponent(m), r = resultOf(m), home = isHomeFor(m);
-    return el('li', null,
-      el('span', { class: 'd' }, fmtShort.format(d), el('br'), past ? '' : fmtTime.format(d)),
-      el('span', null, el('span', { class: 'o', text: `${o.name} (${home ? 'H' : 'B'})` }), el('br'), el('span', { class: 'c', text: m.league })),
-      past
-        ? el('span', { class: 'r' }, `${scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore)} `, r ? el('span', { class: `badge ${r}`, text: RESULT_SHORT[r] }) : null)
-        : el('span', { class: 'r small muted', text: '' }));
-  }));
-}
-
-// ---------- Rendering: league matches ----------
-function dayLabel(date) {
-  const key = fmtDayKey.format(date), d = 864e5;
-  if (key === fmtDayKey.format(Date.now())) return 'Idag';
-  if (key === fmtDayKey.format(Date.now() + d)) return 'I morgon';
-  if (key === fmtDayKey.format(Date.now() - d)) return 'I går';
-  return fmtDate.format(date);
-}
-function leagueMatchList(list, past) {
-  if (!list.length) return el('div', { class: 'empty muted small', text: past ? 'Inga spelade matcher.' : 'Inga inplanerade matcher.' });
-  const wrap = el('div');
-  let lastDay = null;
-  for (const m of list) {
-    const key = m.state === 'in' ? 'live' : fmtDayKey.format(m.date);
-    if (key !== lastDay) {
-      wrap.append(el('div', { class: 'day', text: m.state === 'in' ? 'Pågår nu' : dayLabel(m.date) }));
-      lastDay = key;
-    }
-    const mid = m.state === 'pre'
-      ? el('span', { class: 's', text: fmtTime.format(m.date) })
-      : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore), m.state === 'in' ? el('span', { class: 'live', text: `LIVE ${m.clock || ''}`.trim() }) : null);
-    const row = el('div', { class: 'lm' },
-      el('span', { class: 't h' }, el('span', { text: m.home.name }), logo(m.home.logo, '')),
-      mid,
-      el('span', { class: 't' }, logo(m.away.logo, ''), el('span', { text: m.away.name })));
-    if (m.state === 'pre') { wrap.append(row); continue; }
-    const open = openMatches.has(m.id), box = el('div', { class: 'lmx' });
-    row.classList.add('tap');
-    row.setAttribute('role', 'button'); row.setAttribute('tabindex', '0'); row.setAttribute('aria-expanded', String(open));
-    if (open) box.append(eventsView(m));
-    const toggle = () => {
-      const now = !openMatches.has(m.id);
-      if (now) openMatches.add(m.id); else openMatches.delete(m.id);
-      row.setAttribute('aria-expanded', String(now));
-      box.replaceChildren(...(now ? [eventsView(m)] : []));
-    };
-    row.addEventListener('click', toggle);
-    row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
-    wrap.append(row, box);
-  }
-  return wrap;
-}
-
-function setTexts(ids) { for (const [id, t] of Object.entries(ids)) $(id).textContent = t; }
-function renderMatches() {
-  const ns = $('next-summary'), nl = $('next-list'), ls = $('last-summary'), ll = $('last-list');
-  ns.replaceChildren(); nl.replaceChildren(); ls.replaceChildren(); ll.replaceChildren();
-  if (!team) {
-    setTexts({ 'next-title': 'Aktuella matcher', 'next-toggle': 'Fler kommande matcher', 'last-title': 'Senaste resultat', 'last-toggle': 'Fler resultat' });
-    const ms = cache.league || [];
-    const live = ms.filter((m) => m.state === 'in');
-    const upcoming = [...live, ...ms.filter((m) => m.state === 'pre')];
-    const past = ms.filter((m) => m.state === 'post').reverse();
-    const n = CONFIG.roundSize;
-    if (!cache.league) { ns.append(el('span', { class: 'muted', text: 'Inga matcher tillgängliga.' })); ls.append(el('span', { class: 'muted', text: 'Inga matcher tillgängliga.' })); return; }
-    const k = Math.max(live.length, CONFIG.leaguePreviewMatches);   // live matches always visible
-    const kp = CONFIG.leaguePreviewResults;
-    ns.append(leagueMatchList(upcoming.slice(0, k), false));
-    nl.append(leagueMatchList(upcoming.slice(k, Math.max(k, 2 * n)), false));
-    ls.append(leagueMatchList(past.slice(0, kp), true));
-    ll.append(leagueMatchList(past.slice(kp, 2 * n), true));
-    return;
-  }
-  setTexts({ 'next-title': 'Nästa match', 'next-toggle': 'Kommande matcher', 'last-title': 'Senaste match', 'last-toggle': 'Tidigare matcher' });
-  const td = teamData();
-  if (!td) { ns.append(el('span', { class: 'muted', text: 'Laddar…' })); ls.append(el('span', { class: 'muted', text: 'Laddar…' })); return; }
-  const upcoming = td.matches.filter((m) => m.state !== 'post');
-  const past = td.matches.filter((m) => m.state === 'post').reverse();
-  if (upcoming[0]) ns.append(matchHero(upcoming[0], 'next')); else ns.append(el('span', { class: 'muted', text: 'Ingen inplanerad match.' }));
-  nl.append(teamMatchList(upcoming.slice(1, 1 + CONFIG.upcomingCount), false));
-  if (past[0]) ls.append(matchHero(past[0], 'last')); else ls.append(el('span', { class: 'muted', text: 'Inga spelade matcher.' }));
-  ll.append(teamMatchList(past.slice(1, 1 + CONFIG.recentCount), true));
-}
-
-function renderTeamBar() {
-  const bar = $('teambar');
-  bar.classList.toggle('show', !!team);
-  const raw = team && (team.color || (teamData() && teamData().color));
-  const color = (typeof raw === 'string' && /^#[0-9a-f]{6}$/i.test(raw) && raw) || '#37003C';
-  document.documentElement.style.setProperty('--sel', color);
-  if (!team) return;
-  $('teambar-logo').replaceChildren(logo(team.logo, ''));
-  $('teambar-name').textContent = team.name;
-}
-function lastUpdated() {
-  const u = cache.updatedAt || {};
-  return team ? Math.min(u.table || 0, u[team.id] || 0) || null : Math.min(u.table || 0, u.league || 0) || null;
-}
-function renderStatus(msg, isError) {
-  const s = $('status');
-  s.className = isError ? 'offline' : '';
-  const parts = [];
-  const t = lastUpdated();
-  if (t) parts.push(`Senast uppdaterad ${fmtDate.format(t)} ${fmtTime.format(t)}`);
-  if (msg) parts.push(msg);
-  s.textContent = parts.join(' · ');
-}
-function renderAll() { renderTeamBar(); renderTable(); renderMatches(); applyAccordions(); }
-
-// ---------- Accordions (state per mode) ----------
-function setAcc(btn, open) {
-  const panel = $(btn.getAttribute('aria-controls'));
-  btn.setAttribute('aria-expanded', String(open));
-  panel.classList.toggle('open', open);
-  panel.inert = !open;
-  btn.closest('.card').classList.toggle('expanded', open);
-}
-function applyAccordions() {
-  const saved = (store.get(CONFIG.accKey) || {})[mode()] || {};
-  document.querySelectorAll('.acc-toggle').forEach((btn) => setAcc(btn, !btn.hidden && !!saved[btn.dataset.acc]));
-}
-document.querySelectorAll('.acc-toggle').forEach((btn) => btn.addEventListener('click', () => {
-  const open = btn.getAttribute('aria-expanded') !== 'true';
-  setAcc(btn, open);
-  const all = store.get(CONFIG.accKey) || {};
-  all[mode()] = { ...(all[mode()] || {}), [btn.dataset.acc]: open };
-  store.set(CONFIG.accKey, all);
-}));
-
-// ---------- Choosing a team ----------
-let pending = null;
-function askPick(row) {
-  if (team && row.id === team.id) return;
-  pending = row;
-  $('pick-text').replaceChildren(logo(row.logo, ''), el('span', { text: `${team ? 'Byt till' : 'Följ'} ${row.name}?` }));
-  $('pick-ok').textContent = team ? 'Byt' : 'Följ';
-  const dlg = $('pick');
-  if (typeof dlg.showModal === 'function') dlg.showModal();
-  else if (window.confirm(`${team ? 'Byt till' : 'Följ'} ${row.name}?`)) choose(row);
-}
-function closePick() { const d = $('pick'); if (d.open) d.close(); pending = null; }
-$('pick-cancel').addEventListener('click', closePick);
-$('pick-ok').addEventListener('click', () => { const r = pending; closePick(); if (r) choose(r); });
-$('pick').addEventListener('click', (e) => { if (e.target === $('pick')) closePick(); });
-function choose(row) {
-  if (!validId(row.id)) return;
-  team = { id: row.id, name: row.name, logo: row.logo, color: row.color || null };
-  store.set(CONFIG.teamKey, team);
-  window.scrollTo(0, 0);
-  renderAll();
-  refresh();
-}
-$('teambar-close').addEventListener('click', () => {
-  team = null;
-  store.set(CONFIG.teamKey, null);
-  window.scrollTo(0, 0);
-  renderAll();
-  refresh();
-});
-
-// ---------- Live ----------
-function currentMatches() { return team ? (teamData() || {}).matches || [] : cache.league || []; }
-function scheduleLive() {
-  clearTimeout(liveTimer);
-  const live = currentMatches().filter((m) => m.state === 'in');
-  if (!live.length || document.hidden) return;
-  liveTimer = setTimeout(async () => {
-    try {
-      const fresh = await fetchLiveFor(live);
-      const byId = new Map(fresh.map((m) => [m.id, m]));
-      const upd = (list) => list.map((m) => byId.get(m.id) || m);
-      if (team && teamData()) teamData().matches = upd(teamData().matches);
-      else if (cache.league) cache.league = upd(cache.league);
-      saveCache();
-      if (live.some((m) => (byId.get(m.id) || m).state === 'post')) { await refresh(); return; }
-      renderMatches();
-    } catch { /* keep showing last known */ }
-    scheduleLive();
-  }, CONFIG.livePollMs);
-}
-setInterval(() => {
-  document.querySelectorAll('[data-kickoff]').forEach((n) => { n.textContent = countdown(new Date(n.dataset.kickoff) - Date.now()); });
-}, 30000);
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { clearTimeout(liveTimer); return; }
-  // reopening the app counts as a start: refresh if data is stale
-  const t = lastUpdated();
-  if (!t || Date.now() - t > CONFIG.staleMs) refresh(); else scheduleLive();
-});
-
-// ---------- Refresh ----------
-let busy = false, again = false;
-async function refresh() {
-  if (busy) { again = true; return; }
-  busy = true;
-  try {
-    const forTeam = team;
-    const leagueFresh = Date.now() - ((cache.updatedAt || {}).league || 0) < CONFIG.leagueReuseMs;
-    const known = forTeam && leagueFresh ? leagueMatchesFor(forTeam.id) : null;
-    const jobs = [fetchTable(), forTeam ? fetchTeamMatches(forTeam.id, known, (cache.colors || {})[forTeam.id]) : fetchLeagueMatches(cache.table)];
-    const [t, m] = await Promise.allSettled(jobs);
-    const now = Date.now();
-    cache.updatedAt = cache.updatedAt || {};
-    if (t.status === 'fulfilled') { cache.table = t.value; cache.updatedAt.table = now; }
-    if (m.status === 'fulfilled') {
-      if (forTeam) { cache.teams[forTeam.id] = { ...m.value, ts: now }; cache.updatedAt[forTeam.id] = now; }
-      else { cache.league = m.value.matches; cache.leagueFull = m.value.full; cache.colors = { ...(cache.colors || {}), ...m.value.colors }; cache.updatedAt.league = now; }
-    }
-    // keep the cache small: the most recently used teams only
-    const ids = Object.keys(cache.teams).sort((a, b) => (cache.teams[b].ts || 0) - (cache.teams[a].ts || 0));
-    for (const id of ids.slice(CONFIG.teamCacheMax)) if (!team || id !== team.id) { delete cache.teams[id]; delete cache.updatedAt[id]; }
-    saveCache();
-    if (team !== forTeam) { again = true; return; }   // mode changed while loading
-    renderAll();
-    const failed = [t, m].filter((x) => x.status === 'rejected').length;
-    if (failed) {
-      renderStatus(!navigator.onLine ? 'Offline – visar sparad data' : (failed === 2 ? 'Kunde inte hämta data – visar sparad data' : 'Viss data kunde inte hämtas'), true);
-      if (failed === 2 && !cache.table && !currentMatches().length) {
-        for (const id of ['table-summary', 'next-summary', 'last-summary']) $(id).replaceChildren(el('span', { class: 'error', text: 'Kunde inte hämta data. Kontrollera nätet och öppna appen igen.' }));
-      }
-    } else renderStatus();
-  } catch (e) {
-    renderStatus('Något gick fel vid visning av data', true);
-  } finally {
-    busy = false;
-    if (again) { again = false; setTimeout(refresh, 0); } else scheduleLive();
-  }
-}
-
-// ---------- Boot ----------
-window.addEventListener('online', () => { if (!document.hidden) refresh(); });
-try {
-  const savedTeam = store.get(CONFIG.teamKey);
-  if (savedTeam && validId(savedTeam.id)) {
-    team = { id: savedTeam.id, name: str(savedTeam.name) || '?', logo: str(savedTeam.logo), color: hexColor((str(savedTeam.color) || '').replace('#', '')) };
-  }
-  cache = loadCache(store.get(CONFIG.cacheKey));
-  renderAll();
-  if (lastUpdated()) renderStatus('Hämtar ny data…');
-} catch {
-  cache = emptyCache();
-  store.set(CONFIG.cacheKey, null);
-  renderAll();
-}
-refresh();
-</script>
+<script src="version.js"></script>
+<script src="backup.js"></script>
+<script src="store.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

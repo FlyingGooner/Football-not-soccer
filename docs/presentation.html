@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; require-trusted-types-for 'script'; img-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#37003C">
+<link rel="icon" href="../icons/icon-192.png">
+<title>Football, not soccer</title>
+<link rel="stylesheet" href="presentation.css">
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+  <section class="band"><div class="slide inner">
+    <div class="hero-top"><div class="icon" aria-hidden="true">F<b>n</b>S</div><span class="ver">v0.5.4</span></div>
+    <span class="eyebrow">Din egen fotbollsapp</span>
+    <h1>Football, <span class="n">not</span> soccer</h1>
+    <p class="lead">En liten, snabb webbapp för Premier League. Tabellen, matcherna och ditt lag. Inget annat.</p>
+  </div></section>
+
+  <section class="slide">
+    <span class="eyebrow">Så ser den ut</span>
+    <h2>Allt på en skärm</h2>
+    <div class="phone" aria-label="Exempel på appens vy, påhittade matcher">
+      <div class="mcard">
+        <h3>Aktuella matcher</h3>
+        <div class="mrow"><span class="h">Arsenal</span><span class="s">2–1<br><span class="live">LIVE 78'</span></span><span>Chelsea</span></div>
+        <div class="goals"><div class="h">23' <span>Saka</span><br>61' <span>Rice</span></div><div>55' <span>Palmer (str.)</span></div></div>
+        <div class="mrow"><span class="h">Liverpool</span><span class="s">20:30</span><span>Spurs</span></div>
+      </div>
+      <div class="mcard">
+        <h3>Premier League</h3>
+        <div class="trow cl"><span>1</span><span>Arsenal</span><span>11</span><span>26</span></div>
+        <div class="trow cl"><span>2</span><span>Man City</span><span>11</span><span>23</span></div>
+        <div class="trow me"><span>3</span><span>Liverpool</span><span>11</span><span>22</span></div>
+      </div>
+    </div>
+    <p class="small muted">Exempelbild med påhittade matcher.</p>
+  </section>
+
+  <section class="slide">
+    <span class="eyebrow">Funktioner</span>
+    <h2>Det du faktiskt kollar</h2>
+    <div class="feats">
+      <div class="feat"><div class="k p" aria-hidden="true">●</div><div><h3>Live och nästa match</h3><p>Pågående matcher med ställning och minut överst, sedan det som spelas härnäst grupperat per dag.</p></div></div>
+      <div class="feat"><div class="k g" aria-hidden="true">⚽</div><div><h3>Mål, straffar, röda kort</h3><p>Tryck på en match så fälls målskyttarna ut, med minut och "(str.)" för straff.</p></div></div>
+      <div class="feat"><div class="k c" aria-hidden="true">#</div><div><h3>Tabell med zoner</h3><p>Topp 3 direkt, resten ett tryck bort. CL-, Europa- och nedflyttningsplatser markerade.</p></div></div>
+      <div class="feat"><div class="k u" aria-hidden="true">♥</div><div><h3>Följ ett lag</h3><p>Tryck på ett lag i tabellen. Då ser du dess form, nästa match med nedräkning och alla turneringar: PL, CL, FA-cupen och Ligacupen.</p></div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <span class="eyebrow">Under huven</span>
+    <h2>Litet med flit</h2>
+    <div class="facts">
+      <div class="fact"><b>1</b><span>HTML-fil. Inga ramverk, inget byggsteg.</span></div>
+      <div class="fact"><b>0</b><span>annonser, konton eller spårare.</span></div>
+      <div class="fact"><b>30 s</b><span>mellan uppdateringar under pågående match.</span></div>
+      <div class="fact"><b>0</b><span>anrop när appen är stängd.</span></div>
+    </div>
+    <p class="muted">Senast hämtad data sparas i telefonen och visas med tidsstämpel om nätet saknas. Ljust och mörkt tema följer telefonens inställning.</p>
+  </section>
+
+  <section class="slide">
+    <span class="eyebrow">Jämförelse</span>
+    <h2>Varför inte bara FotMob?</h2>
+    <p class="muted">FotMob är en bra app. Men den är byggd för alla ligor och alla användare. Den här är byggd för en.</p>
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead><tr><th></th><th class="us">FnS</th><th>FotMob</th></tr></thead>
+        <tbody>
+          <tr><td>Reklam</td><td class="yes">Ingen</td><td>Ja, i gratisversionen</td></tr>
+          <tr><td>Konto och spårning</td><td class="yes">Inget</td><td>Annonsspårning, konto valfritt</td></tr>
+          <tr><td>Startskärm</td><td class="yes">Din liga, direkt</td><td>Hela världens matcher</td></tr>
+          <tr><td>Storlek</td><td class="yes">Några hundra kB</td><td>Appbutiksapp, tiotals MB</td></tr>
+          <tr><td>Kan ändras</td><td class="yes">Ja, det är din kod</td><td>Nej</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="slide">
+    <span class="eyebrow">Rakt på sak</span>
+    <h2>Det FotMob gör bättre</h2>
+    <ul class="cons">
+      <li>Notiser vid mål. FnS har ingen server som kan skicka dem.</li>
+      <li>Alla ligor i världen. FnS visar bara Premier League och turneringarna ditt lag spelar i.</li>
+      <li>Laguppställningar, xG, spelarbetyg och detaljerad statistik.</li>
+      <li>Officiellt stöd. FnS hämtar data från ESPN:s öppna gränssnitt, som kan ändras utan förvarning.</li>
+    </ul>
+    <p class="muted">Vill du ha allt, välj FotMob. Vill du ha det du kollar tio gånger om dagen, utan brus, välj FnS.</p>
+  </section>
+
+  <section class="band"><div class="slide inner">
+    <span class="eyebrow">Kom igång</span>
+    <h2 class="on-band">Installera på <span class="n hi">30 sekunder</span></h2>
+    <ol class="steps">
+      <li><span>Öppna adressen i Chrome på mobilen:<br><span class="url">flyinggooner.github.io/Football-not-soccer</span></span></li>
+      <li><span>Tryck på ⋮ och välj <b>Installera app</b>. På iPhone: Dela → <b>Lägg till på hemskärmen</b>.</span></li>
+      <li><span>Öppna FnS från hemskärmen. Den startar i eget fönster utan adressfält.</span></li>
+    </ol>
+    <p class="lead small">Versionsnumret uppe till höger visar när en ny version har kommit ut.</p>
+  </div></section>
+
+</main>
+<nav class="nav" aria-label="Bläddra">
+  <button type="button" class="prev" id="prev">‹ Föregående</button>
+  <span class="count" id="count" aria-live="polite">1 / 7</span>
+  <button type="button" class="next" id="next">Nästa ›</button>
+</nav>
+
+<script src="presentation.js"></script>
+</body>
+</html>
