@@ -155,7 +155,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - All åtkomst via adapterfunktioner (`fetchTable()`, `fetchTeamMatches()`, `fetchMonths()`, `fetchLive()`) i `app.js`, så att källan kan bytas.
 - **När data hämtas:** bara det den öppna fliken visar – när appen öppnas, när den visas igen, när fliken byts, när nätet kommer tillbaka och vid byte av liga eller lag – och bara om cachen inte längre gäller (nedan). Inställningar hämtar inget. Inga anrop i bakgrunden.
   - Byte av liga (knapp eller svep) väntar 0,4 s innan något hämtas, så ligor man sveper förbi hämtas inte.
-  - Samma URL hämtas högst en gång per minut (svaret återanvänds), utom live-uppdateringen.
+  - Samma URL hämtas högst en gång per minut (svaret återanvänds), utom live-uppdateringen och när en match borde ha börjat men fortfarande visas som ej startad.
   - Tabell och matcher hämtas parallellt.
 - **Cache per liga till nästa avspark (beslut 2026-11-11):** ligans data hämtas inte igen så länge ingen match i ligan har börjat eller pågår sedan förra hämtningen (en `pre`-match med avsparkstid ≤ nu, eller en `in`-match). Då hämtas bara dagens scoreboard.
   - Passerade månader hämtas aldrig igen. Denna månad hämtas igen efter 6 timmar (flyttade matcher, nya tider); börjar en ny månad hämtas bara den som saknas.
