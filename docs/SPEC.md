@@ -70,7 +70,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 ### 3. Lag
 - **Hela vyn får plats utan scroll** på en vanlig telefon (beslut 2026-11-11): kompakta kort, matchrader på en rad.
 - Valt lag: rad med märke, namn, **formen** (5 senaste ligamatcher, V/O/F) och **✕** (slutar följa, utan bekräftelse). Neutral bakgrund (`--surface-container-high`), lagets färg bara som kant till vänster. Ingen placering, ingen tabell (finns under Tabell).
-- **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 30:e sekund. Under: 2 kommande på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande som finns (lagets hela schema i de turneringar som hämtas).
+- **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 60:e sekund. Under: 3 kommande (lika många som under Senaste match) på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande som finns (lagets hela schema i de turneringar som hämtas).
 - **Senaste match**: kompakt: resultat, V/O/F, turnering, datum och händelser. Under: 3 matcher innan, en rad var; **Visa fler** fäller ut resten. Utfällt läge gäller bara under sessionen.
 - **Senast följda lag** längst ned.
 - Inget lag valt: "Inget lag valt" och en knapp till Tabell.

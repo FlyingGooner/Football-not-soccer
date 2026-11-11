@@ -159,7 +159,7 @@ T.test('följa lag: dialog → fliken Lag, lagets liga och senast följda sparas
   T.eq(JSON.parse(localStorage.getItem('fns.team.v2')).leagueId, 'esp.1');
   T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
   T.ok(T.$('[data-kickoff]') || T.$('#view-team').textContent.includes('LIVE'), 'nedräkning eller live (ligans pågående match syns i Lag)');
-  T.eq(document.querySelectorAll('#team-next-list li').length, 2);
+  T.eq(document.querySelectorAll('#team-next-list li').length, 3, 'lika många som Senaste match');
   T.eq(document.querySelectorAll('#team-last-list li').length, 3);
   T.eq(document.querySelectorAll('#team-form .dot').length, 5);
   T.ok(!T.$('#view-team table'), 'ingen tabell under Lag');

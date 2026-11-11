@@ -7,7 +7,7 @@
 const CONFIG = {
   leagues: LEAGUES,             // store.js: Premier League, LaLiga, Serie A, Champions League
   europe: EUROPE,               // collected in team mode together with the team's league
-  upcomingCount: 2,             // Lag: rows under Nästa match before Visa fler
+  upcomingCount: 3,             // Lag: rows under Nästa match before Visa fler
   recentCount: 3,               // Lag: rows under Senaste match before Visa fler
   roundSize: 10,
   monthsMax: 3,                 // Visa fler fetches one month at a time, at most 3 back and 3 ahead of the current month
