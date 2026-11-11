@@ -61,7 +61,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Inget lag valt: "Inget lag valt" och en knapp till Tabell.
 
 ### 4. Inställningar
-- Grupper som fälls ut, som i simple-nutrition: **Lag** (Senast följda lag, ta bort) och **Allmänt** (Data, Hjälp och manual, Installera appen). Sist en rad med version och "matchdata från ESPN".
+- Grupper som fälls ut, som i simple-nutrition: **Lag** (Senast följda lag, ta bort), **Utseende** (Kortordning) och **Allmänt** (Data, Hjälp och manual, Installera appen). Sist en rad med version och "matchdata från ESPN".
 
 ### Välja och byta lag
 - Tryck på ett lag i tabellen → dialog "Följ {lag}?" (inget lag valt) eller "Byt till {lag}?" (ett lag valt); efter Följ/Byt visas fliken Lag med **Följ/Byt** och **Avbryt**.
@@ -83,12 +83,15 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Längst ned under Lag: rad med upp till 5 senast följda lag (märke + kort namn), samma lag som har sparad data (`CONFIG.teamCacheMax`). Ett tryck byter lag direkt utan dialog. Under Inställningar → Lag tar ✕ bort laget ur listan och dess cache.
 - Är inte "flera lag samtidigt": bara ett lag är valt åt gången.
 
+### Kortordning
+- Som simple-nutrition: Inställningar → Utseende → Kortordning har en lista per vy (Matcher: Idag i alla ligor, Aktuella matcher, Senaste resultat; Lag: Nästa match, Senaste match, Tabell och form, Senast följda lag). ↑ ↓ flyttar, ●/○ visar/döljer, "Återställ" ger standard. Okända kort-id ignoreras, nya kort läggs sist.
+
 ### Kortet Hjälp
 - Under Inställningar → Allmänt → Hjälp och manual. Samma text som `docs/MANUAL.md` (ändra båda): lägen, välja och byta lag, ligaväljaren, offline och vad ESPN ser.
 
 ### Kortet Data
 - Enligt `../STANDARD.md` punkt 5 (undantag U5), mönstret från budget-buddy (`packData`/`unpackData`/`exportText`/`importText` i `store.js`, `backup.js`).
-- Exporteras: valt lag, vald liga, senast följda lag (utan matchdata). Vald flik exporteras inte. Matchcachen exporteras aldrig – den hämtas om.
+- Exporteras: valt lag, vald liga, senast följda lag (utan matchdata) och kortordning. Vald flik exporteras inte. Matchcachen exporteras aldrig – den hämtas om.
 - Import validerar varje fält som vid läsning från `localStorage`; okänt `leagueId` eller lag-id som inte är `^\d{1,10}$` förkastas.
 - **Radera all data** sist i kortet: tar bort alla `fns.*`-nycklar.
 
@@ -100,6 +103,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 | `fns.team.v2` | Valt lag `{ id, name, logo, color, leagueId }` eller saknas (= ligaläge). `.v1` (utan `leagueId`) läses en gång som `eng.1` |
 | `fns.league.v1` | Vald liga i ligaläge, ett id ur `CONFIG.leagues` |
 | `fns.tab.v1` | Vald flik: `matches`, `table`, `team` eller `settings` |
+| `fns.layout.v1` | Kortordning per vy: `{ matches | team: { order: [kort-id], hidden: [kort-id] } }`, bara vyer som skiljer sig från standard |
 
 ```json
 {

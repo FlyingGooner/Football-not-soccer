@@ -28,15 +28,17 @@
   <!-- Matcher: vald liga -->
   <section class="view" id="view-matches">
     <div class="seg league-picker" role="group" aria-label="Liga"></div>
-    <div class="today" id="today" hidden></div>
-    <section class="card">
+    <div class="arr" id="arr-matches">
+    <div class="today" id="today" data-card="today" hidden></div>
+    <section class="card" data-card="next">
       <h2 id="next-title">Aktuella matcher</h2>
       <div id="next-list"><span class="muted">Laddar…</span></div>
     </section>
-    <section class="card">
+    <section class="card" data-card="last">
       <h2>Senaste resultat</h2>
       <div id="last-list"><span class="muted">Laddar…</span></div>
     </section>
+    </div>
   </section>
 
   <!-- Tabell: vald liga -->
@@ -58,25 +60,25 @@
       <p>Inget lag valt. Tryck på ett lag i tabellen för att följa det.</p>
       <button type="button" class="btn tonal" id="team-pick">Till tabellen</button>
     </div>
-    <div id="team-cards">
-      <section class="card">
+    <div class="arr" id="arr-team">
+      <section class="card" data-card="next">
         <h2>Nästa match</h2>
         <div id="team-next"><span class="muted">Laddar…</span></div>
         <div id="team-next-list"></div>
       </section>
-      <section class="card">
+      <section class="card" data-card="last">
         <h2>Senaste match</h2>
         <div id="team-last"><span class="muted">Laddar…</span></div>
         <div id="team-last-list"></div>
       </section>
-      <section class="card flush">
+      <section class="card flush" data-card="table">
         <h2 id="team-table-title">Tabell</h2>
         <div id="team-table"></div>
       </section>
-    </div>
-    <div class="recent-wrap" id="recent-wrap" hidden>
+    <div class="recent-wrap" id="recent-wrap" data-card="recent" hidden>
       <h2>Senast följda lag</h2>
       <div class="recent" id="recent"></div>
+    </div>
     </div>
   </section>
 
@@ -90,6 +92,14 @@
           <ul class="rows" id="recent-list"></ul>
           <p class="muted small">De fem senast följda lagen. Deras matchdata sparas så att de visas direkt. ✕ tar bort laget och dess sparade data.</p>
         </div>
+      </details>
+    </details>
+
+    <details class="set-group-wrap" id="g-layout">
+      <summary class="set-group"><span class="set-gtitle">Utseende</span><span class="set-hint">Kortordning</span></summary>
+      <details class="card set-sec">
+        <summary class="sec-sum"><span class="set-title">Kortordning</span><span class="set-hint" id="hint-layout"></span></summary>
+        <div class="set-body" id="layout-body"></div>
       </details>
     </details>
 
@@ -123,6 +133,8 @@
             <p>✕ bredvid lagets namn slutar följa laget. Appen öppnas på samma flik nästa gång.</p></details>
           <details><summary>Senast följda lag</summary>
             <p>De fem senast följda lagen visas under Lag. Ett tryck byter lag direkt. Under Inställningar → Lag tar du bort ett lag ur listan.</p></details>
+          <details><summary>Flytta kort</summary>
+            <p>Under Inställningar → Utseende → Kortordning väljer du ordningen på korten under Matcher och Lag. ↑ ↓ flyttar ett kort, ● visar och ○ döljer det. Återställ ger standardordningen.</p></details>
           <details><summary>Matcher och live</summary>
             <p>Tryck på en spelad eller pågående match för att se målskyttar och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen.</p></details>
           <details><summary>Offline och data</summary>

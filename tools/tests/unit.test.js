@@ -106,3 +106,10 @@ T.test('flik: bara kända flikar', () => {
   T.eq(loadTab('team'), 'team');
   T.eq(loadTab('evil'), null);
 });
+T.test('kortordning: okända id bort, nya kort sist, standard sparas inte', () => {
+  T.eq(layoutOf({ matches: { order: ['last', 'evil', 'last'], hidden: ['today', 'x'] } }, 'matches'), { order: ['last', 'today', 'next'], hidden: ['today'] });
+  T.eq(loadLayout({ matches: { order: ['today', 'next', 'last'], hidden: [] }, evil: { order: [] } }), {});
+  T.eq(Object.keys(loadLayout({ team: { hidden: ['recent'] } })), ['team']);
+  const s = loadSettings({ league: 'eng.1', layout: { team: { order: ['table'] } } });
+  T.eq(importText(exportText(s, '2026-11-11')).data.layout, s.layout);
+});

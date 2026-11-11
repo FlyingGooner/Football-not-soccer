@@ -16,6 +16,10 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 - De fem senast följda lagen visas under Lag. Ett tryck byter lag direkt. Under Inställningar → Lag tar du bort ett lag ur listan.
 
+## Flytta kort
+
+- Under Inställningar → Utseende → Kortordning väljer du ordningen på korten under Matcher och Lag. ↑ ↓ flyttar ett kort, ● visar och ○ döljer det. Återställ ger standardordningen.
+
 ## Matcher och live
 
 - Tryck på en spelad eller pågående match för att se målskyttar och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen.

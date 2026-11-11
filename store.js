@@ -134,7 +134,7 @@ function loadRecent(list) {
 const addRecent = (list, t) => loadRecent([t, ...list.filter((x) => x.id !== t.id)]);
 function loadSettings(s) {
   const o = isObj(s) ? s : {};
-  return { team: cleanTeam(o.team), league: loadLeague(o.league), recent: loadRecent(o.recent) };
+  return { team: cleanTeam(o.team), league: loadLeague(o.league), recent: loadRecent(o.recent), layout: loadLayout(o.layout) };
 }
 
 // ---------- Export/import as text (U5, shared standard: format 1 = slim JSON in an envelope) ----------
@@ -146,11 +146,12 @@ function packData(s) {
   const out = { league: s.league };
   if (s.team) out.team = { ...s.team };
   if (s.recent.length) out.recent = s.recent.map((t) => ({ ...t }));
+  if (Object.keys(s.layout).length) out.layout = s.layout;
   return out;
 }
 function unpackData(p) {
   if (!isObj(p)) return null;
-  return { team: p.team ?? null, league: p.league, recent: Array.isArray(p.recent) ? p.recent : [] };
+  return { team: p.team ?? null, league: p.league, recent: Array.isArray(p.recent) ? p.recent : [], layout: isObj(p.layout) ? p.layout : {} };
 }
 function exportText(s, today) {
   return JSON.stringify({ app: EXPORT_APP, format: EXPORT_FORMAT, exported: today, data: packData(s) });
@@ -272,4 +273,28 @@ function zoneOf(leagueId, rank, rows) {
     if (rank >= from && rank <= to) return z;
   }
   return null;
+}
+
+// ---------- Card order per view (as simple-nutrition): { [view]: { order: [id], hidden: [id] } } ----------
+// Ids are fixed; unknown ids are dropped and new cards go last, so a saved order never breaks.
+const LAYOUT = Object.freeze({
+  matches: [['today', 'Idag i alla ligor'], ['next', 'Aktuella matcher'], ['last', 'Senaste resultat']],
+  team: [['next', 'Nästa match'], ['last', 'Senaste match'], ['table', 'Tabell och form'], ['recent', 'Senast följda lag']],
+});
+const LAYOUT_VIEWS = Object.freeze({ matches: 'Matcher', team: 'Lag' });
+function layoutOf(layout, v) {
+  const def = LAYOUT[v].map(([id]) => id), L = (isObj(layout) && isObj(layout[v]) && layout[v]) || {};
+  const ids = (a) => (Array.isArray(a) ? a : []);
+  const order = ids(L.order).filter((id, i, a) => def.includes(id) && a.indexOf(id) === i);
+  def.forEach((id) => { if (!order.includes(id)) order.push(id); });
+  return { order, hidden: ids(L.hidden).filter((id, i, a) => def.includes(id) && a.indexOf(id) === i) };
+}
+// Only views that differ from the default are kept.
+function loadLayout(raw) {
+  const out = {};
+  for (const v of Object.keys(LAYOUT)) {
+    const l = layoutOf(raw, v), def = LAYOUT[v].map(([id]) => id);
+    if (l.hidden.length || l.order.join() !== def.join()) out[v] = l;
+  }
+  return out;
 }

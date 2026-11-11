@@ -16,7 +16,7 @@ const CONFIG = {
   teamCacheMax: RECENT_MAX,
   leagueReuseMs: 600000,
   staleMs: 60000,
-  keys: { cache: 'fns.cache.v3', team: 'fns.team.v2', teamV1: 'fns.team.v1', league: 'fns.league.v1', recent: 'fns.recent.v1', tab: 'fns.tab.v1' },
+  keys: { cache: 'fns.cache.v3', team: 'fns.team.v2', teamV1: 'fns.team.v1', league: 'fns.league.v1', recent: 'fns.recent.v1', tab: 'fns.tab.v1', layout: 'fns.layout.v1' },
   prefix: 'fns.',
   slug: 'football-not-soccer',
 };
@@ -136,6 +136,7 @@ let cache = emptyCache();
 let team = null;                 // { id, name, logo, color, leagueId } or null
 let league = DEFAULT_LEAGUE;     // chosen league for Matcher and Tabell
 let recent = [];
+let layout = {};               // card order per view (Inställningar → Utseende)
 let view = 'matches';
 let liveTimer = null;
 // The Lag tab shows the team; the other tabs show the chosen league.
@@ -143,11 +144,12 @@ const teamView = () => view === 'team' && !!team;
 const viewLeague = () => (teamView() ? team.leagueId : league);
 const L = (id) => cache.leagues[id] || (cache.leagues[id] = emptyLeague());
 const saveCache = () => { if (!store.set(CONFIG.keys.cache, cache)) { trimCache(0); store.set(CONFIG.keys.cache, cache); } };
-const settings = () => ({ team, league, recent });
+const settings = () => ({ team, league, recent, layout });
 function saveSettings() {
   store.set(CONFIG.keys.team, team);
   store.set(CONFIG.keys.league, league);
   store.set(CONFIG.keys.recent, recent);
+  store.set(CONFIG.keys.layout, Object.keys(layout).length ? layout : null);
 }
 // Team cache: only the recently followed teams (and the current one).
 function trimCache(max = CONFIG.teamCacheMax) {
@@ -318,7 +320,7 @@ function renderLeagueMatches() {
 function renderTeam() {
   $('teambar').hidden = !team;
   $('team-empty').hidden = !!team;
-  $('team-cards').hidden = !team;
+  for (const id of ['next', 'last', 'table']) $('arr-team').querySelector(`[data-card="${id}"]`).hidden = !team;
   const c = team && (team.color || (teamData() && teamData().color));
   if (color(c)) document.documentElement.style.setProperty('--sel', color(c));   // strict #rrggbb only
   else document.documentElement.style.removeProperty('--sel');
@@ -371,6 +373,40 @@ function renderStatus(msg, isError) {
   if (msg) parts.push(msg);
   s.textContent = parts.join(' · ');
 }
+// ---------- Card order (as simple-nutrition): ↑ ↓ moves, ●/○ shows/hides ----------
+function arrange() {
+  for (const v of Object.keys(LAYOUT)) {
+    const box = $('arr-' + v), { order, hidden } = layoutOf(layout, v);
+    for (const id of order) {
+      const n = box.querySelector(`:scope > [data-card="${id}"]`);
+      n.classList.toggle('lay-off', hidden.includes(id));
+      box.append(n);
+    }
+  }
+}
+function setLayout(v, l) {
+  layout = loadLayout({ ...layout, [v]: l });
+  store.set(CONFIG.keys.layout, Object.keys(layout).length ? layout : null);
+  render();
+}
+function renderLayout() {
+  $('hint-layout').textContent = Object.keys(layout).length ? 'Egen' : 'Standard';
+  fill($('layout-body'), Object.entries(LAYOUT_VIEWS).map(([v, name]) => {
+    const { order, hidden } = layoutOf(layout, v), label = Object.fromEntries(LAYOUT[v]);
+    const move = (i, d) => { const o = [...order]; [o[i], o[i + d]] = [o[i + d], o[i]]; setLayout(v, { order: o, hidden }); };
+    return [el('h2', { class: 'lay-h', text: name }),
+      el('ul', { class: 'rows lay-list', 'data-view': v }, order.map((id, i) => {
+        const off = hidden.includes(id);
+        return el('li', { class: 'row' + (off ? ' l-off' : '') },
+          el('span', { class: 'row-name', text: label[id] }),
+          el('button', { type: 'button', class: 'icon-btn sm', disabled: i === 0, 'aria-label': `Flytta upp ${label[id]}`, text: '↑', on: { click: () => move(i, -1) } }),
+          el('button', { type: 'button', class: 'icon-btn sm', disabled: i === order.length - 1, 'aria-label': `Flytta ner ${label[id]}`, text: '↓', on: { click: () => move(i, 1) } }),
+          el('button', { type: 'button', class: 'icon-btn sm lay-eye', 'aria-pressed': String(!off), 'aria-label': `${off ? 'Visa' : 'Dölj'} ${label[id]}`, text: off ? '○' : '●',
+            on: { click: () => setLayout(v, { order, hidden: off ? hidden.filter((x) => x !== id) : [...hidden, id] }) } }));
+      })),
+      el('button', { type: 'button', class: 'btn text', 'data-reset': v, text: `Återställ ${name}`, on: { click: () => setLayout(v, null) } })];
+  }));
+}
 function render() {
   for (const v of TABS) $('view-' + v).hidden = v !== view;
   for (const t of document.querySelectorAll('#tabbar [data-view]')) {
@@ -378,7 +414,7 @@ function render() {
     t.classList.toggle('on', on);
     if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
   }
-  renderPickers(); renderLeagueMatches(); renderTable(); renderTeam(); renderSettings();
+  arrange(); renderPickers(); renderLeagueMatches(); renderTable(); renderTeam(); renderSettings(); renderLayout();
 }
 
 // ---------- Router (tabs, see ../STIL.md) ----------
@@ -544,7 +580,7 @@ function snackbar(text, actionText, action, ms = 5000) {
 
 // ---------- Data: backup (U5), import, reset ----------
 function applySettings(s) {
-  team = s.team; league = s.league; recent = s.recent;
+  team = s.team; league = s.league; recent = s.recent; layout = s.layout;
   saveSettings(); trimCache(); saveCache();
   render(); renderStatus();
 }
@@ -593,7 +629,7 @@ $('imp-ok').addEventListener('click', () => {
 $('reset').addEventListener('click', () => $('confirm-dialog').showModal());
 $('cd-ok').addEventListener('click', () => {
   store.clear(CONFIG.prefix);
-  cache = emptyCache(); team = null; league = DEFAULT_LEAGUE; recent = [];
+  cache = emptyCache(); team = null; league = DEFAULT_LEAGUE; recent = []; layout = {};
   render(); renderStatus();
   snackbar('All data är raderad', null, null, 3000);
 });
@@ -616,10 +652,10 @@ addEventListener('online', () => { if (!document.hidden && view !== 'settings') 
 addEventListener('offline', () => renderStatus('Offline – visar sparad data', true));
 let startView = 'matches';
 try {
-  const s = loadSettings({ team: store.get(CONFIG.keys.team), league: store.get(CONFIG.keys.league), recent: store.get(CONFIG.keys.recent) });
+  const s = loadSettings({ team: store.get(CONFIG.keys.team), league: store.get(CONFIG.keys.league), recent: store.get(CONFIG.keys.recent), layout: store.get(CONFIG.keys.layout) });
   team = s.team || loadTeam(null, store.get(CONFIG.keys.teamV1));
   if (store.get(CONFIG.keys.teamV1) != null) { store.set(CONFIG.keys.teamV1, null); if (team) store.set(CONFIG.keys.team, team); }
-  league = s.league; recent = s.recent;
+  league = s.league; recent = s.recent; layout = s.layout;
   cache = loadCache(store.get(CONFIG.keys.cache));
   startView = loadTab(location.hash.slice(1)) || loadTab(store.get(CONFIG.keys.tab)) || (team ? 'team' : 'matches');
 } catch {

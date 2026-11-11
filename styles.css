@@ -216,3 +216,11 @@ dialog p { margin: 0 0 12px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+/* Card order (Inställningar → Utseende) */
+.arr { display: grid; gap: 10px; }
+.lay-off { display: none !important; }
+.lay-h { margin: 12px 0 4px; }
+.lay-h:first-child { margin-top: 0; }
+.icon-btn.sm { min-width: 40px; min-height: 40px; }
+.icon-btn:disabled { opacity: .38; cursor: default; }
+.l-off .row-name { color: var(--muted); text-decoration: line-through; }
