@@ -88,6 +88,37 @@ T.test('säkerhet: klubbmärken från annan värd visas inte', () => {
   T.eq(document.querySelectorAll('img').length, 0);
   T.ok(document.querySelectorAll('.ph').length > 0, 'platshållare');
 });
+T.test('ligor: standard fyra i väljaren, VM väljs under Inställningar och visar grupper, svep byter liga', async () => {
+  const picker = () => [...T.$('#view-table .league-picker').children].map((b) => b.dataset.league);
+  T.eq(picker(), ['eng.1', 'esp.1', 'ita.1', 'uefa.champions']);
+  tab('settings');
+  click(T.$('.lay-list[data-view="leagues"] [aria-label="Visa VM"]'));
+  T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).leagues.hidden.includes('fifa.world'), false);
+  tab('table');
+  await settle();
+  T.eq(picker(), ['eng.1', 'esp.1', 'ita.1', 'uefa.champions', 'fifa.world']);
+  pickLeague('fifa.world');
+  await settle();
+  T.eq([...document.querySelectorAll('#table-full .grp')].map((h) => h.textContent), ['Group A', 'Group B']);
+  T.eq(document.querySelectorAll('#table-full tbody tr').length, 8);
+  const card = T.$('#table-card');
+  const swipe = (x0, x1) => {
+    const t = (x) => new Touch({ identifier: 1, target: card, clientX: x, clientY: 100 });
+    card.dispatchEvent(new TouchEvent('touchstart', { touches: [t(x0)], changedTouches: [t(x0)] }));
+    card.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(x1)] }));
+  };
+  swipe(100, 300);
+  T.eq(league, 'uefa.champions');
+  await settle();
+  swipe(300, 100);
+  T.eq(league, 'fifa.world');
+  await settle();
+  tab('settings');
+  click('[data-reset="leagues"]');
+  T.eq(league, 'eng.1', 'dold liga → första synliga');
+  await settle();
+  T.eq(picker(), ['eng.1', 'esp.1', 'ita.1', 'uefa.champions']);
+});
 T.test('Tabell: hela tabellen med zoner', async () => {
   tab('table');
   await settle();

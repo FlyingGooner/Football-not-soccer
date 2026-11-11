@@ -88,7 +88,7 @@ async function fetchSchedule(compId, teamId) {
 }
 // All matches for one team: its league plus the European competitions. known = league matches already in hand.
 async function fetchTeamMatches(teamId, leagueId, known, knownColor) {
-  const comps = [leagueId, ...CONFIG.europe.map((e) => e.id).filter((id) => id !== leagueId)];
+  const comps = national(leagueId) ? [leagueId] : [leagueId, ...CONFIG.europe.map((e) => e.id).filter((id) => id !== leagueId)];
   const jobs = comps.map((id) => (known && id === leagueId ? Promise.resolve({ list: known, color: knownColor || null }) : fetchSchedule(id, teamId)));
   const settled = await Promise.allSettled(jobs);
   if (settled.every((s) => s.status === 'rejected')) throw settled[0].reason;
@@ -111,7 +111,7 @@ async function fetchScoreboards(leagueId, from, to, today) {
 async function fetchLeagueMatches(leagueId, table, from = -7, to = 7) {
   const merged = await fetchScoreboards(leagueId, from, to, true).catch(() => []);
   const n = CONFIG.roundSize;
-  if (merged.filter((m) => m.state === 'pre').length >= n && merged.filter((m) => m.state === 'post').length >= n) return { matches: merged, full: false, colors: {} };
+  if (!domestic(leagueId) || (merged.filter((m) => m.state === 'pre').length >= n && merged.filter((m) => m.state === 'post').length >= n)) return { matches: merged, full: false, colors: {} };
   try {
     const viaTeams = await fetchLeagueMatchesViaTeams(leagueId, table);
     return { ...viaTeams, matches: mergeMatches([viaTeams.matches, merged]) };
@@ -193,7 +193,8 @@ const scoreText = (a, b) => `${a ?? '–'}–${b ?? '–'}`;
 
 // ---------- Rendering: league picker and today row ----------
 function renderPickers() {
-  document.querySelectorAll('.league-picker').forEach((p) => fill(p, CONFIG.leagues.map((l) => el('button', { type: 'button',
+  const shown = pickerLeagues(layout).map(leagueById);
+  document.querySelectorAll('.league-picker').forEach((p) => fill(p, shown.map((l) => el('button', { type: 'button',
     'aria-pressed': String(l.id === league), 'data-league': l.id, text: l.short, on: { click: () => setLeague(l.id) } }))));
 }
 
@@ -230,7 +231,11 @@ const noTable = () => el('p', { class: 'muted pad-x', text: 'Ingen tabell tillg�
 function renderTable() {
   const rows = L(league).table;
   $('table-title').textContent = leagueById(league).name;
-  fill($('table-full'), rows && rows.length ? [fullTable(rows, league), tableLegend(league)] : noTable());
+  if (!rows || !rows.length) { fill($('table-full'), noTable()); return; }
+  // Group tables (World Cup, Euro …): one table per group with its name, no zones.
+  const groups = [...new Set(rows.map((r) => r.group).filter(Boolean))];
+  if (groups.length) { fill($('table-full'), groups.map((g) => [el('h3', { class: 'grp', text: g }), fullTable(rows.filter((r) => r.group === g), league)])); return; }
+  fill($('table-full'), [fullTable(rows, league), tableLegend(league)]);
 }
 function formDots(matches) {
   const pl = (matches || []).filter((m) => m.state === 'post' && m.leagueId === team.leagueId).slice(-5);
@@ -381,14 +386,23 @@ function swipeTab(dir) {
   const next = ids[ids.indexOf(cur) + dir];
   if (next) { mtab = next; renderLeagueMatches(); }
 }
-let touch0 = null;
-$('card-matches').addEventListener('touchstart', (e) => { const t = e.touches[0]; touch0 = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
-$('card-matches').addEventListener('touchend', (e) => {
-  if (!touch0) return;
-  const t = e.changedTouches[0], dx = t.clientX - touch0.x, dy = t.clientY - touch0.y;
-  touch0 = null;
-  if (Math.abs(dx) >= 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) swipeTab(dx < 0 ? 1 : -1);
-}, { passive: true });
+// Tabell: swipe → next/previous league in the picker.
+function swipeLeague(dir) {
+  const ids = pickerLeagues(layout), next = ids[ids.indexOf(league) + dir];
+  if (next) setLeague(next);
+}
+function onSwipe(node, fn) {
+  let t0 = null;
+  node.addEventListener('touchstart', (e) => { const t = e.touches[0]; t0 = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
+  node.addEventListener('touchend', (e) => {
+    if (!t0) return;
+    const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y;
+    t0 = null;
+    if (Math.abs(dx) >= 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) fn(dx < 0 ? 1 : -1);
+  }, { passive: true });
+}
+onSwipe($('card-matches'), swipeTab);
+onSwipe($('table-card'), swipeLeague);
 function renderTeam() {
   $('teambar').hidden = !team;
   $('team-empty').hidden = !!team;
@@ -455,6 +469,7 @@ function renderStatus(msg, isError) {
 function arrange() {
   for (const v of Object.keys(LAYOUT)) {
     const box = $('arr-' + v), { order, hidden } = layoutOf(layout, v);
+    if (!box) continue;   // leagues: the picker, not cards
     for (const id of order) {
       const n = box.querySelector(`:scope > [data-card="${id}"]`);
       n.classList.toggle('lay-off', hidden.includes(id));
@@ -465,6 +480,8 @@ function arrange() {
 function setLayout(v, l) {
   layout = loadLayout({ ...layout, [v]: l });
   store.set(CONFIG.keys.layout, Object.keys(layout).length ? layout : null);
+  const shown = pickerLeagues(layout);
+  if (!shown.includes(league)) { setLeague(shown[0]); return; }
   render();
 }
 function renderLayout() {
@@ -537,7 +554,7 @@ $('pick').addEventListener('click', (e) => { if (e.target === $('pick')) $('pick
 $('team-pick').addEventListener('click', () => go('table'));
 // A team from the CL table gets its domestic league if it is one of ours (from cached or fetched tables).
 async function domesticLeagueOf(id) {
-  const doms = CONFIG.leagues.filter((l) => !l.cup);
+  const doms = CONFIG.leagues.filter((l) => l.kind === 'league');
   const hit = doms.find((l) => (L(l.id).table || []).some((r) => r.id === id));
   if (hit) return hit.id;
   const res = await Promise.allSettled(doms.map((l) => fetchTable(l.id)));
@@ -557,7 +574,7 @@ async function choose(row) {
   recent = addRecent(recent, team);
   saveSettings();
   go('team', false);
-  if (!domestic(team.leagueId)) {
+  if (!domestic(team.leagueId) && !national(team.leagueId)) {
     const lid = await domesticLeagueOf(team.id).catch(() => null);
     if (lid && team && team.id === t.id) { team = { ...team, leagueId: lid }; recent = addRecent(recent, team); saveSettings(); render(); }
   }
@@ -682,7 +699,7 @@ function snackbar(text, actionText, action, ms = 5000) {
 
 // ---------- Data: backup (U5), import, reset ----------
 function applySettings(s) {
-  team = s.team; league = s.league; recent = s.recent; layout = s.layout;
+  team = s.team; league = pickerLeagues(s.layout).includes(s.league) ? s.league : pickerLeagues(s.layout)[0]; recent = s.recent; layout = s.layout;
   saveSettings(); trimCache(); saveCache();
   render(); renderStatus();
 }
@@ -757,7 +774,7 @@ try {
   const s = loadSettings({ team: store.get(CONFIG.keys.team), league: store.get(CONFIG.keys.league), recent: store.get(CONFIG.keys.recent), layout: store.get(CONFIG.keys.layout) });
   team = s.team || loadTeam(null, store.get(CONFIG.keys.teamV1));
   if (store.get(CONFIG.keys.teamV1) != null) { store.set(CONFIG.keys.teamV1, null); if (team) store.set(CONFIG.keys.team, team); }
-  league = s.league; recent = s.recent; layout = s.layout;
+  league = pickerLeagues(s.layout).includes(s.league) ? s.league : pickerLeagues(s.layout)[0]; recent = s.recent; layout = s.layout;
   cache = loadCache(store.get(CONFIG.keys.cache));
   startView = loadTab(location.hash.slice(1)) || loadTab(store.get(CONFIG.keys.tab)) || (team ? 'team' : 'matches');
 } catch {

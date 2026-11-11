@@ -87,9 +87,15 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - I lagläge visas samma händelser direkt under ställningen i Nästa/Senaste match.
 - Datan kommer från scoreboardens `details` (mål, gula och röda kort), inga extra anrop. Utfällt läge gäller bara under sessionen.
 
-### Champions League i ligaväljaren
-- Ligaväljaren har ett fjärde läge, *CL*. Det visar kortet Matcher och ligafasens tabell (`uefa.champions`) med zonerna Åttondelsfinal (1–8) och Playoff (9–24), utan nedflyttning. Inget slutspelsträd.
-- Lag i CL-tabellen kan följas; laget får då sin inhemska liga om den är en av de tre (från lagets schema), annars visas bara CL-tabellen.
+### Ligor och turneringar (beslut 2026-11-11)
+- Alla i `LEAGUES` (`store.js`), med data kontrollerad hos ESPN 2026-11-11:
+  - **Ligor:** Premier League `eng.1`, LaLiga `esp.1`, Serie A `ita.1`, Bundesliga `ger.1`, Ligue 1 `fra.1`, Eredivisie `ned.1`, Primeira Liga `por.1`, Allsvenskan `swe.1`.
+  - **Europacuper:** Champions League `uefa.champions`, Europa League `uefa.europa`, Conference League `uefa.europa.conf` – ligafasens tabell med zonerna Åttondelsfinal (1–8) och Playoff (9–24). Inget slutspelsträd.
+  - **Landslag:** VM `fifa.world`, EM `uefa.euro`, Copa América `conmebol.america`, Afrikanska mästerskapen `caf.nations`, Gold Cup `concacaf.gold` (Asiatiska mästerskapen saknar data). Tabellen visas per grupp (gruppens namn som rubrik), utan zoner. Mellan turneringarna visas senaste turneringens data eller tomt läge.
+- **Ligaväljaren** visar de ligor användaren valt, i vald ordning (standard: PL, LaLiga, Serie A, CL; övriga dolda). Fler än fyra → raden kan scrollas i sidled. Väljs under Inställningar → Utseende → **Ligor**: samma lista som Kortordning (↑ ↓ flyttar, ●/○ visar/döljer, Återställ). Minst en måste visas. Döljs den valda ligan byts till första synliga. Gäller både Matcher och Tabell. Sparas i `fns.layout.v1` under `leagues` (exporteras som övrig kortordning).
+- **Svep på Tabell** åt vänster/höger byter till nästa/föregående liga i ligaväljaren (samma regel som svep på Matcher).
+- Lag i en europacups tabell kan följas; laget får då sin inhemska liga om den är en av ligorna ovan, annars visas bara cupens data. **Landslag** kan följas från turneringens tabell; laget får turneringen som liga och bara den turneringens matcher hämtas (inga europacuper).
+- Reserven "varje lags schema" används bara för ligor, aldrig för cuper och landslagsturneringar (för många anrop).
 
 ### Senast följda lag
 - Längst ned under Lag: rad med upp till 5 senast följda lag (märke + kort namn), samma lag som har sparad data (`CONFIG.teamCacheMax`). Ett tryck byter lag direkt utan dialog. Under Inställningar → Lag tar ✕ bort laget ur listan och dess cache.
@@ -141,7 +147,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 
 ## Datakälla och uppdatering
 - **ESPN:s öppna JSON-API** (`site.api.espn.com`), inofficiellt, gratis, ingen nyckel.
-  - Samma host för alla ligor och Champions League; bara `{liga}` i sökvägen skiljer (`eng.1`, `esp.1`, `ita.1`, `uefa.champions`, `uefa.europa`, `uefa.europa.conf`).
+  - Samma host för alla ligor och turneringar; bara `{liga}` i sökvägen skiljer (id enligt Ligor och turneringar).
   - Tabell: `/apis/v2/sports/soccer/{liga}/standings`
   - Ligans matcher: `/apis/site/v2/sports/soccer/{liga}/scoreboard?dates=YYYYMMDD-YYYYMMDD` i intervall om en vecka: först 1 vecka bakåt och 1 framåt plus dagens scoreboard; Visa fler hämtar en vecka till åt gången (högst 5 bakåt, 5 framåt).
   - Lagets matcher: `/apis/site/v2/sports/soccer/{turnering}/teams/{lag-id}/schedule` (+ `?fixture=true` för kommande), per turnering.
@@ -165,6 +171,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 - Arbetsytans agent `granskning` bestämmer över säkerheten (undantag U5, U6 – godkänt 2026-11-11, villkor i dess tabell). CSP: `connect-src https://site.api.espn.com; img-src 'self' https://a.espncdn.com` (inga `https:`/`data:`); beslutet "Avböjt – smalare `img-src`" nedan är upphävt.
 - Exponering vid hämtning (kontrollerat 2026-11-11): ESPN ser IP, `User-Agent`, `Accept-Language`, `Origin` och vilka ligor/lag som hämtas. Ingen referer, inga cookies (API: `credentials:'omit'`; klubbmärken: `img.crossOrigin='anonymous'`, ESPN svarar `Access-Control-Allow-Origin: *`), ingen användardata. Ligor hämtas först när de öppnas. Fler ligor ändrar varken host eller CSP (`connect-src https://site.api.espn.com`), bara sökvägar. Liga-id i URL:er kommer alltid från `CONFIG`, aldrig från lagrad data eller API-svar; lagrat `leagueId` valideras mot `CONFIG.leagues`.
 - Cache `.v4` (2026-11-11): nya fält `range` och händelsetypen `yellow` (spelarnamn och minut från API:t) valideras i `store.js` som övriga fält och renderas som text. Ingen ny host, ingen ändrad CSP, inget nytt undantag. Färre anrop än tidigare.
+- Fler ligor och turneringar (2026-11-11): bara nya sökvägar på samma host, id ur `LEAGUES`. Ingen ny host, ingen ändrad CSP, inget nytt undantag, ingen ny nyckel. Ny lagrad del `layout.leagues` (id valideras mot `LEAGUES`), nytt cachefält `group` i tabellrader (text, max 60 tecken, renderas som text).
 - `<head>` (2026-11-11): `viewport-fit=cover` och ändrade `theme-color`-värden (se PWA-krav). Ingen ändring av CSP eller anrop.
 - Ombyggnad enligt `template/` (2026-11-11): appen är undantaget från regeln om inga nätverksanrop. Innan bygget kontrolleras att undantaget för ESPN finns kvar i `granskning`-tabellen och `tools/check.ps1`; saknas det → förhandsprövning.
 

@@ -11,6 +11,9 @@
     : Array.from({ length: 20 }, (_, k) => ({ id: String(P[lid] + k + 1), name: tname(lid, k + 1) })));
   const team = (t) => ({ id: t.id, shortDisplayName: t.name, color: '3366cc', logos: [{ href: 'https://evil.example/x.png' }] });
   function standings(lid) {
+    if (lid === 'fifa.world') return { children: ['Group A', 'Group B'].map((name, g) => ({ name, standings: { entries: [1, 2, 3, 4].map((i) => ({
+      team: team({ id: String(900 + g * 10 + i), name: `Land ${g}${i}` }), stats: [{ name: 'rank', value: i }, { name: 'points', value: 9 - i }] })) } })) };
+    if (!P[lid] && lid !== 'uefa.champions') return { children: [] };
     const ts = teamsOf(lid);
     return { children: [{ standings: { entries: ts.map((t, i) => ({ team: team(t), stats: [
       { name: 'rank', value: i + 1 }, { name: 'gamesPlayed', value: 10 }, { name: 'wins', value: 10 - i % 10 }, { name: 'ties', value: 0 },

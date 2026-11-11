@@ -1,11 +1,12 @@
 // Unit tests for store.js (plain script). Run: tools\test.ps1 football-not-soccer
 const LOGO = 'https://a.espncdn.com/i/teamlogos/soccer/500/359.png';
 
-T.test('ligor: PL, LaLiga, Serie A och CL', () => {
-  T.eq(LEAGUES.map((l) => l.id), ['eng.1', 'esp.1', 'ita.1', 'uefa.champions']);
+T.test('ligor: 16 ligor och turneringar, standard PL först', () => {
+  T.eq(LEAGUES.length, 16);
+  T.eq(LEAGUES.slice(0, 4).map((l) => l.id), ['eng.1', 'esp.1', 'ita.1', 'uefa.champions']);
   T.eq(loadLeague('esp.1'), 'esp.1');
   T.eq(loadLeague('x'), 'eng.1');
-  T.eq(loadLeague('uefa.europa'), 'eng.1');
+  T.eq([loadLeague('uefa.europa'), loadLeague('fifa.world')], ['uefa.europa', 'fifa.world']);
 });
 T.test('URL-byggare: bara kända turneringar, lag-id och datum', () => {
   T.eq(espnUrl('standings', 'esp.1'), 'https://site.api.espn.com/apis/v2/sports/soccer/esp.1/standings');
@@ -65,7 +66,7 @@ T.test('ESPN-tolkning: tabell och matcher med mål, okända fält ignoreras', ()
   const rows = parseStandings({ children: [{ standings: { entries: [
     { team: { id: '359', shortDisplayName: 'Arsenal', color: 'ef0107', logos: [{ href: LOGO }] }, stats: [{ name: 'rank', value: 1 }, { name: 'points', value: 26 }, { name: 'pointDifferential', value: 15 }] },
     { team: { id: '<b>', shortDisplayName: 'X' }, stats: [] }] } }] });
-  T.eq(rows, [{ id: '359', name: 'Arsenal', logo: LOGO, color: '#ef0107', rank: 1, played: null, w: null, d: null, l: null, gd: 15, pts: 26 }]);
+  T.eq(rows, [{ id: '359', name: 'Arsenal', logo: LOGO, color: '#ef0107', rank: 1, played: null, w: null, d: null, l: null, gd: 15, pts: 26, group: null }]);
   const ms = parseEvents({ events: [{ id: '1', date: '2026-11-07T15:00Z', competitions: [{ status: { type: { state: 'in' }, displayClock: "67'" },
     competitors: [{ homeAway: 'home', score: '2', team: { id: '359', shortDisplayName: 'Arsenal' } }, { homeAway: 'away', score: '1', team: { id: '363', shortDisplayName: 'Chelsea' } }],
     details: [{ scoringPlay: true, penaltyKick: true, type: { text: 'Penalty - Scored' }, clock: { displayValue: "40'" }, team: { id: '359' }, athletesInvolved: [{ shortName: 'B. Saka' }] }] }] }, null] }, 'eng.1');
@@ -122,4 +123,19 @@ T.test('cache v4: datumintervall valideras, gula kort tolkas och behålls', () =
   T.eq(Object.keys(loadLayout({ team: { hidden: ['recent'] } })), ['team']);
   const s = loadSettings({ league: 'eng.1', layout: { team: { order: ['table'] } } });
   T.eq(importText(exportText(s, '2026-11-11')).data.layout, s.layout);
+});
+T.test('ligor: standardväljare, ordning och dolda valideras, minst en visas', () => {
+  T.eq(pickerLeagues({}), ['eng.1', 'esp.1', 'ita.1', 'uefa.champions']);
+  T.eq(loadLayout({}), {});
+  const all = LEAGUES.map((l) => l.id);
+  T.eq(pickerLeagues({ leagues: { order: ['fifa.world', 'evil'], hidden: all.filter((id) => id !== 'fifa.world' && id !== 'swe.1') } }), ['fifa.world', 'swe.1']);
+  T.eq(pickerLeagues({ leagues: { order: [], hidden: all } }).length, 1);
+  T.ok(LEAGUES.every((l) => espnUrl('standings', l.id).startsWith('https://site.api.espn.com/apis/')), 'alla ligor via espnUrl');
+  T.eq([national('fifa.world'), national('eng.1'), domestic('ger.1'), domestic('uefa.europa')], [true, false, true, false]);
+});
+T.test('ESPN-tolkning: grupptabeller får gruppnamn, en tabell får inget', () => {
+  const e = (id) => ({ team: { id }, stats: [{ name: 'rank', value: 1 }] });
+  const g = parseStandings({ children: [{ name: 'Group A', standings: { entries: [e('1')] } }, { name: 'Group B', standings: { entries: [e('2')] } }] });
+  T.eq(g.map((r) => r.group), ['Group A', 'Group B']);
+  T.eq(parseStandings({ children: [{ name: 'Bundesliga', standings: { entries: [e('3')] } }] })[0].group, null);
 });

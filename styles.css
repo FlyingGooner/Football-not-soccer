@@ -251,3 +251,5 @@ dialog p { margin: 0 0 12px; }
 #view-team .more-btn { min-height: 36px; margin: 0; }
 #view-team .recent-wrap { margin-top: 0; }
 #view-team .recent-wrap h2 { display: none; }
+.grp { margin: 12px 14px 2px; font-size: .75rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.grp:first-child { margin-top: 0; }

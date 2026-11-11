@@ -39,7 +39,7 @@
   <!-- Tabell: vald liga -->
   <section class="view" id="view-table" hidden>
     <div class="seg league-picker" role="group" aria-label="Liga"></div>
-    <section class="card flush">
+    <section class="card flush" id="table-card">
       <h2 id="table-title">Premier League</h2>
       <div id="table-full"><span class="muted pad-x">Laddar…</span></div>
     </section>
@@ -87,9 +87,9 @@
     </details>
 
     <details class="set-group-wrap" id="g-layout">
-      <summary class="set-group"><span class="set-gtitle">Utseende</span><span class="set-hint">Kortordning</span></summary>
+      <summary class="set-group"><span class="set-gtitle">Utseende</span><span class="set-hint">Ligor, kortordning</span></summary>
       <details class="card set-sec">
-        <summary class="sec-sum"><span class="set-title">Kortordning</span><span class="set-hint" id="hint-layout"></span></summary>
+        <summary class="sec-sum"><span class="set-title">Ligor och kortordning</span><span class="set-hint" id="hint-layout"></span></summary>
         <div class="set-body" id="layout-body"></div>
       </details>
     </details>
@@ -125,7 +125,8 @@
           <details><summary>Senast följda lag</summary>
             <p>De fem senast följda lagen visas under Lag. Ett tryck byter lag direkt. Under Inställningar → Lag tar du bort ett lag ur listan.</p></details>
           <details><summary>Flytta kort</summary>
-            <p>Under Inställningar → Utseende → Kortordning väljer du ordningen på korten under Lag. ↑ ↓ flyttar ett kort, ● visar och ○ döljer det. Återställ ger standardordningen.</p></details>
+            <p>Under Inställningar → Utseende → Ligor och kortordning väljer du vilka ligor och turneringar som visas i ligaväljaren och i vilken ordning, och ordningen på korten under Lag. ↑ ↓ flyttar, ● visar och ○ döljer. Återställ ger standard.</p>
+            <p>Det finns Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Allsvenskan, Champions League, Europa League, Conference League, VM, EM, Copa América, Afrikanska mästerskapen och Gold Cup. Svep i sidled på Tabell för att byta liga och på Matcher för att byta flik.</p></details>
           <details><summary>Matcher och live</summary>
             <p>Tryck på en spelad eller pågående match för att se målskyttar, gula och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen. Övrig data hämtas bara igen när en match har börjat.</p></details>
           <details><summary>Offline och data</summary>

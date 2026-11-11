@@ -19,13 +19,33 @@ const ZONES_DOMESTIC = [
   { cls: 'zone-eu', from: 5, to: 6, label: 'Europa' },
   { cls: 'zone-rel', from: -3, to: -1, label: 'Nedflyttning' },   // negative = counted from the bottom of the table
 ];
+const Z = (cl, eu, rel) => [
+  { cls: 'zone-cl', from: 1, to: cl, label: 'Champions League' },
+  { cls: 'zone-eu', from: cl + 1, to: eu, label: 'Europa' },
+  { cls: 'zone-rel', from: -rel, to: -1, label: 'Nedflyttning' },
+];
+const ZONES_PHASE = [{ cls: 'zone-cl', from: 1, to: 8, label: 'Åttondelsfinal' }, { cls: 'zone-eu', from: 9, to: 24, label: 'Playoff' }];
+// kind: league (domestic), cup (European club cup), national (national-team tournament, group tables).
 const LEAGUES = Object.freeze([
-  { id: 'eng.1', name: 'Premier League', short: 'PL', zones: ZONES_DOMESTIC },
-  { id: 'esp.1', name: 'LaLiga', short: 'LaLiga', zones: ZONES_DOMESTIC },
-  { id: 'ita.1', name: 'Serie A', short: 'Serie A', zones: ZONES_DOMESTIC },
-  { id: 'uefa.champions', name: 'Champions League', short: 'CL', cup: true,
-    zones: [{ cls: 'zone-cl', from: 1, to: 8, label: 'Åttondelsfinal' }, { cls: 'zone-eu', from: 9, to: 24, label: 'Playoff' }] },
+  { id: 'eng.1', name: 'Premier League', short: 'PL', kind: 'league', zones: ZONES_DOMESTIC },
+  { id: 'esp.1', name: 'LaLiga', short: 'LaLiga', kind: 'league', zones: ZONES_DOMESTIC },
+  { id: 'ita.1', name: 'Serie A', short: 'Serie A', kind: 'league', zones: ZONES_DOMESTIC },
+  { id: 'uefa.champions', name: 'Champions League', short: 'CL', kind: 'cup', cup: true, zones: ZONES_PHASE },
+  { id: 'ger.1', name: 'Bundesliga', short: 'Bundesliga', kind: 'league', zones: Z(4, 6, 2) },
+  { id: 'fra.1', name: 'Ligue 1', short: 'Ligue 1', kind: 'league', zones: Z(3, 5, 2) },
+  { id: 'ned.1', name: 'Eredivisie', short: 'Eredivisie', kind: 'league', zones: Z(2, 4, 2) },
+  { id: 'por.1', name: 'Primeira Liga', short: 'Portugal', kind: 'league', zones: Z(2, 4, 2) },
+  { id: 'swe.1', name: 'Allsvenskan', short: 'Allsvenskan', kind: 'league', zones: [{ cls: 'zone-eu', from: 1, to: 3, label: 'Europa' }, { cls: 'zone-rel', from: -2, to: -1, label: 'Nedflyttning' }] },
+  { id: 'uefa.europa', name: 'Europa League', short: 'EL', kind: 'cup', cup: true, zones: ZONES_PHASE },
+  { id: 'uefa.europa.conf', name: 'Conference League', short: 'ECL', kind: 'cup', cup: true, zones: ZONES_PHASE },
+  { id: 'fifa.world', name: 'VM', short: 'VM', kind: 'national', cup: true, zones: [] },
+  { id: 'uefa.euro', name: 'EM', short: 'EM', kind: 'national', cup: true, zones: [] },
+  { id: 'conmebol.america', name: 'Copa América', short: 'Copa América', kind: 'national', cup: true, zones: [] },
+  { id: 'caf.nations', name: 'Afrikanska mästerskapen', short: 'Afrika', kind: 'national', cup: true, zones: [] },
+  { id: 'concacaf.gold', name: 'Gold Cup', short: 'Gold Cup', kind: 'national', cup: true, zones: [] },
 ]);
+const DEFAULT_PICKER = ['eng.1', 'esp.1', 'ita.1', 'uefa.champions'];
+const national = (id) => { const l = leagueById(id); return !!l && l.kind === 'national'; };
 const EUROPE = Object.freeze([
   { id: 'uefa.champions', name: 'Champions League' },
   { id: 'uefa.europa', name: 'Europa League' },
@@ -85,7 +105,7 @@ function cleanRow(r) {
   if (!isObj(r) || !validId(r.id)) return null;
   const n = (v) => (Number.isInteger(v) && Math.abs(v) < 1000 ? v : null);
   return { id: r.id, name: cleanText(r.name) || '?', logo: logoUrl(r.logo), color: color(r.color),
-    rank: n(r.rank), played: n(r.played), w: n(r.w), d: n(r.d), l: n(r.l), gd: n(r.gd), pts: n(r.pts) };
+    rank: n(r.rank), played: n(r.played), w: n(r.w), d: n(r.d), l: n(r.l), gd: n(r.gd), pts: n(r.pts), group: cleanText(r.group) || null };
 }
 // Object without prototype, keys checked (no __proto__ tricks).
 function idMap(obj, fn) {
@@ -105,7 +125,7 @@ function loadCache(c) {
   if (!isObj(c)) return emptyCache();
   return {
     leagues: idMap(c.leagues, (k, v) => (isLeague(k) && isObj(v) ? {
-      table: Array.isArray(v.table) ? v.table.map(cleanRow).filter(Boolean).slice(0, 60) : null,
+      table: Array.isArray(v.table) ? v.table.map(cleanRow).filter(Boolean).slice(0, 80) : null,
       league: cleanMatches(v.league),
       leagueFull: v.leagueFull === true,
       range: cleanRange(v.range),
@@ -244,19 +264,23 @@ function parseEvent(ev, compId) {
   });
 }
 const parseEvents = (data, compId) => (Array.isArray(data && data.events) ? data.events : []).map((ev) => parseEvent(ev, compId)).filter(Boolean);
+// One table, or one per group (World Cup, Euro …): rows get `group` when there are several.
 function parseStandings(data) {
-  const group = (isObj(data) && Array.isArray(data.children) && data.children[0]) || data || {};
-  const entries = (isObj(group.standings) && Array.isArray(group.standings.entries) && group.standings.entries) || [];
-  const rows = entries.filter(isObj).map((e) => {
-    const s = {};
-    for (const st of Array.isArray(e.stats) ? e.stats : []) if (isObj(st)) s[st.name || st.type] = apiNum(st);
-    const t = teamOf(e);
-    return cleanRow({ id: t.id, name: t.name, logo: t.logo, color: t.color, rank: s.rank, played: s.gamesPlayed, w: s.wins, d: s.ties, l: s.losses,
-      gd: s.pointDifferential ?? ((s.pointsFor ?? 0) - (s.pointsAgainst ?? 0)), pts: s.points });
-  }).filter(Boolean);
-  rows.sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
-  rows.forEach((r, i) => { if (r.rank == null) r.rank = i + 1; });
-  return rows;
+  const kids = isObj(data) && Array.isArray(data.children) ? data.children.filter(isObj) : [];
+  const groups = kids.length ? kids : [data || {}], many = groups.length > 1;
+  return groups.slice(0, 20).flatMap((g) => {
+    const entries = (isObj(g.standings) && Array.isArray(g.standings.entries) && g.standings.entries) || [];
+    const rows = entries.filter(isObj).map((e) => {
+      const s = {};
+      for (const st of Array.isArray(e.stats) ? e.stats : []) if (isObj(st)) s[st.name || st.type] = apiNum(st);
+      const t = teamOf(e);
+      return cleanRow({ id: t.id, name: t.name, logo: t.logo, color: t.color, rank: s.rank, played: s.gamesPlayed, w: s.wins, d: s.ties, l: s.losses,
+        gd: s.pointDifferential ?? ((s.pointsFor ?? 0) - (s.pointsAgainst ?? 0)), pts: s.points, group: many ? str(g.name) : null });
+    }).filter(Boolean);
+    rows.sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
+    rows.forEach((r, i) => { if (r.rank == null) r.rank = i + 1; });
+    return rows;
+  });
 }
 const STATE_RANK = { pre: 0, in: 1, post: 2 };
 // Same match from several sources: the most advanced state wins, goal details are kept.
@@ -283,21 +307,29 @@ function zoneOf(leagueId, rank, rows) {
 // Ids are fixed; unknown ids are dropped and new cards go last, so a saved order never breaks.
 const LAYOUT = Object.freeze({
   team: [['next', 'Nästa match'], ['last', 'Senaste match'], ['recent', 'Senast följda lag']],
+  // League picker (Matcher and Tabell): the default four first, the rest hidden until chosen.
+  leagues: [...DEFAULT_PICKER, ...LEAGUES.map((l) => l.id).filter((id) => !DEFAULT_PICKER.includes(id))].map((id) => [id, leagueById(id).name]),
 });
-const LAYOUT_VIEWS = Object.freeze({ team: 'Lag' });   // Matcher has one card only, so no list
+const LAYOUT_HIDDEN = Object.freeze({ leagues: LEAGUES.map((l) => l.id).filter((id) => !DEFAULT_PICKER.includes(id)) });
+const LAYOUT_VIEWS = Object.freeze({ leagues: 'Ligor', team: 'Lag' });   // Matcher has one card only, so no list
 function layoutOf(layout, v) {
-  const def = LAYOUT[v].map(([id]) => id), L = (isObj(layout) && isObj(layout[v]) && layout[v]) || {};
+  const def = LAYOUT[v].map(([id]) => id), saved = isObj(layout) && isObj(layout[v]) && layout[v], L = saved || {};
   const ids = (a) => (Array.isArray(a) ? a : []);
   const order = ids(L.order).filter((id, i, a) => def.includes(id) && a.indexOf(id) === i);
   def.forEach((id) => { if (!order.includes(id)) order.push(id); });
-  return { order, hidden: ids(L.hidden).filter((id, i, a) => def.includes(id) && a.indexOf(id) === i) };
+  let hidden = saved ? ids(L.hidden).filter((id, i, a) => def.includes(id) && a.indexOf(id) === i) : [...(LAYOUT_HIDDEN[v] || [])];
+  if (v === 'leagues' && hidden.length >= order.length) hidden = hidden.filter((id) => id !== order[0]);   // at least one league shown
+  return { order, hidden };
 }
 // Only views that differ from the default are kept.
 function loadLayout(raw) {
   const out = {};
   for (const v of Object.keys(LAYOUT)) {
-    const l = layoutOf(raw, v), def = LAYOUT[v].map(([id]) => id);
-    if (l.hidden.length || l.order.join() !== def.join()) out[v] = l;
+    const l = layoutOf(raw, v), def = LAYOUT[v].map(([id]) => id), dh = LAYOUT_HIDDEN[v] || [];
+    const sameHidden = l.hidden.length === dh.length && l.hidden.every((id) => dh.includes(id));
+    if (!sameHidden || l.order.join() !== def.join()) out[v] = l;
   }
   return out;
 }
+// Leagues shown in the picker, in the chosen order.
+const pickerLeagues = (layout) => { const { order, hidden } = layoutOf(layout, 'leagues'); return order.filter((id) => !hidden.includes(id)); };
