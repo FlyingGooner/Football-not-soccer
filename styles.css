@@ -226,7 +226,7 @@ dialog p { margin: 0 0 12px; }
 .more-btn { width: 100%; margin-top: 4px; }
 .mtabs { margin: -4px 0 6px; }
 #match-list { touch-action: pan-y; }
-/* League picker and match tabs: small centred boxes (segmented), scrolls sideways if many */
+/* League picker and match tabs: text tabs, centred, equal widths (symmetric); chosen = bold with a line under */
 /* Lag: compact, everything fits without scrolling */
 #teambar { background: var(--surface-container-high); color: var(--text); min-height: 48px; gap: 10px; padding-left: 12px; }
 #teambar img, #teambar .ph { width: 24px; height: 24px; }
@@ -250,8 +250,7 @@ dialog p { margin: 0 0 12px; }
 #view-team .recent-wrap h2 { display: none; }
 .grp { margin: 12px 14px 2px; font-size: .75rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .grp:first-child { margin-top: 0; }
-.seg { display: flex; width: max-content; max-width: 100%; margin-inline: auto; overflow-x: auto; scrollbar-width: none; border: 1px solid var(--outline); border-radius: var(--r-md); }
-.seg button { flex: none; min-height: 36px; padding: 0 14px; border: 0; border-left: 1px solid var(--outline); background: transparent; color: var(--text); font-weight: 500; font-size: .875rem; white-space: nowrap; }
-.seg button:first-child { border-left: 0; }
-.seg button[aria-pressed="true"] { background: var(--primary-container); color: var(--on-primary-container); }
-.mtabs { margin: 0 auto 8px; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; width: max-content; max-width: 100%; margin-inline: auto; overflow-x: auto; scrollbar-width: none; }
+.seg button { min-height: 44px; padding: 0 10px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); font-weight: 500; font-size: .9375rem; white-space: nowrap; text-align: center; }
+.seg button[aria-pressed="true"] { color: var(--text); font-weight: 700; border-bottom-color: var(--primary); }
+.mtabs { margin: -4px auto 6px; }
