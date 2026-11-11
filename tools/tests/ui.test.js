@@ -25,7 +25,8 @@ T.test('första start: Matcher i PL, pågående överst, resultat', async () => 
   T.eq(view, 'matches');
   T.ok(!T.$('#view-matches').hidden && T.$('#view-table').hidden, 'bara Matcher syns');
   T.eq(T.$('#tabbar .tab.on').dataset.view, 'matches');
-  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'now');
+  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'next', 'öppnas på Kommande');
+  click('#mtabs [data-mtab="now"]');
   T.ok(T.$('#match-list').textContent.includes('Pågår nu'), 'pågående match överst');
   T.ok(T.$('#match-list').textContent.includes("LIVE 67'"), 'LIVE med minut');
   T.ok(T.$('#more').hidden, 'Aktuella har ingen Visa fler');
@@ -280,4 +281,17 @@ T.test('kortordning: flytta och dölja kort, sparas och återställs', async () 
   click('[data-reset="team"]');
   T.eq(localStorage.getItem('fns.layout.v1'), null);
   T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['next', 'last', 'recent']);
+});
+T.test('byte av vy: Matcher öppnas på Kommande, utfällda matcher återställs', async () => {
+  tab('matches');
+  await settle();
+  click('#mtabs [data-mtab="past"]');
+  click('#match-list .lm.tap');
+  T.ok(T.$('#match-list .evs'), 'utfälld');
+  tab('table');
+  tab('matches');
+  await settle();
+  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'next');
+  click('#mtabs [data-mtab="past"]');
+  T.ok(!T.$('#match-list .evs'), 'ihopfälld igen');
 });

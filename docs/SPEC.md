@@ -50,10 +50,10 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppd
 ```
 - **Ligaväljare** överst: textflikar *PL · LaLiga · Serie A · CL* utan ramar, vald i fetstil med tunn linje under (beslut 2026-11-11, minimalistiskt), samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar bara det som behövs (se Datakälla och uppdatering).
 - **Kortet Matcher** ersätter korten Aktuella matcher och Senaste resultat (beslut 2026-11-11). Ingen rubrik. Flikar överst i kortet, samma textflikar som ligaväljaren:
-  - **Aktuella**: pågående matcher ("Pågår nu") och resten av dagens matcher ("Idag"). Förvald om det finns sådana, annars Kommande.
+  - **Aktuella**: pågående matcher ("Pågår nu") och resten av dagens matcher ("Idag"). Matcher öppnas alltid på **Kommande** (beslut 2026-11-11).
   - **Kommande**: matcher efter i dag, per dag ("I morgon", datum), äldst först.
   - **Spelade**: resultat per dag, nyaste först.
-  - Vald flik gäller bara under sessionen (ingen ny lagring).
+  - Vald flik och utfällda matcher (även Visa fler) återställs när man byter vy (ingen ny lagring).
   - **Svep** åt vänster/höger på listan byter till nästa/föregående flik (Aktuella → Kommande → Spelade). Bara tydligt vågräta svep (minst 50 px, mer vågrätt än lodrätt), så att lodrät scroll inte påverkas.
 - **Längd:** listan fyller skärmen ner till menyn (så många rader som får plats, minst 5) och slutar med **Visa fler**. Visa fler visar fler rader ur cachen; när cachen är slut hämtas en vecka till åt det hållet (Kommande framåt, Spelade bakåt). Aktuella har ingen Visa fler. Utfällt läge gäller bara under sessionen.
 - **Tomt läge:** "Inga matcher i dag", "Inga kommande matcher", "Inga spelade matcher".

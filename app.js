@@ -329,7 +329,7 @@ function leagueMatchList(list, emptyText) {
 }
 // ---------- Card Matcher: tabs Aktuella / Kommande / Spelade (session only) ----------
 const MTABS = [['now', 'Aktuella', 'Inga matcher i dag'], ['next', 'Kommande', 'Inga kommande matcher'], ['past', 'Spelade', 'Inga spelade matcher']];
-let mtab = null;                  // null = default (Aktuella if there are matches today)
+let mtab = 'next';               // Kommande every time Matcher is opened from another view
 let extra = { next: 0, past: 0 }; // rows added with Visa fler
 let loadingMore = false;
 function matchLists(ms) {
@@ -348,7 +348,7 @@ function fitRows() {
 const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? offOf(r.from) <= -7 * CONFIG.weeksMax : offOf(r.to) >= 7 * CONFIG.weeksMax); };
 function renderLeagueMatches() {
   const ms = L(league).league || [], lists = matchLists(ms);
-  const tab = mtab || (lists.now.length ? 'now' : 'next');
+  const tab = mtab;
   fill($('mtabs'), MTABS.map(([id, name]) => el('button', { type: 'button', role: 'tab', 'aria-selected': String(id === tab), 'aria-pressed': String(id === tab), 'data-mtab': id, text: name,
     on: { click: () => { mtab = id; renderLeagueMatches(); } } })));
   const [, , empty] = MTABS.find(([id]) => id === tab), list = lists[tab];
@@ -361,7 +361,7 @@ function renderLeagueMatches() {
 }
 // Visa fler: more rows from the cache; when it runs out, one more week from ESPN in that direction.
 async function showMore() {
-  const tab = mtab || (matchLists(L(league).league || []).now.length ? 'now' : 'next');
+  const tab = mtab;
   if (tab === 'now' || loadingMore) return;
   const step = fitRows(), dir = tab === 'past' ? -1 : 1, lid = league;
   extra[tab] += step;
@@ -382,7 +382,7 @@ async function showMore() {
 $('more').addEventListener('click', showMore);
 // Swipe left/right on the list → next/previous tab (only clearly horizontal swipes, ≥ 50 px).
 function swipeTab(dir) {
-  const ids = MTABS.map(([id]) => id), cur = mtab || (matchLists(L(league).league || []).now.length ? 'now' : 'next');
+  const ids = MTABS.map(([id]) => id), cur = mtab;
   const next = ids[ids.indexOf(cur) + dir];
   if (next) { mtab = next; renderLeagueMatches(); }
 }
@@ -514,7 +514,9 @@ function render() {
 
 // ---------- Router (tabs, see ../STIL.md) ----------
 function go(v, fetch = true) {
+  const prev = view;
   view = loadTab(v) || 'matches';
+  if (view !== prev) { mtab = 'next'; openMatches.clear(); teamOpen.next = teamOpen.last = false; extra = { next: 0, past: 0 }; }   // new view: start fresh
   if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view);
   store.set(CONFIG.keys.tab, view);
   render();
