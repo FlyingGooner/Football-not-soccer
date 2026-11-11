@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; require-trusted-types-for 'script'; img-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#37003C">
+<meta name="theme-color" content="#0f1a0b">
 <link rel="icon" href="../icons/icon-192.png">
 <title>Football, not soccer</title>
 <link rel="stylesheet" href="presentation.css">
@@ -15,96 +15,100 @@
 
 <main class="deck" id="deck">
 
-  <section class="band"><div class="slide inner">
-    <div class="hero-top"><div class="icon" aria-hidden="true">F<b>n</b>S</div><span class="ver">v0.5.4</span></div>
-    <span class="eyebrow">Din egen fotbollsapp</span>
-    <h1>Football, <span class="n">not</span> soccer</h1>
-    <p class="lead">En liten, snabb webbapp för Premier League. Tabellen, matcherna och ditt lag. Inget annat.</p>
-  </div></section>
-
-  <section class="slide">
-    <span class="eyebrow">Så ser den ut</span>
-    <h2>Allt på en skärm</h2>
-    <div class="phone" aria-label="Exempel på appens vy, påhittade matcher">
-      <div class="mcard">
-        <h3>Aktuella matcher</h3>
-        <div class="mrow"><span class="h">Arsenal</span><span class="s">2–1<br><span class="live">LIVE 78'</span></span><span>Chelsea</span></div>
-        <div class="goals"><div class="h">23' <span>Saka</span><br>61' <span>Rice</span></div><div>55' <span>Palmer (str.)</span></div></div>
-        <div class="mrow"><span class="h">Liverpool</span><span class="s">20:30</span><span>Spurs</span></div>
-      </div>
-      <div class="mcard">
-        <h3>Premier League</h3>
-        <div class="trow cl"><span>1</span><span>Arsenal</span><span>11</span><span>26</span></div>
-        <div class="trow cl"><span>2</span><span>Man City</span><span>11</span><span>23</span></div>
-        <div class="trow me"><span>3</span><span>Liverpool</span><span>11</span><span>22</span></div>
-      </div>
-    </div>
-    <p class="small muted">Exempelbild med påhittade matcher.</p>
-  </section>
-
-  <section class="slide">
-    <span class="eyebrow">Funktioner</span>
-    <h2>Det du faktiskt kollar</h2>
-    <div class="feats">
-      <div class="feat"><div class="k p" aria-hidden="true">●</div><div><h3>Live och nästa match</h3><p>Pågående matcher med ställning och minut överst, sedan det som spelas härnäst grupperat per dag.</p></div></div>
-      <div class="feat"><div class="k g" aria-hidden="true">⚽</div><div><h3>Mål, straffar, röda kort</h3><p>Tryck på en match så fälls målskyttarna ut, med minut och "(str.)" för straff.</p></div></div>
-      <div class="feat"><div class="k c" aria-hidden="true">#</div><div><h3>Tabell med zoner</h3><p>Topp 3 direkt, resten ett tryck bort. CL-, Europa- och nedflyttningsplatser markerade.</p></div></div>
-      <div class="feat"><div class="k u" aria-hidden="true">♥</div><div><h3>Följ ett lag</h3><p>Tryck på ett lag i tabellen. Då ser du dess form, nästa match med nedräkning och alla turneringar: PL, CL, FA-cupen och Ligacupen.</p></div></div>
+  <section class="title">
+    <div class="glow"></div><div class="glow g2"></div>
+    <div class="hero">
+      <div class="icons"><img src="../icons/icon-192.png" alt=""><span class="ver">v0.14.9</span></div>
+      <span class="eyebrow">flyinggooner · Fotboll</span>
+      <h1>Football, not soccer</h1>
+      <p class="lead">Tabellen, matcherna och ditt lag – utan reklam, utan konto, utan brus.</p>
     </div>
   </section>
 
-  <section class="slide">
+  <section>
+    <span class="eyebrow">Filosofi</span>
+    <h2>Tre principer bakom appen</h2>
+    <div class="cols">
+      <div class="card"><div class="ic" aria-hidden="true">🎯</div><h3>Ett tydligt fokus</h3><p>Appen svarar på en enda fråga: hur går det för mitt lag? Allt annat väljs aktivt bort.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🔒</div><h3>Integritet först</h3><p>Ingen inloggning, ingen spårning. Data stannar på telefonen och strikt CSP stänger ute allt externt.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">⚡</div><h3>Ren webb</h3><p>HTML, CSS och vanlig JavaScript. Inga byggsteg – hela appen kan levereras som en enda fil.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Appen</span>
+    <div class="ph"><img src="../icons/icon-192.png" alt=""><div><p class="name"><strong>Football, not soccer</strong></p><span class="chip">#4c8c2b</span></div></div>
+    <p class="lead"><strong>Det du kollar tio gånger om dagen – inget annat.</strong></p>
+    <ul class="f">
+      <li>Matcher: aktuella, kommande och spelade, live med minut</li>
+      <li>Tabell med zoner för Europa och nedflyttning</li>
+      <li>Följ ett lag i alla tävlingar: liga, cuper och Europa</li>
+      <li>16 ligor och turneringar – du väljer vilka som syns</li>
+      <li>Krypterad backup av inställningar, offline, ljust och mörkt</li>
+    </ul>
+    <div class="phone" role="img" aria-label="Exempel på appens vy, påhittade matcher">
+      <div class="mc"><div class="t">Aktuella matcher</div>
+        <div class="row"><span>Arsenal</span><span>2–1<span class="live">LIVE 78'</span></span><span>Chelsea</span></div>
+        <div class="gl">23' Saka · 61' Rice · 55' Palmer (str.)</div>
+        <div class="row"><span>Liverpool</span><span>20:30</span><span>Spurs</span></div>
+      </div>
+      <div class="mc"><div class="t">Premier League</div>
+        <div class="tr"><span>1</span><span>Arsenal</span><span>26</span></div>
+        <div class="tr"><span>2</span><span>Man City</span><span>23</span></div>
+        <div class="tr me"><span>3</span><span>Liverpool</span><span>22</span></div>
+      </div>
+    </div>
+    <p class="cap">Skiss med påhittade matcher</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Datakällan</span>
+    <h2>Ett enda, godkänt undantag</h2>
+    <p>Resultat kan inte byggas in i förväg. Därför får appen läsa från en källa – och bara på ett sätt.</p>
+    <div class="flow">
+      <div class="fbox"><b>1 · ESPN:s öppna API</b>Bara <code>site.api.espn.com</code> och klubbmärken från <code>a.espncdn.com</code>. Inga nycklar, inget konto.</div>
+      <div class="farr" aria-hidden="true">↓</div>
+      <div class="fbox"><b>2 · Fasta adresser</b>URL:er byggs på ett ställe av kända liga-id, lag-id och datum. Inga cookies, ingen referer, tidsgräns 10 s.</div>
+      <div class="farr" aria-hidden="true">↓</div>
+      <div class="fbox"><b>3 · Kontroll</b>Svaret får inte vara för stort och tolkas fält för fält. Okänt kastas, text visas som text.</div>
+      <div class="farr" aria-hidden="true">↓</div>
+      <div class="fbox"><b>4 · Cache i telefonen</b>Hämtas när appen öppnas och live var 60:e sekund. Inget skickas – ESPN ser bara vad som hämtas.</div>
+    </div>
+  </section>
+
+  <section>
     <span class="eyebrow">Under huven</span>
     <h2>Litet med flit</h2>
     <div class="facts">
-      <div class="fact"><b>1</b><span>HTML-fil. Inga ramverk, inget byggsteg.</span></div>
-      <div class="fact"><b>0</b><span>annonser, konton eller spårare.</span></div>
-      <div class="fact"><b>30 s</b><span>mellan uppdateringar under pågående match.</span></div>
-      <div class="fact"><b>0</b><span>anrop när appen är stängd.</span></div>
+      <div><b>1</b><span>HTML-fil. Inga ramverk, inget byggsteg.</span></div>
+      <div><b>0</b><span>annonser, konton eller spårare.</span></div>
+      <div><b>60 s</b><span>mellan uppdateringar under pågående match.</span></div>
+      <div><b>0</b><span>anrop när appen är stängd.</span></div>
     </div>
-    <p class="muted">Senast hämtad data sparas i telefonen och visas med tidsstämpel om nätet saknas. Ljust och mörkt tema följer telefonens inställning.</p>
+    <p class="note">Senast hämtad data visas om nätet saknas – aldrig en blank skärm.</p>
   </section>
 
-  <section class="slide">
-    <span class="eyebrow">Jämförelse</span>
-    <h2>Varför inte bara FotMob?</h2>
-    <p class="muted">FotMob är en bra app. Men den är byggd för alla ligor och alla användare. Den här är byggd för en.</p>
-    <div class="cmp-wrap">
-      <table class="cmp">
-        <thead><tr><th></th><th class="us">FnS</th><th>FotMob</th></tr></thead>
-        <tbody>
-          <tr><td>Reklam</td><td class="yes">Ingen</td><td>Ja, i gratisversionen</td></tr>
-          <tr><td>Konto och spårning</td><td class="yes">Inget</td><td>Annonsspårning, konto valfritt</td></tr>
-          <tr><td>Startskärm</td><td class="yes">Din liga, direkt</td><td>Hela världens matcher</td></tr>
-          <tr><td>Storlek</td><td class="yes">Några hundra kB</td><td>Appbutiksapp, tiotals MB</td></tr>
-          <tr><td>Kan ändras</td><td class="yes">Ja, det är din kod</td><td>Nej</td></tr>
-        </tbody>
-      </table>
-    </div>
+  <section>
+    <span class="eyebrow">Ärlig jämförelse</span>
+    <h2>Mot de stora resultatapparna</h2>
+    <table class="cmp">
+      <tr><th></th><th>Football, not soccer</th><th>Typisk resultatapp</th></tr>
+      <tr><td>Reklam och spårning</td><td><b>Ingen</b></td><td>Ja, i gratisversionen</td></tr>
+      <tr><td>Startskärm</td><td><b>Din liga, direkt</b></td><td>Hela världens matcher</td></tr>
+      <tr><td>Storlek</td><td><b>Några hundra kB</b></td><td>Tiotals MB</td></tr>
+      <tr><td>Notiser vid mål</td><td>Nej – ingen server</td><td><b>Bättre</b></td></tr>
+      <tr><td>Statistik, uppställningar, xG</td><td>Nej</td><td><b>Bättre</b></td></tr>
+      <tr><td>Datakälla</td><td>Öppet API, kan ändras utan förvarning</td><td><b>Bättre</b> – officiella avtal</td></tr>
+    </table>
   </section>
-
-  <section class="slide">
-    <span class="eyebrow">Rakt på sak</span>
-    <h2>Det FotMob gör bättre</h2>
-    <ul class="cons">
-      <li>Notiser vid mål. FnS har ingen server som kan skicka dem.</li>
-      <li>Alla ligor i världen. FnS visar bara Premier League och turneringarna ditt lag spelar i.</li>
-      <li>Laguppställningar, xG, spelarbetyg och detaljerad statistik.</li>
-      <li>Officiellt stöd. FnS hämtar data från ESPN:s öppna gränssnitt, som kan ändras utan förvarning.</li>
-    </ul>
-    <p class="muted">Vill du ha allt, välj FotMob. Vill du ha det du kollar tio gånger om dagen, utan brus, välj FnS.</p>
-  </section>
-
-  <section class="slide">
+  <section>
     <span class="eyebrow">Kvalitetsstämpel</span>
     <h2>Säkerhetstestad</h2>
-    <p class="lead">Automatiska tester körs före varje commit och push. Underkänt test = ingen release.</p>
+    <p>Automatiska tester körs före varje commit och push. Underkänt test = ingen release.</p>
     <h3 class="checks-h">Säkerhetskontroll</h3>
     <ul class="checks">
-      <li><b>S</b><span>t</span></li>
-      <li><b>i</b><span>n</span></li>
-      <li><b>B</b><span>a</span></li>
-      <li><b>E</b><span>S</span></li>
+      <li><b>Strikt innehållspolicy</b><span>ingen kod utifrån, inga inline-skript.</span></li>
+      <li><b>Bara godkänd källa</b><span>ESPN:s värdar, utan cookies och referer, med tidsgräns och storlekstak.</span></li>
       <li><b>Bara egen lagring</b><span>egna nycklar i telefonen, inga farliga API:er som eval.</span></li>
       <li><b>Service worker</b><span>cachar bara appens egna filer.</span></li>
       <li><b>Krypterad backup</b><span>AES-256-GCM, PBKDF2 600 000 varv, lösenordet sparas aldrig.</span></li>
@@ -115,25 +119,62 @@
       <li><b>Text, aldrig HTML</b><span>data visas som text – inget kan köras via innehåll.</span></li>
       <li><b>ESPN-svar kontrolleras</b><span>okända tävlingar, felaktiga lag-id, färger och klubbmärken från andra värdar stoppas.</span></li>
       <li><b>Fel och offline</b><span>sparad data visas, aldrig en blank skärm.</span></li>
-      <li><b>Export och radering</b><span>backup fram och tillbaka; radera tar bara appens egna data.</span></li>
+      <li><b>Export och radering</b><span>bara inställningar i backupen; radera tar bara appens egna data.</span></li>
+      <li><b>Inget nät i testerna</b><span>ESPN fejkas – testerna går aldrig ut på nätet.</span></li>
     </ul>
   </section>
 
-  <section class="band"><div class="slide inner">
+  <section>
+    <span class="eyebrow">Design</span>
+    <h2>Material Design 3, byggd för mobilen</h2>
+    <div class="card">
+      <h3>Färg via roller</h3>
+      <p>Nyckelfärgen styr allt. Ljust och mörkt tema följer telefonen. Nästan kantigt och tätt.</p>
+      <div class="palette"><div class="sw p">primary</div><div class="sw c">container</div><div class="sw s">surface</div><div class="sw d">dark</div></div>
+      <div class="shapes"><div class="shape r8">Kort · 8 px</div><div class="shape r4">Chip · 4 px</div><div class="shape r6">Knapp · 6 px</div><div class="shape r12">Dialog · 12 px</div></div>
+      <p class="note">Bottenmeny för tummen · tryckytor ≥ 48 px · systemtypsnitt</p>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Arbetssätt</span>
+    <h2>Samma struktur, varje gång</h2>
+<pre><em>index.html</em>  styles.css  app.js
+store.js  version.js  <em>sw.js</em>
+<em>docs/</em>   SPEC · MANUAL · presentation
+<em>tools/</em>  tester · bygge
+<em>dist/</em>   testfil med allt inbakat</pre>
+    <ol class="steps">
+      <li>SPEC först – idé, mål, icke-mål</li>
+      <li>Säkerhet: förhandsprövning före bygget, efterkontroll före push</li>
+      <li>Release kör kontroll och alla tester – underkänt stoppar</li>
+      <li>Det som blir bättre här förs in i alla appar</li>
+    </ol>
+  </section>
+
+  <section>
     <span class="eyebrow">Kom igång</span>
-    <h2 class="on-band">Installera på <span class="n hi">30 sekunder</span></h2>
+    <h2>Installera på 30 sekunder</h2>
     <ol class="steps">
       <li><span>Öppna adressen i Chrome på mobilen:<br><span class="url">flyinggooner.github.io/Football-not-soccer</span></span></li>
       <li><span>Tryck på ⋮ och välj <b>Installera app</b>. På iPhone: Dela → <b>Lägg till på hemskärmen</b>.</span></li>
-      <li><span>Öppna FnS från hemskärmen. Den startar i eget fönster utan adressfält.</span></li>
+      <li><span>Öppna appen från hemskärmen. Den startar i eget fönster.</span></li>
     </ol>
-    <p class="lead small">Versionsnumret uppe till höger visar när en ny version har kommit ut.</p>
-  </div></section>
+  </section>
+
+  <section class="title">
+    <div class="glow"></div><div class="glow g2"></div>
+    <div class="hero">
+      <span class="eyebrow">Sammanfattning</span>
+      <h1>Football,<br>not soccer.</h1>
+      <p class="lead">Din liga, ditt lag – och ingenting annat.</p>
+    </div>
+  </section>
 
 </main>
 <nav class="nav" aria-label="Bläddra">
   <button type="button" class="prev" id="prev">‹ Föregående</button>
-  <span class="count" id="count" aria-live="polite">1 / 7</span>
+  <span class="count" id="count" aria-live="polite"></span>
   <button type="button" class="next" id="next">Nästa ›</button>
 </nav>
 
