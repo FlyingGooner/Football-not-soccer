@@ -151,3 +151,9 @@ T.test('månader och all-schema: liga ur händelsen, okända tävlingar bort, he
   T.eq(parseDefaultLeague({ team: { defaultLeague: { slug: 'esp.1' } } }), 'esp.1');
   T.eq([parseDefaultLeague({ team: { defaultLeague: { slug: 'uefa.champions' } } }), parseDefaultLeague({ team: { defaultLeague: { slug: '../x' } } }), parseDefaultLeague(null)], [null, null, null]);
 });
+
+T.test('U6: för stort ESPN-svar avvisas före JSON.parse', () => {
+  T.eq(parseResponse('{"a":1}', 100), { a: 1 });
+  let err = null; try { parseResponse('{"a":"' + 'x'.repeat(200) + '"}', 100); } catch (e) { err = e; }
+  T.ok(err && /stort/.test(err.message), 'stort svar ger fel');
+});

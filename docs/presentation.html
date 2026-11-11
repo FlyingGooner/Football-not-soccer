@@ -95,6 +95,21 @@
     <p class="muted">Vill du ha allt, välj FotMob. Vill du ha det du kollar tio gånger om dagen, utan brus, välj FnS.</p>
   </section>
 
+  <section class="slide">
+    <span class="eyebrow">Kvalitetsstämpel</span>
+    <h2>Säkerhetstestad</h2>
+    <ul class="checks">
+      <li><b>Strikt innehållspolicy (CSP)</b><span>ingen kod utifrån, inga inline-skript.</span></li>
+      <li><b>Ett enda nätverksundantag</b><span>bara läsning från ESPN:s öppna resultat-API, inget skickas.</span></li>
+      <li><b>Data bara i telefonen</b><span>inget konto, ingen server, inga spårare.</span></li>
+      <li><b>Importer valideras</b><span>ogiltiga eller manipulerade fält avvisas, styrtecken rensas.</span></li>
+      <li><b>Data visas som text</b><span>aldrig som HTML – inget kan köras via innehåll.</span></li>
+      <li><b>Krypterad backup</b><span>AES-256-GCM, PBKDF2 600 000 varv, lösenordet sparas aldrig.</span></li>
+      <li><b>Offline med egna filer</b><span>service workern cachar bara appens egna filer.</span></li>
+      <li><b>Kontrolleras automatiskt</b><span>säkerhetskontroll och tester före varje commit och push.</span></li>
+    </ul>
+  </section>
+
   <section class="band"><div class="slide inner">
     <span class="eyebrow">Kom igång</span>
     <h2 class="on-band">Installera på <span class="n hi">30 sekunder</span></h2>

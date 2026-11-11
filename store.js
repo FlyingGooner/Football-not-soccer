@@ -61,6 +61,8 @@ const domestic = (id) => { const l = leagueById(id); return !!l && !l.cup; };
 // ---------- Validators (cached, imported and API data may be old, odd or tampered with) ----------
 const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const str = (v) => (typeof v === 'string' && v ? v : null);
+// U6: an ESPN answer over the size cap is rejected before it is parsed.
+const parseResponse = (text, max) => { if (typeof text !== 'string' || text.length > max) throw new Error('Svaret är för stort'); return JSON.parse(text); };
 const validId = (v) => (typeof v === 'string' && /^\d{1,10}$/.test(v) ? v : null);
 const color = (v) => (typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : null);
 const hexColor = (v) => (typeof v === 'string' && /^[0-9a-f]{6}$/i.test(v) ? `#${v.toLowerCase()}` : null);   // ESPN gives "ef0107"

@@ -5,6 +5,8 @@
 
 // ---------- Config ----------
 const CONFIG = {
+  fetchTimeoutMs: 10000,        // U6: every ESPN request is aborted after 10 s
+  maxResponseChars: 8000000,    // U6: larger answers are rejected before JSON.parse
   leagues: LEAGUES,             // store.js: Premier League, LaLiga, Serie A, Champions League
   europe: EUROPE,               // collected in team mode together with the team's league
   upcomingCount: 3,             // Lag: rows under Nästa match before Visa fler
@@ -79,8 +81,8 @@ const recentUrls = new Map();
 function getJSON(url, fresh = false) {
   const now = Date.now(), hit = recentUrls.get(url);
   if (!fresh && hit && now - hit.t < CONFIG.sameUrlMs) return hit.p;
-  const p = fetch(url, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', mode: 'cors' })
-    .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); });
+  const p = fetch(url, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', mode: 'cors', signal: AbortSignal.timeout(CONFIG.fetchTimeoutMs) })
+    .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); }).then((t) => parseResponse(t, CONFIG.maxResponseChars));
   recentUrls.set(url, { t: now, p });
   p.catch(() => { if (recentUrls.get(url) && recentUrls.get(url).p === p) recentUrls.delete(url); });
   return p;
