@@ -86,12 +86,12 @@ T.test('zoner: per liga, nedflyttning räknas från botten', () => {
   T.eq(zoneOf('uefa.champions', 36, 36), null);
 });
 T.test('export/import: inställningar fram och tillbaka, ingen cache', () => {
-  const s = loadSettings({ team: { id: '86', name: 'Real', leagueId: 'esp.1' }, league: 'ita.1', recent: [{ id: '86', name: 'Real', leagueId: 'esp.1' }], acc: { team: { table: true, x: true } } });
+  const s = loadSettings({ team: { id: '86', name: 'Real', leagueId: 'esp.1' }, league: 'ita.1', recent: [{ id: '86', name: 'Real', leagueId: 'esp.1' }] });
   const t = exportText(s, '2026-11-11');
   const r = importText(t);
   T.eq(r.data, s);
   T.eq(r.exported, '2026-11-11');
-  T.eq(Object.keys(JSON.parse(t).data).sort(), ['acc', 'league', 'recent', 'team']);
+  T.eq(Object.keys(JSON.parse(t).data).sort(), ['league', 'recent', 'team']);
 });
 T.test('import avvisar fel app, format, okänd liga och dåliga lag-id', () => {
   T.ok(importText('{').error);
@@ -100,4 +100,9 @@ T.test('import avvisar fel app, format, okänd liga och dåliga lag-id', () => {
   const r = importText(JSON.stringify({ app: 'football-not-soccer', format: 1, data: { league: 'evil.1', team: { id: '1;x', leagueId: 'eng.1' },
     recent: [{ id: '5', leagueId: 'zzz' }, { id: '6', name: 'Ok', leagueId: 'ita.1' }] } }));
   T.eq([r.data.league, r.data.team, r.data.recent.map((t) => t.id), r.skipped], ['eng.1', null, ['6'], 2]);
+});
+T.test('flik: bara kända flikar', () => {
+  T.eq(TABS, ['matches', 'table', 'team', 'settings']);
+  T.eq(loadTab('team'), 'team');
+  T.eq(loadTab('evil'), null);
 });

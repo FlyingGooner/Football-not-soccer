@@ -1,8 +1,10 @@
 // UI tests in dist/football-not-soccer.html with a fake ESPN (ui-before.js). Run: tools\test.ps1 football-not-soccer
 const CSP = "default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://site.api.espn.com; img-src 'self' https://a.espncdn.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'";
-const rows = () => [...document.querySelectorAll('#table-summary tbody tr')];
 const click = (s) => { const n = typeof s === 'string' ? T.$(s) : s; T.ok(n, `saknas: ${s}`); n.click(); };
+const tab = (v) => click(`#tabbar [data-view="${v}"]`);
 const settle = () => T.until(() => !busy && !again, 'refresh blev inte klar');
+const tableRows = () => [...document.querySelectorAll('#table-full tbody tr')];
+const pickLeague = (id) => click(`#view-${view} [data-league="${id}"]`);
 
 // The test file (dist) gets a rewritten CSP from build-single.ps1 (inline code), so only the network directives are compared.
 T.test('säkerhet: CSP-nätverk bara ESPN, no-referrer', () => {
@@ -13,15 +15,19 @@ T.test('säkerhet: CSP-nätverk bara ESPN, no-referrer', () => {
   T.eq(got['default-src'], ["'none'"]);
   T.eq(T.$('meta[name="referrer"]').content, 'no-referrer');
 });
-T.test('första start: ligaläge PL, topp 3 synliga, aktuella matcher och resultat', async () => {
+T.test('struktur: rubrik med version, meny nertill med fyra flikar', () => {
+  T.eq(T.$('.brand').textContent, 'Football, not soccer');
+  T.ok(T.$('#version').textContent.startsWith('v'), 'version');
+  T.eq([...document.querySelectorAll('#tabbar .tab')].map((t) => t.textContent), ['⚽Matcher', '📋Tabell', '⭐Lag', '⚙️Inst.']);
+});
+T.test('första start: Matcher i PL, pågående överst, resultat', async () => {
   await settle();
-  T.eq(T.$('#table-title').textContent, 'Premier League');
-  T.eq(rows().filter((r) => getComputedStyle(r).display !== 'none').length, 3);
-  T.eq(T.$('#next-title').textContent, 'Aktuella matcher');
-  T.ok(T.$('#next-summary').textContent.includes('Pågår nu'), 'pågående match överst');
-  T.ok(T.$('#next-summary').textContent.includes('LIVE'), 'LIVE visas');
-  T.eq(document.querySelectorAll('#last-summary .lm').length, 2);
-  T.ok(T.$('#teambar').offsetParent === null, 'inget lag valt');
+  T.eq(view, 'matches');
+  T.ok(!T.$('#view-matches').hidden && T.$('#view-table').hidden, 'bara Matcher syns');
+  T.eq(T.$('#tabbar .tab.on').dataset.view, 'matches');
+  T.ok(T.$('#next-list').textContent.includes('Pågår nu'), 'pågående match överst');
+  T.ok(T.$('#next-list').textContent.includes('LIVE'), 'LIVE visas');
+  T.eq(document.querySelectorAll('#last-list .lm').length, 10);
 });
 T.test('säkerhet: bara ESPN:s API, utan cookies och referer', () => {
   T.ok(__calls.length > 0, 'inga anrop');
@@ -34,78 +40,104 @@ T.test('säkerhet: klubbmärken från annan värd visas inte', () => {
   T.eq(document.querySelectorAll('img').length, 0);
   T.ok(document.querySelectorAll('.ph').length > 0, 'platshållare');
 });
-T.test('ligaväljare: LaLiga sparas och visas', async () => {
-  click('[data-league="esp.1"]');
+T.test('Tabell: hela tabellen med zoner', async () => {
+  tab('table');
+  await settle();
+  T.eq(location.hash, '#table');
+  T.eq(T.$('#table-title').textContent, 'Premier League');
+  T.eq(tableRows().length, 20);
+  T.ok(tableRows()[0].classList.contains('zone-cl') && tableRows()[19].classList.contains('zone-rel'), 'zoner');
+});
+T.test('ligaväljare: LaLiga sparas och visas på båda flikarna', async () => {
+  pickLeague('esp.1');
   await settle();
   T.eq(T.$('#table-title').textContent, 'LaLiga');
   T.eq(localStorage.getItem('fns.league.v1'), '"esp.1"');
-  T.eq(T.$('[data-league="esp.1"]').getAttribute('aria-pressed'), 'true');
+  T.eq([...document.querySelectorAll('[data-league="esp.1"]')].map((b) => b.getAttribute('aria-pressed')), ['true', 'true']);
+  tab('matches');
+  await settle();
 });
 T.test('säkerhet: data från källan renderas som text, aldrig HTML', () => {
-  T.ok(T.$('#table-full').textContent.includes('<img src=x onerror=alert(1)>') || T.$('#table-summary').textContent.includes('<img'), 'namnet visas som text');
+  T.ok(T.$('#table-full').textContent.includes('<img src=x onerror=alert(1)>'), 'namnet visas som text');
   T.eq(document.querySelectorAll('img[src="x"]').length, 0);
 });
 T.test('Idag-raden byggs bara av cachen: PL och LaLiga, inte Serie A', () => {
-  const t = [...document.querySelectorAll('#today [data-today]')].map((b) => b.dataset.today);
-  T.eq(t, ['eng.1', 'esp.1']);
+  T.eq([...document.querySelectorAll('#today [data-today]')].map((b) => b.dataset.today), ['eng.1', 'esp.1']);
   T.ok(/LaLiga \d+/.test(T.$('#today').textContent), 'antal visas');
 });
-T.test('följa lag: dialog → lagläge, lagets liga och senast följda sparas', async () => {
-  click(rows()[1]);
+T.test('Lag utan valt lag: tom vy med knapp till tabellen', () => {
+  tab('team');
+  T.ok(!T.$('#team-empty').hidden && T.$('#team-cards').hidden, 'tom vy');
+  click('#team-pick');
+  T.eq(view, 'table');
+});
+T.test('följa lag: dialog → fliken Lag, lagets liga och senast följda sparas', async () => {
+  await settle();
+  click(tableRows()[1]);
   T.ok(T.$('#pick').open, 'dialogen öppnas');
   T.ok(T.$('#pick-text').textContent.includes('Följ Esp 2'), T.$('#pick-text').textContent);
   click('#pick-ok');
   await settle();
+  T.eq(view, 'team');
   T.eq(T.$('#teambar-name').textContent, 'Esp 2');
   T.eq(JSON.parse(localStorage.getItem('fns.team.v2')).leagueId, 'esp.1');
   T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
-  T.eq(T.$('#next-title').textContent, 'Nästa match');
   T.ok(T.$('[data-kickoff]'), 'nedräkning');
-  T.eq(document.querySelectorAll('.form .dot').length, 5);
-  T.ok(T.$('#leaguebar').hidden, 'ligaväljaren dold i lagläge');
+  T.eq(document.querySelectorAll('#team-next-list li').length, 2);
+  T.eq(document.querySelectorAll('#team-last-list li').length, 5);
+  T.eq(document.querySelectorAll('#team-table .form .dot').length, 5);
+  T.ok(T.$('#team-table .more tr.me'), 'laget markerat i hela tabellen');
 });
-T.test('byta lag: hela tabellen, laget markerat, senast följda-raden', async () => {
-  click('[data-acc="table"]');
-  T.ok(T.$('#table-full tr.me'), 'laget markerat');
-  click([...document.querySelectorAll('#table-full tbody tr')][2]);
+T.test('byta lag och senast följda', async () => {
+  T.$('#team-table .more').open = true;
+  click([...document.querySelectorAll('#team-table .more tbody tr')][2]);
   T.eq(T.$('#pick-ok').textContent, 'Byt');
   click('#pick-ok');
   await settle();
   T.eq(T.$('#teambar-name').textContent, 'Esp 3');
-  T.eq([...document.querySelectorAll('#recent .rpick')].map((b) => b.textContent), ['Esp 2']);
-  click('#recent .rpick');
+  T.eq([...document.querySelectorAll('#recent .rchip')].map((b) => b.textContent), ['Esp 2']);
+  click('#recent .rchip');
   await settle();
   T.eq(T.$('#teambar-name').textContent, 'Esp 2');
   T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202', '203']);
 });
-T.test('ta bort ur senast följda tar bort lagets cache', () => {
-  click('#recent .rdel');
+T.test('Inst.: grupper, ta bort ur senast följda tar bort lagets cache', () => {
+  tab('settings');
+  T.eq(T.$('#hint-team').textContent, 'Esp 2');
+  T.eq(T.$('#hint-recent').textContent, '2 av 5');
+  click(document.querySelectorAll('#recent-list .rdel')[1]);
   T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
   T.ok(!('203' in JSON.parse(localStorage.getItem('fns.cache.v3')).teams), 'cachen borttagen');
+  T.ok(T.$('#foot').textContent.includes('v' + self.APP_VERSION), 'version i foten');
 });
-T.test('✕ tillbaka till ligaläge, ligan kvar', async () => {
+T.test('fliken sparas och appen öppnas på den', () => {
+  T.eq(localStorage.getItem('fns.tab.v1'), '"settings"');
+});
+T.test('✕ slutar följa laget', () => {
+  tab('team');
   click('#teambar-close');
-  await settle();
   T.eq(localStorage.getItem('fns.team.v2'), null);
-  T.eq(T.$('#table-title').textContent, 'LaLiga');
+  T.ok(!T.$('#team-empty').hidden, 'tom vy');
 });
 T.test('CL: lag får sin inhemska liga', async () => {
-  click('[data-league="uefa.champions"]');
+  tab('table');
+  await settle();
+  pickLeague('uefa.champions');
   await settle();
   T.eq(T.$('#table-title').textContent, 'Champions League');
-  click(rows()[3]);   // Ita 1
+  click(tableRows()[3]);   // Ita 1
   click('#pick-ok');
   await T.until(() => JSON.parse(localStorage.getItem('fns.team.v2')).leagueId === 'ita.1', 'inhemsk liga hittades inte');
   await T.wait(50);
   await settle();
-  T.eq(T.$('#table-title').textContent, 'Serie A');
-  click('#teambar-close');
-  await settle();
+  T.eq(T.$('#team-table-title').textContent, 'Serie A');
 });
-T.test('matchdetaljer fälls ut med målskytt', () => {
-  const row = T.$('#last-summary .lm.tap');
+T.test('matchdetaljer fälls ut med målskytt', async () => {
+  tab('matches');
+  await settle();
+  const row = T.$('#last-list .lm.tap');
   click(row);
-  T.ok(T.$('#last-summary .evs').textContent.includes('A. Skytt'), 'målskytt');
+  T.ok(T.$('#last-list .evs').textContent.includes('A. Skytt'), 'målskytt');
   T.eq(row.getAttribute('aria-expanded'), 'true');
 });
 T.test('export: bara inställningar, ingen matchdata', () => {
@@ -114,6 +146,7 @@ T.test('export: bara inställningar, ingen matchdata', () => {
   T.eq(JSON.parse(t).data.recent.length, 2);
 });
 T.test('import: dialog, ersätt och ångra', async () => {
+  tab('settings');
   const text = JSON.stringify({ app: 'football-not-soccer', format: 1, exported: '2026-11-01', data: { league: 'eng.1', team: { id: '105', name: 'Eng 5', leagueId: 'eng.1' } } });
   T.$('#import-text').value = text;
   click('#import-btn');
@@ -121,27 +154,27 @@ T.test('import: dialog, ersätt och ångra', async () => {
   T.ok(T.$('#imp-sum').textContent.includes('Eng 5'), T.$('#imp-sum').textContent);
   click('#imp-ok');
   T.$('#import-dialog').close();
-  await settle();
-  T.eq(T.$('#teambar-name').textContent, 'Eng 5');
+  T.eq(T.$('#hint-team').textContent, 'Eng 5');
   click('#snack-action');   // Ångra
-  await settle();
-  T.eq(localStorage.getItem('fns.team.v2'), null);
+  T.eq(JSON.parse(localStorage.getItem('fns.team.v2')).id, '301');
 });
 T.test('offline: sparad data och felmeddelande, aldrig blank skärm', async () => {
+  tab('table');
+  await settle();
   __fail = true;
   refresh();
   await settle();
-  T.ok(T.$('#status').classList.contains('offline'), 'statusraden visar fel');
-  T.ok(rows().length > 0, 'sparad tabell visas');
+  T.ok(T.$('#status').classList.contains('error'), 'statusraden visar fel');
+  T.ok(tableRows().length > 0, 'sparad tabell visas');
   __fail = false;
 });
-T.test('radera all data: alla fns.*-nycklar, andra appars nycklar kvar', async () => {
+T.test('radera all data: alla fns.*-nycklar, andra appars nycklar kvar', () => {
+  tab('settings');
   localStorage.setItem('bb.data', '1');
   click('#reset');
   click('#cd-ok');
   T.$('#confirm-dialog').close();
-  T.eq(Object.keys(localStorage).filter((k) => k.startsWith('fns.')).filter((k) => k !== 'fns.cache.v3'), []);
+  T.eq(Object.keys(localStorage).filter((k) => k.startsWith('fns.')), []);
   T.eq(localStorage.getItem('bb.data'), '1');
-  await settle();
-  T.eq(T.$('#table-title').textContent, 'Premier League');
+  T.eq(T.$('#hint-team').textContent, 'Inget lag');
 });

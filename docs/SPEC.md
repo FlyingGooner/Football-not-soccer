@@ -17,90 +17,54 @@ De flesta fotbollsappar är fulla av nyheter, reklam, notiser och konton. Den h�
 
 ## Begrepp
 - **Liga**: en av `CONFIG.leagues` – Premier League (`eng.1`), LaLiga (`esp.1`), Serie A (`ita.1`). Vald liga sparas; första start är Premier League.
-- **Ligaläge**: inget lag valt. Visar vald liga som helhet. Första start är alltid i ligaläge.
-- **Lagläge**: ett lag valt. Visar lagets tabellrad i lagets egen liga, matcher och form. Lagets liga sparas med laget, så att Real Madrid alltid visar LaLiga-tabellen. Valt läge och lag sparas och appen öppnas i samma läge nästa gång.
+- **Ligavy**: flikarna Matcher och Tabell visar vald liga som helhet.
+- **Lagvy**: fliken Lag visar valt lag: tabellrad i lagets egen liga, matcher och form. Lagets liga sparas med laget, så att Real Madrid alltid visar LaLiga-tabellen. Valt lag sparas.
 - **Match**: en match i någon av de konfigurerade turneringarna, med tillstånd `pre` (kommande), `in` (pågår) eller `post` (spelad).
 - **Turneringar** i lagläge: lagets liga, Champions League, Europa League och Conference League (`CONFIG.teamCompetitions`). Matcher hämtas från alla och slås ihop; turneringar där laget saknar matcher syns inte.
 - **Zoner** i tabellen, per liga (`CONFIG.leagues[].zones`): Champions League (1–4), Europa (5–6) och nedflyttning (18–20). Antal lag läses från tabellen.
 - **Form**: V/O/F i lagets 5 senaste ligamatcher.
-- **Accordion**: ett kort med en alltid synlig sammanfattning och en utfällbar del. Alla är stängda vid första start; öppet/stängt sparas per läge.
+- **Flik**: en av fyra vyer i menyn nertill. Vald flik sparas (`fns.tab.v1`) och appen öppnas på den; första start är Matcher (Lag om ett lag redan är valt).
 
 ## Skärmar
-Ingen header eller uppdatera-knapp. Överst finns bara en statusrad: "Senast uppdaterad …" (och "Offline – visar sparad data" vid behov) samt versionsetiketten uppe till höger.
+Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppdaterad …", fel och offline), rubrikrad med appens namn och versionsetikett, innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
 
-### 1. Ligaläge
+### 1. Matcher
 ```
 ┌──────────────────────────────┐
-│ Senast uppdaterad lör 7 nov  │ v0.7.0
+│ Football, not soccer  v0.11.0│
+│ [ PL | LaLiga | Serie A | CL ]│
+│ Idag  PL 3  LaLiga 2         │
 │ AKTUELLA MATCHER             │
 │  PÅGÅR NU                    │
 │  Arsenal    2–1   Chelsea    │
-│             LIVE 67'         │
 │  IDAG                        │
 │  Spurs     17:30  Liverpool  │
-│  Fler kommande matcher    ⌄  │
-├──────────────────────────────┤
 │ SENASTE RESULTAT             │
 │  Everton    0–0   Fulham     │
-│  Fler resultat            ⌄  │
 ├──────────────────────────────┤
-│ PREMIER LEAGUE               │
-│  1 Arsenal       11  26      │
-│  2 Man City      11  24      │
-│  3 Liverpool     11  23      │
-│  Hela tabellen            ⌄  │
+│ ⚽Matcher 📋Tabell ⭐Lag ⚙️Inst.│
 └──────────────────────────────┘
 ```
-- **Aktuella matcher**: alla pågående matcher under "Pågår nu" (ställning, matchminut, LIVE), fyllt på med närmast kommande till minst 3 rader. Grupperat per dag med "Idag", "I morgon" eller datum. Utfällt: fler kommande, upp till två omgångar (20 matcher).
-- **Senaste resultat**: de 2 senast spelade, nyaste först. Utfällt: upp till två omgångar (20 matcher).
-- **Ligaväljare** överst: segmenterad knapp *PL · LaLiga · Serie A · CL* (se Champions League i ligaväljaren). Byte visar sparad data för ligan direkt och hämtar färsk.
-- **Tabell**: topp 3 (placering, lag, M, V, O, F, MS, P). Utfällt: resten av samma tabell plus förklaring av zonerna. Raderna är tryckbara. På smal skärm döljs V/O/F.
+- **Ligaväljare** överst: segmenterad knapp *PL · LaLiga · Serie A · CL*, samma på Matcher och Tabell. Byte visar sparad data direkt och hämtar färsk.
+- **Aktuella matcher**: pågående under "Pågår nu" (ställning, minut, LIVE), sedan kommande, upp till två omgångar (20), grupperat per dag ("Idag", "I morgon", datum).
+- **Senaste resultat**: upp till två omgångar (20), nyaste först.
 
-### 2. Lagläge
-```
-┌──────────────────────────────┐
-│ (●) Arsenal               ✕  │
-│ NÄSTA MATCH                  │
-│   Arsenal  17:30  Chelsea    │
-│   PL · Hemma  om 2 d 4 h     │
-│  Kommande matcher         ⌄  │
-├──────────────────────────────┤
-│ SENASTE MATCH                │
-│   Spurs     1–3   Arsenal    │
-│   ⚽ 12' Saka   ⚽ 40' Son    │
-│  Tidigare matcher         ⌄  │
-├──────────────────────────────┤
-│ PREMIER LEAGUE               │
-│  1 Arsenal       11  26      │
-│  Form V V O V F           ⌄  │
-└──────────────────────────────┘
-```
-- Överst en rad med lagets märke och namn samt **✕**, som tar tillbaka till ligaläge utan bekräftelse.
-- **Nästa match**: motståndare (med klubbmärke), hemma/borta, turnering, datum och avsparkstid i lokal tid, nedräkning ("om 2 d 4 h"). Pågående match: ställning, matchminut och LIVE. Utfällt: de 5 därefter kommande.
-- **Senaste match**: resultat, motståndare, H/B, turnering, datum och V/O/F. Utfällt: de 5 matcherna innan.
-- **Tabell**: lagets rad och form. Utfällt: hela tabellen med laget markerat; raderna är tryckbara för att byta lag.
-- Matcher i lagläge omfattar alla turneringar laget spelar i.
+### 2. Tabell
+- Hela tabellen för vald liga (placering, lag, M, V, O, F, MS, P) med zonfärger och förklaring. På smal skärm döljs V/O/F. Raderna är tryckbara för att följa laget.
 
-### 3. Bred skärm (≥ 840 px, dator)
-```
-┌──────────────────────────┬──────────────────────┐
-│ (valt lag            ✕)  │                      │
-│ AKTUELLA MATCHER       ▲ │ PREMIER LEAGUE       │
-│  upp till två omgångar,│ │  hela tabellen,      │
-│  en omgång syns, resten│ │  alltid utfälld,     │
-│  skrollas i kortet     ▼ │  med zonförklaring   │
-│ SENASTE RESULTAT       ▲ │                      │
-│  (samma)               ▼ │                      │
-└──────────────────────────┴──────────────────────┘
-```
-- Matcher i vänsterkolumnen, tabellen i högerkolumnen. Inga accordions för matcher och tabell – allt visas. Hjälp och Data ligger under, som accordions, och nås genom att skrolla sidan.
-- Övre delen fyller fönstrets höjd. Varje kort tar sin del av höjden (matcher och resultat hälften var, tabellen hela höjden) och skrollar inuti sig självt. Kortrubrik, dagrubrik och tabellhuvud stannar kvar överst; en dagrubrik följer bara med så länge dagens matcher syns.
-- Ligaläge: Aktuella matcher och Senaste resultat innehåller upp till två omgångar (20 matcher).
-- Lagläge: Nästa/Senaste match visar även listan med 5 kommande/tidigare. Tabellen visas hel med laget markerat och formen ovanför.
-- Under 840 px (mobil och surfplatta) är det en kolumn med accordions; på surfplatta centrerad, max 640 px (se Design).
+### 3. Lag
+- Valt lag: rad med märke, namn och **✕** (slutar följa, utan bekräftelse).
+- **Nästa match**: motståndare, hemma/borta, turnering, datum och tid, nedräkning; pågående match med ställning och LIVE. Under: de 5 därefter kommande.
+- **Senaste match**: resultat, turnering, datum, V/O/F och mål. Under: de 5 matcherna innan.
+- **Tabell**: lagets rad i lagets egen liga, form (5 senaste ligamatcher) och "Hela tabellen" som fälls ut med laget markerat.
+- **Senast följda lag** längst ned.
+- Inget lag valt: "Inget lag valt" och en knapp till Tabell.
+
+### 4. Inställningar
+- Grupper som fälls ut, som i simple-nutrition: **Lag** (Senast följda lag, ta bort) och **Allmänt** (Data, Hjälp och manual, Installera appen). Sist en rad med version och "matchdata från ESPN".
 
 ### Välja och byta lag
-- Tryck på ett lag i tabellen → dialog "Följ {lag}?" (ligaläge) eller "Byt till {lag}?" (lagläge) med **Följ/Byt** och **Avbryt**.
+- Tryck på ett lag i tabellen → dialog "Följ {lag}?" (inget lag valt) eller "Byt till {lag}?" (ett lag valt); efter Följ/Byt visas fliken Lag med **Följ/Byt** och **Avbryt**.
 - Valt lags rad markeras med lagets egen färg från datakällan (vänsterkant och svag bakgrundston). Saknas färg används primärfärgen.
 
 ### Matchdetaljer
@@ -113,18 +77,18 @@ Ingen header eller uppdatera-knapp. Överst finns bara en statusrad: "Senast upp
 - Lag i CL-tabellen kan följas; laget får då sin inhemska liga om den är en av de tre (från lagets schema), annars visas bara CL-tabellen.
 
 ### Idag i alla ligor
-- Ligaläge, överst under ligaväljaren: en rad "Idag: PL 3 · LaLiga 2 · Serie A 4 · CL 0" med antal matcher idag per liga, byggd **bara av data som redan finns i cachen** (inga extra anrop). Ligor utan färsk data (äldre än i dag) visas inte. Tryck byter liga.
+- Matcher, under ligaväljaren: en rad "Idag: PL 3 · LaLiga 2 · Serie A 4 · CL 0" med antal matcher idag per liga, byggd **bara av data som redan finns i cachen** (inga extra anrop). Ligor utan färsk data (äldre än i dag) visas inte. Tryck byter liga.
 
 ### Senast följda lag
-- I lagläge och på ligasidan: rad med upp till 5 senast följda lag (märke + kort namn), samma lag som har sparad data (`CONFIG.teamCacheMax`). Ett tryck byter lag direkt utan dialog. Långt tryck/✕ tar bort laget ur listan och dess cache.
+- Längst ned under Lag: rad med upp till 5 senast följda lag (märke + kort namn), samma lag som har sparad data (`CONFIG.teamCacheMax`). Ett tryck byter lag direkt utan dialog. Under Inställningar → Lag tar ✕ bort laget ur listan och dess cache.
 - Är inte "flera lag samtidigt": bara ett lag är valt åt gången.
 
 ### Kortet Hjälp
-- Sist i listan, stängt från början. Samma text som `docs/MANUAL.md` (ändra båda): lägen, välja och byta lag, ligaväljaren, offline och vad ESPN ser.
+- Under Inställningar → Allmänt → Hjälp och manual. Samma text som `docs/MANUAL.md` (ändra båda): lägen, välja och byta lag, ligaväljaren, offline och vad ESPN ser.
 
 ### Kortet Data
 - Enligt `../STANDARD.md` punkt 5 (undantag U5), mönstret från budget-buddy (`packData`/`unpackData`/`exportText`/`importText` i `store.js`, `backup.js`).
-- Exporteras: valt lag, vald liga, senast följda lag (utan matchdata), öppna accordions. Matchcachen exporteras aldrig – den hämtas om.
+- Exporteras: valt lag, vald liga, senast följda lag (utan matchdata). Vald flik exporteras inte. Matchcachen exporteras aldrig – den hämtas om.
 - Import validerar varje fält som vid läsning från `localStorage`; okänt `leagueId` eller lag-id som inte är `^\d{1,10}$` förkastas.
 - **Radera all data** sist i kortet: tar bort alla `fns.*`-nycklar.
 
@@ -135,7 +99,7 @@ Ingen header eller uppdatera-knapp. Överst finns bara en statusrad: "Senast upp
 | `fns.recent.v1` | Senast följda lag, upp till 5: `[{ id, name, logo, color, leagueId }]`, nyast först |
 | `fns.team.v2` | Valt lag `{ id, name, logo, color, leagueId }` eller saknas (= ligaläge). `.v1` (utan `leagueId`) läses en gång som `eng.1` |
 | `fns.league.v1` | Vald liga i ligaläge, ett id ur `CONFIG.leagues` |
-| `fns.acc.v2` | Öppna accordions per läge: `{ league: { next, last, table }, team: { … } }` |
+| `fns.tab.v1` | Vald flik: `matches`, `table`, `team` eller `settings` |
 
 ```json
 {
@@ -166,8 +130,8 @@ Ingen header eller uppdatera-knapp. Överst finns bara en statusrad: "Senast upp
   - Live: scoreboard för pågående matchers turnering.
   - Reserv: ger scoreboard för få matcher byggs ligans matcher av varje lags schema. Live faller på samma sätt tillbaka till hemmalagets schema.
 - All åtkomst via adapterfunktioner (`fetchTable()`, `fetchTeamMatches()`, `fetchLeagueMatches()`, `fetchLive()`) i `app.js`, så att källan kan bytas.
-- **När data hämtas:** när appen öppnas, när den visas igen efter bakgrunden (om datan är äldre än 1 minut), när nätet kommer tillbaka och vid byte av lag eller läge. Inga anrop i bakgrunden.
-- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 30:e sekund. Ligaläge: alla pågående ligamatcher; lagläge: lagets match.
+- **När data hämtas:** bara det den öppna fliken visar – när appen öppnas, när den visas igen eller fliken byts (om datan är äldre än 1 minut), när nätet kommer tillbaka och vid byte av liga eller lag. Inställningar hämtar inget. Inga anrop i bakgrunden.
+- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 30:e sekund. Matcher: alla pågående ligamatcher; Lag: lagets match.
 - Cachad data visas direkt vid start och ersätts sedan av färsk data. Har ligadatan byggts av alla lags scheman och är nyare än 10 minuter visas ett nyvalt lags ligamatcher direkt därifrån och hämtas inte igen.
 
 ### Integritet och säkerhet
@@ -202,15 +166,11 @@ Ingen header eller uppdatera-knapp. Överst finns bara en statusrad: "Senast upp
 - Ljust och mörkt tema via `prefers-color-scheme`; `color-scheme: light dark` så att tvingat mörkt läge inte färgar om sidan.
 - Resultatfärger: vinst grön, oavgjort grå, förlust röd. Zoner: CL grön, Europa blå, nedflyttning röd.
 - Siffror med `tabular-nums`.
-- **Layout: mobil, surfplatta, dator** (se `../CLAUDE.md`). Appen har inga flikar, så ingen sidomeny.
-  - **Mobil (< 600 px, test 390 px):** en kolumn, kort som accordions.
-  - **Surfplatta (600–839 px, iPad stående, test 820 px):** en centrerad kolumn max 640 px med 24 px marginaler; accordions som på mobil.
-  - **Dator (≥ 840 px, även iPad liggande, test 1280 px):** matcher till vänster, tabellen till höger, alla kort utfällda och skrollar inne i sig själva.
-- Accordions är `<button>` med `aria-expanded`; tryckytor ≥ 48 px; animation ≤ 200 ms, avstängd vid `prefers-reduced-motion`.
+- **Layout:** bara mobil (som simple-nutrition), en kolumn max 520 px, test 390 px. Menyn nertill, tryckytor ≥ 48 px, animation ≤ 200 ms, avstängd vid `prefers-reduced-motion`.
 - Fungerar i aktuell Safari (iOS) och Chrome (Android).
 
 ## Acceptanskriterier v1
-- [ ] Layout fungerar på 390 px (mobil), 820 px (iPad stående) och 1280 px (dator), ljust och mörkt.
+- [ ] Layout fungerar på 390 px, ljust och mörkt, med menyn nertill och Inställningar i grupper.
 - [ ] Första start visar ligaläge: topp 3 i tabellen, aktuella matcher och senaste resultat grupperade per dag.
 - [ ] Tryck på ett lag i tabellen → bekräftelse → lagläge för det laget.
 - [ ] I lagläge: lagets rad med form syns direkt, hela tabellen fälls ut, laget markerat med sin färg.

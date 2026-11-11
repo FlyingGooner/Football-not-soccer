@@ -18,93 +18,130 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="version" aria-label="Version"></div>
 <div id="status" role="status" aria-live="polite"></div>
+<header class="topbar">
+  <span class="brand">Football, not soccer</span>
+  <span id="version" class="version" aria-label="Appversion"></span>
+</header>
+
 <main>
-  <div id="teambar" aria-label="Valt lag">
-    <span id="teambar-logo"></span><span class="n" id="teambar-name"></span>
-    <button type="button" id="teambar-close" aria-label="Tillbaka till ligan">✕</button>
-  </div>
-
-  <div id="leaguebar">
-    <div class="seg" id="league-picker" role="group" aria-label="Liga"></div>
+  <!-- Matcher: vald liga -->
+  <section class="view" id="view-matches">
+    <div class="seg league-picker" role="group" aria-label="Liga"></div>
     <div class="today" id="today" hidden></div>
-  </div>
-
-  <div class="recent" id="recent" aria-label="Senast följda lag" hidden></div>
-
-  <section class="card" id="card-next">
-    <h2 id="next-title">Nästa match</h2>
-    <div class="summary" id="next-summary"><span class="muted">Laddar…</span></div>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="next-panel" data-acc="next" data-wide="open">
-      <span id="next-toggle">Kommande matcher</span><span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="acc-panel" id="next-panel"><div id="next-list"></div></div>
+    <section class="card">
+      <h2 id="next-title">Aktuella matcher</h2>
+      <div id="next-list"><span class="muted">Laddar…</span></div>
+    </section>
+    <section class="card">
+      <h2>Senaste resultat</h2>
+      <div id="last-list"><span class="muted">Laddar…</span></div>
+    </section>
   </section>
 
-  <section class="card" id="card-last">
-    <h2 id="last-title">Senaste match</h2>
-    <div class="summary" id="last-summary"><span class="muted">Laddar…</span></div>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="last-panel" data-acc="last" data-wide="open">
-      <span id="last-toggle">Tidigare matcher</span><span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="acc-panel" id="last-panel"><div id="last-list"></div></div>
+  <!-- Tabell: vald liga -->
+  <section class="view" id="view-table" hidden>
+    <div class="seg league-picker" role="group" aria-label="Liga"></div>
+    <section class="card flush">
+      <h2 id="table-title">Premier League</h2>
+      <div id="table-full"><span class="muted pad-x">Laddar…</span></div>
+    </section>
   </section>
 
-  <section class="card" id="card-table">
-    <h2 id="table-title">Premier League</h2>
-    <div class="summary" id="table-summary"><span class="muted">Laddar…</span></div>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="table-panel" data-acc="table" data-wide="open">
-      <span>Hela tabellen</span><span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="acc-panel" id="table-panel"><div id="table-full"></div></div>
+  <!-- Lag: valt lag -->
+  <section class="view" id="view-team" hidden>
+    <div id="teambar" hidden>
+      <span id="teambar-logo"></span><span class="n" id="teambar-name"></span>
+      <button type="button" class="icon-btn" id="teambar-close" aria-label="Sluta följa laget">✕</button>
+    </div>
+    <div class="card empty" id="team-empty" hidden>
+      <p>Inget lag valt. Tryck på ett lag i tabellen för att följa det.</p>
+      <button type="button" class="btn tonal" id="team-pick">Till tabellen</button>
+    </div>
+    <div id="team-cards">
+      <section class="card">
+        <h2>Nästa match</h2>
+        <div id="team-next"><span class="muted">Laddar…</span></div>
+        <div id="team-next-list"></div>
+      </section>
+      <section class="card">
+        <h2>Senaste match</h2>
+        <div id="team-last"><span class="muted">Laddar…</span></div>
+        <div id="team-last-list"></div>
+      </section>
+      <section class="card flush">
+        <h2 id="team-table-title">Tabell</h2>
+        <div id="team-table"></div>
+      </section>
+    </div>
+    <div class="recent-wrap" id="recent-wrap" hidden>
+      <h2>Senast följda lag</h2>
+      <div class="recent" id="recent"></div>
+    </div>
   </section>
 
-  <section class="card help" id="card-help">
-    <h2>Hjälp</h2>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="help-panel" data-acc="help">
-      <span>Så använder du appen</span><span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="acc-panel" id="help-panel"><div class="pad">
-      <details><summary>Liga och lag</summary>
-        <p>Appen visar en liga i taget: aktuella matcher, senaste resultat och tabellen. Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst.</p>
-        <p>Raden Idag visar hur många matcher som spelas idag i de ligor du redan har öppnat. Tryck för att byta liga.</p></details>
-      <details><summary>Följa ett lag</summary>
-        <p>Tryck på ett lag i tabellen och sedan Följ. Då visas lagets nästa och senaste match i alla turneringar, lagets rad i tabellen och formen i de fem senaste ligamatcherna.</p>
-        <p>Tryck ✕ bredvid lagets namn för att gå tillbaka till ligan. Appen öppnas i samma läge nästa gång.</p></details>
-      <details><summary>Senast följda lag</summary>
-        <p>De fem senast följda lagen visas som en rad med märken. Ett tryck byter lag direkt. ✕ på ett lag tar bort det ur listan.</p></details>
-      <details><summary>Matcher och live</summary>
-        <p>Tryck på en spelad eller pågående match för att se målskyttar och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen.</p></details>
-      <details><summary>Offline och data</summary>
-        <p>Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.</p>
-        <p>Under Data sparar du en krypterad backup-fil med valt lag, liga och senast följda lag. Matchdata ingår inte, den hämtas igen.</p></details>
-    </div></div>
-  </section>
-
-  <section class="card" id="card-data">
-    <h2>Data</h2>
-    <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="data-panel" data-acc="data">
-      <span>Backup och radera</span><span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="acc-panel" id="data-panel"><div class="pad">
-      <p class="muted">Backup-filen innehåller valt lag, vald liga och senast följda lag, och krypteras alltid med ett lösenord du väljer. Matchdata ingår inte. Läs in filen på en annan enhet för att flytta inställningarna.</p>
-      <div class="actions wrap">
-        <button type="button" class="btn filled" id="backup-save">Spara backup-fil</button>
-        <label class="btn tonal btn-file">Läs in backup-fil<input type="file" id="import-file" accept=".txt,.json"></label>
-      </div>
-      <p class="error" id="import-error" role="alert"></p>
-      <details class="data-text">
-        <summary class="data-text-title">Klistra in text</summary>
-        <label class="field"><span>Importera (ersätter inställningarna)</span><textarea id="import-text" rows="4" autocomplete="off" spellcheck="false" placeholder="Klistra in innehållet i en backup-fil"></textarea></label>
-        <div class="actions"><span class="spacer"></span><button type="button" class="btn tonal" id="import-btn">Importera</button></div>
+  <!-- Inställningar -->
+  <section class="view" id="view-settings" hidden>
+    <details class="set-group-wrap" id="g-team">
+      <summary class="set-group"><span class="set-gtitle">Lag</span><span class="set-hint" id="hint-team"></span></summary>
+      <details class="card set-sec">
+        <summary class="sec-sum"><span class="set-title">Senast följda lag</span><span class="set-hint" id="hint-recent"></span></summary>
+        <div class="set-body">
+          <ul class="rows" id="recent-list"></ul>
+          <p class="muted small">De fem senast följda lagen. Deras matchdata sparas så att de visas direkt. ✕ tar bort laget och dess sparade data.</p>
+        </div>
       </details>
-      <div class="actions"><button type="button" class="btn text danger" id="reset">Radera all data</button></div>
-    </div></div>
-  </section>
+    </details>
 
-  <p class="foot"><button type="button" class="btn tonal" id="install" hidden>Installera appen</button></p>
+    <details class="set-group-wrap" id="g-general">
+      <summary class="set-group"><span class="set-gtitle">Allmänt</span><span class="set-hint">Data, hjälp</span></summary>
+      <details class="card set-sec" id="card-data">
+        <summary class="sec-sum"><span class="set-title">Data</span><span class="set-hint">Backup, import, radera</span></summary>
+        <div class="set-body">
+          <p class="muted">Backup-filen innehåller valt lag, vald liga och senast följda lag, och krypteras alltid med ett lösenord du väljer. Matchdata ingår inte, den hämtas igen. Läs in filen på en annan enhet för att flytta inställningarna.</p>
+          <div class="actions wrap">
+            <button type="button" class="btn filled" id="backup-save">Spara backup-fil</button>
+            <label class="btn tonal btn-file">Läs in backup-fil<input type="file" id="import-file" accept=".txt,.json"></label>
+          </div>
+          <p class="error" id="import-error" role="alert"></p>
+          <details class="data-text">
+            <summary class="data-text-title">Klistra in text</summary>
+            <label class="field"><span>Importera (ersätter inställningarna)</span><textarea id="import-text" rows="4" autocomplete="off" spellcheck="false" placeholder="Klistra in innehållet i en backup-fil"></textarea></label>
+            <div class="actions"><span class="spacer"></span><button type="button" class="btn tonal" id="import-btn">Importera</button></div>
+          </details>
+          <div class="actions"><button type="button" class="btn text danger" id="reset">Radera all data</button></div>
+        </div>
+      </details>
+      <details class="card set-sec help" id="card-help">
+        <summary class="sec-sum"><span class="set-title">Hjälp och manual</span><span class="set-hint">Så funkar appen</span></summary>
+        <div class="set-body">
+          <details><summary>Matcher och tabell</summary>
+            <p>Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher syns pågående och kommande matcher och de senaste resultaten, under Tabell hela tabellen.</p>
+            <p>Raden Idag visar hur många matcher som spelas idag i de ligor du redan har öppnat. Tryck för att byta liga.</p></details>
+          <details><summary>Följa ett lag</summary>
+            <p>Tryck på ett lag i tabellen och sedan Följ. Under Lag visas lagets nästa och senaste match i alla turneringar, lagets rad i tabellen och formen i de fem senaste ligamatcherna.</p>
+            <p>✕ bredvid lagets namn slutar följa laget. Appen öppnas på samma flik nästa gång.</p></details>
+          <details><summary>Senast följda lag</summary>
+            <p>De fem senast följda lagen visas under Lag. Ett tryck byter lag direkt. Under Inställningar → Lag tar du bort ett lag ur listan.</p></details>
+          <details><summary>Matcher och live</summary>
+            <p>Tryck på en spelad eller pågående match för att se målskyttar och röda kort. Under pågående match uppdateras ställningen var 30:e sekund medan appen är öppen.</p></details>
+          <details><summary>Offline och data</summary>
+            <p>Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.</p>
+            <p>Under Inställningar → Data sparar du en krypterad backup-fil med valt lag, liga och senast följda lag. Matchdata ingår inte, den hämtas igen.</p></details>
+        </div>
+      </details>
+      <div class="actions center"><button type="button" class="btn tonal" id="install" hidden>Installera appen</button></div>
+    </details>
+    <p class="foot muted small" id="foot"></p>
+  </section>
 </main>
+
+<nav class="tabbar" id="tabbar" aria-label="Vyer">
+  <a class="tab" href="#matches" data-view="matches"><span aria-hidden="true">⚽</span>Matcher</a>
+  <a class="tab" href="#table" data-view="table"><span aria-hidden="true">📋</span>Tabell</a>
+  <a class="tab" href="#team" data-view="team"><span aria-hidden="true">⭐</span>Lag</a>
+  <a class="tab" href="#settings" data-view="settings"><span aria-hidden="true">⚙️</span>Inst.</a>
+</nav>
 
 <dialog id="pick" aria-labelledby="pick-text">
   <form method="dialog">

@@ -114,8 +114,9 @@ function loadCache(c) {
   };
 }
 
-// ---------- Settings: chosen team, league, recent teams, open accordions ----------
-const ACC_KEYS = ['next', 'last', 'table', 'help', 'data'];
+// ---------- Settings: chosen team, league, recent teams; open tab ----------
+const TABS = ['matches', 'table', 'team', 'settings'];
+const loadTab = (v) => (TABS.includes(v) ? v : null);
 const RECENT_MAX = 5;
 const loadLeague = (v) => (isLeague(v) ? v : DEFAULT_LEAGUE);
 // fns.team.v2, or once from fns.team.v1 (no leagueId – that version only had the Premier League).
@@ -129,15 +130,11 @@ function loadRecent(list) {
   }
   return out;
 }
-function loadAcc(a) {
-  const mode = (m) => { const o = {}; if (isObj(m)) for (const k of ACC_KEYS) if (m[k] === true) o[k] = true; return o; };
-  return { league: mode(isObj(a) && a.league), team: mode(isObj(a) && a.team) };
-}
 // Recent list after following t: t first, no duplicates, at most RECENT_MAX.
 const addRecent = (list, t) => loadRecent([t, ...list.filter((x) => x.id !== t.id)]);
 function loadSettings(s) {
   const o = isObj(s) ? s : {};
-  return { team: cleanTeam(o.team), league: loadLeague(o.league), recent: loadRecent(o.recent), acc: loadAcc(o.acc) };
+  return { team: cleanTeam(o.team), league: loadLeague(o.league), recent: loadRecent(o.recent) };
 }
 
 // ---------- Export/import as text (U5, shared standard: format 1 = slim JSON in an envelope) ----------
@@ -149,14 +146,11 @@ function packData(s) {
   const out = { league: s.league };
   if (s.team) out.team = { ...s.team };
   if (s.recent.length) out.recent = s.recent.map((t) => ({ ...t }));
-  const acc = {};
-  for (const m of ['league', 'team']) if (Object.keys(s.acc[m]).length) acc[m] = { ...s.acc[m] };
-  if (Object.keys(acc).length) out.acc = acc;
   return out;
 }
 function unpackData(p) {
   if (!isObj(p)) return null;
-  return { team: p.team ?? null, league: p.league, recent: Array.isArray(p.recent) ? p.recent : [], acc: isObj(p.acc) ? p.acc : {} };
+  return { team: p.team ?? null, league: p.league, recent: Array.isArray(p.recent) ? p.recent : [] };
 }
 function exportText(s, today) {
   return JSON.stringify({ app: EXPORT_APP, format: EXPORT_FORMAT, exported: today, data: packData(s) });
