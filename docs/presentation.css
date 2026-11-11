@@ -127,3 +127,5 @@ p { margin: 0; max-width: 62ch; }
 .checks li::before { content: "\2713"; grid-row: span 2; width: 22px; height: 22px; border-radius: var(--r-xs); background: var(--green); color: var(--plum); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
 .checks b { font-weight: 600; }
 .checks span { color: var(--muted); font-size: 13px; }
+.checks-h { margin: 18px 0 0; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.checks-h + .checks { margin-top: 8px; }

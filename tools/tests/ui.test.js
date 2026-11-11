@@ -78,11 +78,12 @@ T.test('cache: ingen ny hämtning av tabell eller intervall vid flikbyte', async
   T.ok(!urls.some((u) => u.includes('standings')), 'tabellen hämtas inte igen: ' + urls.join());
   T.ok(urls.every((u) => !u.includes('dates=')), 'bara dagens scoreboard (pågående match)');
 });
-T.test('säkerhet: bara ESPN:s API, utan cookies och referer', () => {
+T.test('säkerhet: bara ESPN:s API, utan cookies och referer, med tidsgräns', () => {
   T.ok(__calls.length > 0, 'inga anrop');
   for (const c of __calls) {
     T.ok(c.url.startsWith('https://site.api.espn.com/apis/'), 'fel värd: ' + c.url);
     T.eq([c.opts.credentials, c.opts.cache, c.opts.referrerPolicy], ['omit', 'no-store', 'no-referrer']);
+    T.ok(c.opts.signal instanceof AbortSignal, 'tidsgräns saknas: ' + c.url);
   }
 });
 T.test('säkerhet: klubbmärken från annan värd visas inte', () => {
