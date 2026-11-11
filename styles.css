@@ -43,11 +43,12 @@ button { cursor: pointer; }
 .pad-x { padding: 0 14px; }
 
 /* Top app bar */
-#status { padding-top: 8px; font-size: .75rem; color: var(--muted); }
+#status { font-size: .75rem; line-height: 1.3; color: var(--muted); }
 #status:empty { display: none; }
 #status.error { color: var(--error); font-weight: 500; }
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 6px; }
-.brand { font-weight: 400; font-size: 1.375rem; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0 6px; }
+.brand-wrap { display: grid; min-width: 0; }
+.brand { font-weight: 400; font-size: 1.375rem; line-height: 1.2; }
 .version { font-size: .7rem; font-weight: 500; padding: 4px 10px; border-radius: var(--r-sm); color: var(--on-primary-container); background: var(--primary-container); }
 
 /* Views and cards */

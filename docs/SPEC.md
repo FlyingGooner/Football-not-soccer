@@ -26,7 +26,7 @@ De flesta fotbollsappar är fulla av nyheter, reklam, notiser och konton. Den h�
 - **Flik**: en av fyra vyer i menyn nertill. Vald flik sparas (`fns.tab.v1`) och appen öppnas på den; första start är Matcher (Lag om ett lag redan är valt).
 
 ## Skärmar
-Samma struktur som simple-nutrition (beslut 2026-11-11): statusrad ("Senast uppdaterad …", fel och offline), rubrikrad med appens namn och versionsetikett, innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
+Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens namn och versionsetikett, och under namnet en liten statusrad ("Senast uppdaterad …", fel och offline; beslut 2026-11-11, sparar plats), innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
 
 ### 1. Matcher
 ```
