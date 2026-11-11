@@ -282,7 +282,7 @@ function zoneOf(leagueId, rank, rows) {
 // ---------- Card order per view (as simple-nutrition): { [view]: { order: [id], hidden: [id] } } ----------
 // Ids are fixed; unknown ids are dropped and new cards go last, so a saved order never breaks.
 const LAYOUT = Object.freeze({
-  team: [['next', 'Nästa match'], ['last', 'Senaste match'], ['table', 'Placering och form'], ['recent', 'Senast följda lag']],
+  team: [['next', 'Nästa match'], ['last', 'Senaste match'], ['recent', 'Senast följda lag']],
 });
 const LAYOUT_VIEWS = Object.freeze({ team: 'Lag' });   // Matcher has one card only, so no list
 function layoutOf(layout, v) {

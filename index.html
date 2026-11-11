@@ -48,7 +48,7 @@
   <!-- Lag: valt lag -->
   <section class="view" id="view-team" hidden>
     <div id="teambar" hidden>
-      <span id="teambar-logo"></span><span class="n" id="teambar-name"></span>
+      <span id="teambar-logo"></span><span class="n" id="teambar-name"></span><span class="tform" id="team-form"></span>
       <button type="button" class="icon-btn" id="teambar-close" aria-label="Sluta följa laget">✕</button>
     </div>
     <div class="card empty" id="team-empty" hidden>
@@ -57,7 +57,7 @@
     </div>
     <div class="arr" id="arr-team">
       <section class="card" data-card="next">
-        <h2>Nästa match</h2>
+        <h2 id="team-next-title">Nästa match</h2>
         <div id="team-next"><span class="muted">Laddar…</span></div>
         <div id="team-next-list"></div>
       </section>
@@ -65,10 +65,6 @@
         <h2>Senaste match</h2>
         <div id="team-last"><span class="muted">Laddar…</span></div>
         <div id="team-last-list"></div>
-      </section>
-      <section class="card" data-card="table">
-
-        <div id="team-table"></div>
       </section>
     <div class="recent-wrap" id="recent-wrap" data-card="recent" hidden>
       <h2>Senast följda lag</h2>
@@ -124,7 +120,7 @@
             <p>Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher finns flikarna Aktuella (pågående och dagens matcher), Kommande och Spelade, under Tabell hela tabellen.</p>
             <p>Listan fyller skärmen. Visa fler visar fler matcher och hämtar en vecka till när det behövs.</p></details>
           <details><summary>Följa ett lag</summary>
-            <p>Tryck på ett lag i tabellen och sedan Följ. Under Lag visas lagets nästa och senaste match i alla turneringar, lagets placering och poäng och formen i de fem senaste ligamatcherna.</p>
+            <p>Tryck på ett lag i tabellen och sedan Följ. Under Lag visas lagets nästa och senaste match i alla turneringar och, bredvid lagets namn, formen i de fem senaste ligamatcherna. Visa fler fäller ut alla kommande och fler spelade matcher. Pågår matchen visas den live under Pågår nu.</p>
             <p>✕ bredvid lagets namn slutar följa laget. Appen öppnas på samma flik nästa gång.</p></details>
           <details><summary>Senast följda lag</summary>
             <p>De fem senast följda lagen visas under Lag. Ett tryck byter lag direkt. Under Inställningar → Lag tar du bort ett lag ur listan.</p></details>

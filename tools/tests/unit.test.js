@@ -107,7 +107,7 @@ T.test('flik: bara kända flikar', () => {
   T.eq(loadTab('evil'), null);
 });
 T.test('kortordning: okända id bort, nya kort sist, standard sparas inte', () => {
-  T.eq(layoutOf({ team: { order: ['last', 'evil', 'last'], hidden: ['table', 'x'] } }, 'team'), { order: ['last', 'next', 'table', 'recent'], hidden: ['table'] });
+  T.eq(layoutOf({ team: { order: ['last', 'evil', 'last'], hidden: ['recent', 'table'] } }, 'team'), { order: ['last', 'next', 'recent'], hidden: ['recent'] });
   T.eq(loadLayout({ matches: { order: ['today', 'next', 'last'], hidden: ['today'] }, evil: { order: [] } }), {});   // old Matcher layout dropped
 });
 T.test('cache v4: datumintervall valideras, gula kort tolkas och behålls', () => {

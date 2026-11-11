@@ -226,9 +226,28 @@ dialog p { margin: 0 0 12px; }
 .more-btn { width: 100%; margin-top: 4px; }
 .mtabs { margin: -4px 0 6px; }
 #match-list { touch-action: pan-y; }
-.standing { display: flex; align-items: center; gap: 4px; }
-.standing > span:first-child { margin-right: auto; font-weight: 500; }
 /* League picker and match tabs: text tabs, chosen = bold with a thin line under (minimal) */
 .seg { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
 .seg button { min-height: 44px; padding: 0 2px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); font-weight: 500; font-size: .9375rem; white-space: nowrap; }
 .seg button[aria-pressed="true"] { color: var(--text); font-weight: 700; border-bottom-color: var(--primary); }
+/* Lag: compact, everything fits without scrolling */
+#teambar { background: var(--surface-container-high); color: var(--text); min-height: 48px; gap: 10px; padding-left: 12px; }
+#teambar img, #teambar .ph { width: 24px; height: 24px; }
+.tform { display: flex; gap: 3px; }
+.tform .dot { width: 18px; height: 18px; font-size: .625rem; }
+#view-team .card { padding: 8px 12px; }
+#view-team h2 { margin-bottom: 4px; }
+#view-team .side { grid-template-columns: auto; gap: 2px; font-size: .8125rem; }
+#view-team .side img, #view-team .side .ph { width: 28px; height: 28px; }
+#view-team .score { font-size: 1.375rem; line-height: 1.2; }
+#view-team .time { font-size: 1.125rem; line-height: 1.2; }
+#view-team .mid { gap: 2px; }
+#view-team .meta { margin-top: 4px; font-size: .75rem; }
+#view-team .evs { padding-bottom: 2px; font-size: .75rem; }
+#view-team ul.mlist { margin: 6px -12px 0; }
+#view-team ul.mlist li { grid-template-columns: 92px 1fr auto auto; gap: 8px; padding: 6px 12px; min-height: 36px; font-size: .875rem; }
+#view-team ul.mlist .o { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+#view-team ul.mlist .r { min-width: 0; }
+#view-team .more-btn { min-height: 36px; margin: 0; }
+#view-team .recent-wrap { margin-top: 0; }
+#view-team .recent-wrap h2 { display: none; }

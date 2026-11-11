@@ -7,8 +7,8 @@
 const CONFIG = {
   leagues: LEAGUES,             // store.js: Premier League, LaLiga, Serie A, Champions League
   europe: EUROPE,               // collected in team mode together with the team's league
-  upcomingCount: 5,
-  recentCount: 5,
+  upcomingCount: 2,             // Lag: rows under Nästa match before Visa fler
+  recentCount: 3,               // Lag: rows under Senaste match before Visa fler
   roundSize: 10,
   weeksMax: 5,                  // Visa fler fetches one week at a time, at most 5 back and 5 ahead
   minRows: 5,
@@ -270,13 +270,16 @@ function matchHero(m, kind) {
     el('div', { class: 'meta' }, `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`, m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
       m.state === 'pre' && kind === 'next' ? el('span', { class: 'countdown', 'data-kickoff': m.date, text: countdown(d - Date.now()) }) : null));
 }
+const COMP_SHORT = { 'uefa.europa': 'EL', 'uefa.europa.conf': 'ECL' };
 function teamMatchList(list, past) {
   if (!list.length) return null;
   return el('ul', { class: 'mlist' }, list.map((m) => {
     const d = new Date(m.date), o = opponent(m), r = resultOf(m), home = isHomeFor(m);
+    const c = compById(m.leagueId), comp = (c && c.short) || COMP_SHORT[m.leagueId] || m.league;
     return el('li', null,
-      el('span', { class: 'd' }, fmtShort.format(d), el('br'), past ? '' : fmtTime.format(d)),
-      el('span', null, el('span', { class: 'o', text: `${o.name} (${home ? 'H' : 'B'})` }), el('br'), el('span', { class: 'c', text: m.league })),
+      el('span', { class: 'd', text: past ? fmtShort.format(d) : `${fmtShort.format(d)} ${fmtTime.format(d)}` }),
+      el('span', { class: 'o', text: `${o.name} (${home ? 'H' : 'B'})` }),
+      el('span', { class: 'c', text: comp }),
       past ? el('span', { class: 'r' }, `${scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore)} `, r ? el('span', { class: `badge ${r}`, text: RESULT_SHORT[r] }) : null)
         : el('span', { class: 'r' }));
   }));
@@ -372,8 +375,6 @@ async function showMore() {
   renderLeagueMatches();
 }
 $('more').addEventListener('click', showMore);
-// Swedish ordinal: 1:a, 2:a, 3:e … 11:e, 12:e, 21:a, 22:a.
-const ordinal = (n) => `${n}:${[1, 2].includes(n % 10) && ![11, 12].includes(n % 100) ? 'a' : 'e'}`;
 // Swipe left/right on the list → next/previous tab (only clearly horizontal swipes, ≥ 50 px).
 function swipeTab(dir) {
   const ids = MTABS.map(([id]) => id), cur = mtab || (matchLists(L(league).league || []).now.length ? 'now' : 'next');
@@ -391,7 +392,7 @@ $('card-matches').addEventListener('touchend', (e) => {
 function renderTeam() {
   $('teambar').hidden = !team;
   $('team-empty').hidden = !!team;
-  for (const id of ['next', 'last', 'table']) $('arr-team').querySelector(`[data-card="${id}"]`).hidden = !team;
+  for (const id of ['next', 'last']) $('arr-team').querySelector(`[data-card="${id}"]`).hidden = !team;
   const c = team && (team.color || (teamData() && teamData().color));
   if (color(c)) document.documentElement.style.setProperty('--sel', color(c));   // strict #rrggbb only
   else document.documentElement.style.removeProperty('--sel');
@@ -404,17 +405,24 @@ function renderTeam() {
   if (!td) { fill($('team-next'), loading()); fill($('team-last'), loading()); fill($('team-next-list')); fill($('team-last-list')); }
   else {
     const upcoming = td.matches.filter((m) => m.state !== 'post'), past = td.matches.filter((m) => m.state === 'post').reverse();
+    $('team-next-title').textContent = upcoming[0] && upcoming[0].state === 'in' ? 'Pågår nu' : 'Nästa match';
     fill($('team-next'), upcoming[0] ? matchHero(upcoming[0], 'next') : el('p', { class: 'muted', text: 'Ingen inplanerad match.' }));
-    fill($('team-next-list'), teamMatchList(upcoming.slice(1, 1 + CONFIG.upcomingCount), false));
+    fill($('team-next-list'), teamList(upcoming.slice(1), false, CONFIG.upcomingCount));
     fill($('team-last'), past[0] ? matchHero(past[0], 'last') : el('p', { class: 'muted', text: 'Inga spelade matcher.' }));
-    fill($('team-last-list'), teamMatchList(past.slice(1, 1 + CONFIG.recentCount), true));
+    fill($('team-last-list'), teamList(past.slice(1), true, CONFIG.recentCount));
   }
-  const lid = team.leagueId, rows = L(lid).table;
-  // One line: placing and points in the team's own league + form (no table here; it is under Tabell).
-  const me = rows && rows.find((r) => r.id === team.id), name = leagueById(lid).name;
-  const text = me && me.rank != null ? `${ordinal(me.rank)} i ${name}${me.pts != null ? ` · ${me.pts} p` : ''}` : `${name}: ingen placering`;
+  // Form in the team bar (no placing, no table here; that is under Tabell).
   const dots = formDots(td && td.matches);
-  fill($('team-table'), el('div', { class: 'standing' }, el('span', { text }), dots ? [...dots.children].slice(1) : null));
+  fill($('team-form'), dots ? [...dots.children].slice(1) : null);
+}
+// Compact list under Nästa/Senaste match: first `n` rows, Visa fler expands the rest (session only).
+const teamOpen = { next: false, last: false };
+function teamList(list, past, n) {
+  const key = past ? 'last' : 'next', open = teamOpen[key];
+  if (!list.length) return null;
+  return [teamMatchList(open ? list : list.slice(0, n), past),
+    list.length > n ? el('button', { type: 'button', class: 'btn text more-btn', 'data-more': key, text: open ? 'Visa färre' : `Visa fler (${list.length - n})`,
+      on: { click: () => { teamOpen[key] = !open; renderTeam(); } } }) : null];
 }
 function renderRecent() {
   const list = recent.filter((t) => !team || t.id !== team.id);

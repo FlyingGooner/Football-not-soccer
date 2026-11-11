@@ -128,11 +128,12 @@ T.test('följa lag: dialog → fliken Lag, lagets liga och senast följda sparas
   T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
   T.ok(T.$('[data-kickoff]'), 'nedräkning');
   T.eq(document.querySelectorAll('#team-next-list li').length, 2);
+  T.eq(document.querySelectorAll('#team-last-list li').length, 3);
+  T.eq(document.querySelectorAll('#team-form .dot').length, 5);
+  T.ok(!T.$('#view-team table'), 'ingen tabell under Lag');
+  click('#team-last-list [data-more]');
   T.eq(document.querySelectorAll('#team-last-list li').length, 5);
-  T.eq(document.querySelectorAll('#team-table .standing .dot').length, 5);
-  T.eq(T.$('#team-table .standing span').textContent, '2:a i LaLiga · 39 p');
-  T.ok(!T.$('#team-table table'), 'ingen tabell under Lag');
-  T.eq([1, 2, 3, 11, 12, 21, 22].map(ordinal), ['1:a', '2:a', '3:e', '11:e', '12:e', '21:a', '22:a']);
+  click('#team-last-list [data-more]');
 });
 T.test('byta lag och senast följda', async () => {
   tab('table');
@@ -177,7 +178,7 @@ T.test('CL: lag får sin inhemska liga', async () => {
   await T.until(() => JSON.parse(localStorage.getItem('fns.team.v2')).leagueId === 'ita.1', 'inhemsk liga hittades inte');
   await T.wait(50);
   await settle();
-  T.ok(T.$('#team-table .standing').textContent.includes('i Serie A'), T.$('#team-table').textContent);
+  T.ok(T.$('#teambar-name').textContent === 'Ita 1' && document.querySelectorAll('#team-form .dot').length > 0, 'form i lagraden');
 });
 T.test('matchdetaljer fälls ut med målskytt', async () => {
   tab('matches');
@@ -238,14 +239,14 @@ T.test('kortordning: flytta och dölja kort, sparas och återställs', async () 
   tab('settings');
   T.ok(!T.$('.lay-list[data-view="matches"]'), 'Matcher har bara ett kort, ingen lista');
   const list = () => [...document.querySelectorAll('.lay-list[data-view="team"] li .row-name')].map((n) => n.textContent);
-  T.eq(list(), ['Nästa match', 'Senaste match', 'Placering och form', 'Senast följda lag']);
+  T.eq(list(), ['Nästa match', 'Senaste match', 'Senast följda lag']);
   click(T.$('.lay-list[data-view="team"] [aria-label="Flytta upp Senaste match"]'));
-  T.eq(list(), ['Senaste match', 'Nästa match', 'Placering och form', 'Senast följda lag']);
-  click(T.$('.lay-list[data-view="team"] [aria-label="Dölj Placering och form"]'));
-  T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).team, { order: ['last', 'next', 'table', 'recent'], hidden: ['table'] });
+  T.eq(list(), ['Senaste match', 'Nästa match', 'Senast följda lag']);
+  click(T.$('.lay-list[data-view="team"] [aria-label="Dölj Senast följda lag"]'));
+  T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).team, { order: ['last', 'next', 'recent'], hidden: ['recent'] });
   T.eq(T.$('#hint-layout').textContent, 'Egen');
-  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['last', 'next', 'table', 'recent']);
+  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['last', 'next', 'recent']);
   click('[data-reset="team"]');
   T.eq(localStorage.getItem('fns.layout.v1'), null);
-  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['next', 'last', 'table', 'recent']);
+  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['next', 'last', 'recent']);
 });
