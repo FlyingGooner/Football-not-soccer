@@ -402,7 +402,7 @@ function onSwipe(node, fn) {
   }, { passive: true });
 }
 onSwipe($('card-matches'), swipeTab);
-onSwipe($('table-card'), swipeLeague);
+onSwipe($('view-table'), swipeLeague);   // whole view, not only the card
 function renderTeam() {
   $('teambar').hidden = !team;
   $('team-empty').hidden = !!team;

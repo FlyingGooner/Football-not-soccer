@@ -102,7 +102,7 @@ T.test('ligor: standard fyra i väljaren, VM väljs under Inställningar och vis
   await settle();
   T.eq([...document.querySelectorAll('#table-full .grp')].map((h) => h.textContent), ['Group A', 'Group B']);
   T.eq(document.querySelectorAll('#table-full tbody tr').length, 8);
-  const card = T.$('#table-card');
+  const card = T.$('#view-table');
   const swipe = (x0, x1) => {
     const t = (x) => new Touch({ identifier: 1, target: card, clientX: x, clientY: 100 });
     card.dispatchEvent(new TouchEvent('touchstart', { touches: [t(x0)], changedTouches: [t(x0)] }));
