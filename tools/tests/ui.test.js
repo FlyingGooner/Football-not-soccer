@@ -325,8 +325,9 @@ T.test('anrop: snabbt ligabyte hämtar bara sista ligan, samma URL högst en gå
   T.ok(!urls.some((u) => u.includes('/esp.1/')), 'passerad liga hämtas inte: ' + urls.join());
   T.eq(new Set(urls).size, urls.length, 'ingen URL två gånger');
 });
-T.test('Lag: all-schema (2 anrop), vänskapsmatcher bort, live var 60:e sekund', async () => {
-  T.eq(CONFIG.livePollMs, 60000);
+T.test('Lag: all-schema (2 anrop), vänskapsmatcher bort, live var 20:e sekund', async () => {
+  T.eq(CONFIG.livePollMs, 20000);
+  T.ok(/^Uppdaterad (\S.* )?\d{2}[:.]\d{2}/.test(T.$('#status').textContent), 'kort statusrad: ' + T.$('#status').textContent);
   const urls = __calls.map((c) => c.url).filter((u) => u.includes('/teams/'));
   T.ok(urls.length > 0 && urls.every((u) => /soccer\/all\/teams\/\d+\/schedule/.test(u) || /soccer\/[a-z.]+\/teams\/\d+$/.test(u)), urls.join());
   T.ok(Object.values(cache.teams).every((t) => t.matches.every((m) => m.leagueId !== 'club.friendly' && m.id !== '1')), 'vänskapsmatch borttagen');

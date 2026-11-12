@@ -14,7 +14,7 @@ const CONFIG = {
   roundSize: 10,
   monthsMax: 3,                 // Visa fler fetches one month at a time, at most 3 back and 3 ahead of the current month
   minRows: 5,
-  livePollMs: 60000,
+  livePollMs: 20000,
   teamCacheMax: RECENT_MAX,
   leagueCacheMax: 6,            // leagues kept in the cache (most recently used)
   teamAllMs: 24 * 3600e3,       // a team's all-competition schedule: at most once a day (or when its match has started)
@@ -438,7 +438,7 @@ function lastUpdated() {
 function renderStatus(msg, isError) {
   const s = $('status'), t = view === 'settings' ? null : lastUpdated(), parts = [];
   s.className = isError ? 'error' : '';
-  if (t) parts.push(`Senast uppdaterad ${fmtDate.format(t)} ${fmtTime.format(t)}`);
+  if (t) parts.push(`Uppdaterad ${new Date(t).toDateString() === new Date().toDateString() ? '' : fmtDate.format(t) + ' '}${fmtTime.format(t)}`);
   if (msg) parts.push(msg);
   s.textContent = parts.join(' · ');
 }

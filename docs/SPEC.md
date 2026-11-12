@@ -26,7 +26,7 @@ De flesta fotbollsappar är fulla av nyheter, reklam, notiser och konton. Den h�
 - **Flik**: en av fyra vyer i menyn nertill. Vald flik sparas (`fns.tab.v1`) och appen öppnas på den; första start är Matcher (Lag om ett lag redan är valt).
 
 ## Skärmar
-Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens namn och versionsetikett, och under namnet en liten statusrad ("Senast uppdaterad …", fel och offline; beslut 2026-11-11, sparar plats), innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
+Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens namn och versionsetikett, och under namnet en liten statusrad ("Uppdaterad 14:32", datum bara om inte idag, fel och offline; beslut 2026-11-11, sparar plats), innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
 
 ### 1. Matcher
 ```
@@ -70,7 +70,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 ### 3. Lag
 - **Hela vyn får plats utan scroll** på en vanlig telefon (beslut 2026-11-11): kompakta kort, matchrader på en rad.
 - Valt lag: rad med märke, namn, **formen** (5 senaste ligamatcher, V/O/F) och **✕** (slutar följa, utan bekräftelse). Neutral bakgrund (`--surface-container-high`), lagets färg bara som kant till vänster. Ingen placering, ingen tabell (finns under Tabell).
-- **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 60:e sekund. Under: 3 kommande (lika många som under Senaste match) på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande som finns (lagets hela schema i de turneringar som hämtas).
+- **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 20:e sekund. Under: 3 kommande (lika många som under Senaste match) på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande som finns (lagets hela schema i de turneringar som hämtas).
 - **Senaste match**: kompakt: resultat, V/O/F, turnering, datum och målskyttar (kort visas inte; de syns när en matchrad fälls ut). Under: 3 matcher innan, en rad var; **Visa fler** fäller ut resten. Utfällt läge gäller bara under sessionen.
 - **Senast följda lag** längst ned.
 - Inget lag valt: "Inget lag valt" och en knapp till Tabell.
@@ -162,7 +162,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
   - Tabellen hämtas bara när en match i ligan har gått till `post` efter förra tabellhämtningen (eller saknas/är äldre än 6 timmar).
   - Lag: ligans matcher tas ur ligacachen (fliken Lag hämtar lagets liga som ovan); lagets schema för alla tävlingar högst en gång per dygn eller när en av lagets matcher har börjat.
   - Cachen behåller högst 6 ligor (de senast använda, plus vald liga och lagets liga), för att inte fylla `localStorage`.
-- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 60:e sekund. Matcher: alla pågående ligamatcher; Lag: lagets match. Uppdateringen skrivs till både ligans och lagens cache.
+- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 20:e sekund. Matcher: alla pågående ligamatcher; Lag: lagets match. Uppdateringen skrivs till både ligans och lagens cache.
 - ESPN:s `Cache-Control` är bara 3–18 s, så webbläsarens HTTP-cache hjälper inte: `cache:'no-store'`, appens egen cache i `localStorage` gäller.
 - Cachad data visas direkt vid start och ersätts sedan av färsk data.
 

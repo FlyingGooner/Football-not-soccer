@@ -23,7 +23,7 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Matcher och live
 
-- Tryck på en spelad eller pågående match för att se målskyttar, gula och röda kort. Under pågående match uppdateras ställningen var 60:e sekund medan appen är öppen. Övrig data hämtas bara igen när en match har börjat.
+- Tryck på en spelad eller pågående match för att se målskyttar, gula och röda kort. Under pågående match uppdateras ställningen var 20:e sekund medan appen är öppen. Övrig data hämtas bara igen när en match har börjat.
 
 ## Offline och data
 
