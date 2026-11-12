@@ -148,73 +148,166 @@
     return { text };
   }
 
+  // Random backup password: 16 chars in four groups (xK7m-p9Rw-2vBn-4qTz), no look-alikes (0 O o 1 I l). Unbiased
+  // (rejection sampling), at least one upper, lower and digit, shuffled (Fisher–Yates), always passes checkPassword(). Never stored.
+  const PW_UP = 'ABCDEFGHJKLMNPQRSTUVWXYZ', PW_LO = 'abcdefghijkmnpqrstuvwxyz', PW_NUM = '23456789', PW_ALL = PW_UP + PW_LO + PW_NUM;
+  function randInt(n) {
+    const lim = 256 - (256 % n), b = new Uint8Array(1);
+    do crypto.getRandomValues(b); while (b[0] >= lim);
+    return b[0] % n;
+  }
+  function generatePassword() {
+    for (;;) {
+      const c = [PW_UP, PW_LO, PW_NUM].map((s) => s[randInt(s.length)]);
+      while (c.length < 16) c.push(PW_ALL[randInt(PW_ALL.length)]);
+      for (let i = c.length - 1; i > 0; i--) { const j = randInt(i + 1); [c[i], c[j]] = [c[j], c[i]]; }
+      const pwd = [0, 4, 8, 12].map((i) => c.slice(i, i + 4).join('')).join('-');
+      if (!checkPassword(pwd)) return pwd;
+    }
+  }
+
   // Password dialog: #pw-dialog lives in each app's index.html (the app's own classes, fixed ids).
   // mode 'export' → { pwd } | null (cancelled); mode 'import' → { pwd } | null. Encryption is mandatory (2026-11-11).
   // #pw-show shows the password as text; on every close (button, Esc, cancel) the fields are cleared and hidden again.
-  function askPassword(mode) {
+  // work(pwd) (optional, 2026-11-12): runs inside the open dialog with a busy state, so the slow key derivation never looks
+  // like a frozen app. { error } keeps the dialog open with the message (try again); anything else → { pwd, value }.
+  function askPassword(mode, work) {
     const $ = (id) => document.getElementById(id);
     const dlg = $('pw-dialog');
-    if (!dlg || typeof dlg.showModal !== 'function') return Promise.resolve(null);
+    if (!dlg || typeof dlg.showModal !== 'function' || dlg.open) return Promise.resolve(null);   // open: a second tap
     const exp = mode === 'export';
+    const okText = exp ? 'Spara krypterad' : 'Öppna';
     const show = $('pw-show'), p1 = $('pw-1'), p2 = $('pw-2'), err = $('pw-error'), ok = $('pw-ok'), cancel = $('pw-cancel');
     $('pw-title').textContent = exp ? 'Spara backup-fil' : 'Krypterad backup';
     $('pw-text').textContent = exp ? 'Filen krypteras med ett lösenord som du väljer.' : 'Filen är krypterad. Skriv lösenordet du valde när du sparade den.';
     $('pw-2-row').hidden = !exp;
     $('pw-hint').hidden = !exp;
     $('pw-warn').textContent = exp ? 'Glömmer du lösenordet går backupen inte att öppna. Spara det t.ex. i en lösenordshanterare.' : '';
-    ok.textContent = exp ? 'Spara krypterad' : 'Öppna';
+    ok.textContent = okText;
     err.textContent = '';
     p1.autocomplete = exp ? 'new-password' : 'current-password';
+    p2.autocomplete = 'new-password';
+    // v0.12.0 (optional elements, so apps without them still work): password-manager username, generator, copy, colour preview.
+    const form = dlg.querySelector('form'), user = $('pw-user'), gen = $('pw-gen'), copy = $('pw-copy'), prev = $('pw-preview'), note = $('pw-note');
+    if (user && !user.value) user.value = (document.title.split(/[–|-]/)[0].trim() || 'App') + ' backup';
+    if (gen) gen.hidden = !exp;
+    if (note) note.textContent = '';
     const fields = [p1, p2];
-    const hide = () => { show.checked = false; for (const f of fields) f.type = 'password'; };
-    const onShow = () => { for (const f of fields) f.type = show.checked ? 'text' : 'password'; };
+    const drawPreview = () => {
+      if (!prev) return;
+      const on = show.checked && !!p1.value;
+      prev.hidden = !on;
+      if (copy) copy.hidden = !on;
+      prev.replaceChildren(...(on ? [...p1.value].map((ch) => {
+        const s = document.createElement('span');
+        s.textContent = ch;
+        if (/\p{N}/u.test(ch)) s.className = 'pw-digit'; else if (/[^\p{L}\p{N}\s]/u.test(ch)) s.className = 'pw-special';
+        return s;
+      }) : []));
+    };
+    const hide = () => { show.checked = false; for (const f of fields) f.type = 'password'; drawPreview(); };
+    const onShow = () => { for (const f of fields) f.type = show.checked ? 'text' : 'password'; drawPreview(); };
     hide();
     return new Promise((resolve) => {
-      let result = null;
-      const onOk = () => {
+      let result = null, working = false;
+      const busy = (on) => {
+        working = on;
+        for (const b of [ok, cancel, p1, p2, show, gen]) if (b) b.disabled = on;
+        ok.textContent = on ? (exp ? 'Krypterar …' : 'Öppnar …') : okText;
+        dlg.setAttribute('aria-busy', on ? 'true' : 'false');
+      };
+      const onOk = async (e) => {
+        e?.preventDefault();
+        if (working) return;
         const pwd = p1.value;
         const bad = exp ? checkPassword(pwd) || (pwd !== p2.value ? 'Lösenorden är inte lika.' : '')
           : !pwd ? 'Skriv lösenordet.' : pwd.length > PWD_MAX ? BAD : '';
         if (bad) { err.textContent = bad; return; }
-        result = { pwd }; dlg.close();
+        let value;
+        if (work) {
+          err.textContent = '';
+          busy(true);
+          try { value = await work(pwd); } catch { value = { error: exp ? 'Kunde inte kryptera filen.' : BAD }; }
+          busy(false);
+          if (!dlg.open) return;
+          if (value && value.error) { err.textContent = value.error; p1.focus({ preventScroll: true }); p1.select?.(); return; }
+        }
+        result = work ? { pwd, value } : { pwd }; hide(); dlg.close(); finish();
       };
-      const onCancel = () => { result = null; dlg.close(); };
-      const onKey = (e) => { if (e.key === 'Enter' &&(e.target === p1 || e.target === p2)) { e.preventDefault(); onOk(); } };
-      const onClose = () => {
+      const onCancel = () => { if (working) return; result = null; dlg.close(); finish(); };
+      const onEsc = (e) => { if (working) e.preventDefault(); };   // Esc must not close mid-work
+      const onGen = () => {
+        const pwd = generatePassword();
+        p1.value = pwd; p2.value = pwd; err.textContent = '';
+        show.checked = true; onShow();
+        if (note) note.textContent = 'Skriv upp lösenordet. Utan det går backupen inte att läsa in.';
+      };
+      const onCopy = () => {
+        navigator.clipboard?.writeText(p1.value).then(() => { if (note) note.textContent = 'Kopierat'; })
+          .catch(() => { p1.select(); if (note) note.textContent = 'Markera och kopiera lösenordet'; })
+          ?? (p1.select(), note && (note.textContent = 'Markera och kopiera lösenordet'));
+      };
+      // Each opening ends itself synchronously (finish) when it closes the dialog. The close event only covers other
+      // ways out (Esc) and is ignored while the dialog is open: a late close event from the previous opening used to end
+      // a new one at once, so its OK did nothing (found 2026-11-12).
+      let done = false;
+      const onClose = () => { if (!dlg.open) finish(); };
+      const finish = () => {
+        if (done) return;
+        done = true;
+        dlg.removeEventListener('close', onClose);
+        busy(false);
         p1.value = ''; p2.value = ''; err.textContent = ''; hide();
-        ok.removeEventListener('click', onOk); cancel.removeEventListener('click', onCancel);
-        show.removeEventListener('change', onShow); dlg.removeEventListener('keydown', onKey);
+        if (note) note.textContent = '';
+        dlg.removeEventListener('cancel', onEsc);
+        form.removeEventListener('submit', onOk); ok.removeEventListener('click', onClick); dlg.removeEventListener('keydown', onKey); cancel.removeEventListener('click', onCancel);
+        show.removeEventListener('change', onShow); p1.removeEventListener('input', drawPreview);
+        gen?.removeEventListener('click', onGen); copy?.removeEventListener('click', onCopy);
         resolve(result);
       };
-      ok.addEventListener('click', onOk);
+      form.addEventListener('submit', onOk);
+      const onClick = () => { if (ok.type !== 'submit') onOk(); };
+      const onKey = (e) => { if (e.key === 'Enter' && (e.target === p1 || e.target === p2)) { e.preventDefault(); form.requestSubmit(); } };
+      ok.addEventListener('click', onClick); dlg.addEventListener('keydown', onKey);
       cancel.addEventListener('click', onCancel);
       show.addEventListener('change', onShow);
-      dlg.addEventListener('keydown', onKey);
-      dlg.addEventListener('close', onClose, { once: true });
+      p1.addEventListener('input', drawPreview);
+      gen?.addEventListener('click', onGen);
+      copy?.addEventListener('click', onCopy);
+      dlg.addEventListener('cancel', onEsc);
+      dlg.addEventListener('close', onClose);
       p1.value = ''; p2.value = '';
       dlg.showModal();
-      p1.focus();
+      // In an artifact the page can sit in an iframe as tall as the page: the modal is then centred out of sight and the
+      // app looks frozen (mobile, 2026-11-12). Scroll it into view; harmless when the frame is the viewport.
+      try { dlg.scrollIntoView({ block: 'center' }); } catch { /* old browser */ }
+      p1.focus({ preventScroll: true });
     });
   }
 
   // Whole flows for the apps. saveWithPassword → same codes as save(), plus 'cancelled' and 'nocrypto'.
   // Never an unencrypted file: without crypto.subtle nothing is saved.
+  // One save at a time: a second tap while the dialog or the host's save prompt is open gives 'busy', never a second file.
+  let saving = false;
   async function saveWithPassword({ slug, today, text }) {
     if (!hasCrypto()) return 'nocrypto';
-    const a = await askPassword('export');
-    if (!a) return 'cancelled';
-    let env;
-    try { env = await encrypt(text, a.pwd, slug); } catch { return 'error'; }
-    return save({ slug, today, text: env });
+    if (saving) return 'busy';
+    saving = true;
+    try {
+      const a = await askPassword('export', async (pwd) => ({ env: await encrypt(text, pwd, slug) }));
+      if (!a) return 'cancelled';
+      return await save({ slug, today, text: a.value.env });
+    } finally { saving = false; }
   }
   // Plain text → { text } as is; envelope → asks for the password → { text } | { error } | { cancelled: true }.
+  // A wrong password stays in the dialog with the message, so the user can try again without picking the file anew.
   async function openText(text, slug, maxChars) {
     if (!isEncrypted(text)) return { text };
     if (!hasCrypto()) return { error: 'Den här webbläsaren kan inte öppna krypterade filer.' };
-    const a = await askPassword('import');
+    const a = await askPassword('import', (pwd) => decrypt(text, pwd, slug, maxChars));
     if (!a) return { cancelled: true };
-    return decrypt(text, a.pwd, slug, maxChars);
+    return a.value;
   }
 
-  self.Backup = Object.freeze({ fileName, save, read, checkPassword, isEncrypted, encrypt, decrypt, askPassword, saveWithPassword, openText });
+  self.Backup = Object.freeze({ fileName, save, read, checkPassword, isEncrypted, encrypt, decrypt, askPassword, saveWithPassword, openText, generatePassword });
 })();
