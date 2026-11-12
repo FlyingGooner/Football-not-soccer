@@ -338,3 +338,18 @@ T.test('lag-hero visar bara mål; vyn spränger inte bredden', () => {
   T.eq(eventsView(m, true).querySelectorAll('.ev').length, 1);
   T.eq(getComputedStyle(T.$('#view-matches')).gridTemplateColumns.split(' ').length, 1);
 });
+
+T.test('Lösenordsgenerator: fyller båda fälten, Kopiera bara för genererat lösenord (U5)', async () => {
+  const $id = (id) => document.getElementById(id);
+  const done = Backup.askPassword('export');
+  T.ok($id('pw-copy').disabled && $id('pw-user').autocomplete === 'username', 'Kopiera avstängd före generering');
+  $id('pw-gen').click();
+  const pwd = $id('pw-1').value;
+  T.ok(/^([A-Za-z2-9]{4}-){3}[A-Za-z2-9]{4}$/.test(pwd) && pwd === $id('pw-2').value && $id('pw-show').checked, 'båda fälten ifyllda och synliga');
+  T.ok(!$id('pw-preview').hidden && !$id('pw-copy').hidden && !$id('pw-copy').disabled, 'förhandsvisning och Kopiera');
+  $id('pw-1').value += 'x'; $id('pw-1').dispatchEvent(new Event('input'));
+  T.ok($id('pw-copy').disabled, 'Kopiera av när lösenordet ändras för hand');
+  $id('pw-cancel').click();
+  T.eq(await done, null);
+  T.eq([$id('pw-1').value, $id('pw-preview').children.length], ['', 0], 'fält och förhandsvisning töms');
+});

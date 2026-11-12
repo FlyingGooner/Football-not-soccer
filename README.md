@@ -35,7 +35,7 @@ Fotbollsappar har blivit nyhetsflöden med resultat någonstans längre ner. Den
 | 📋 **Tabell** | Hela tabellen med zoner för Europa och nedflyttning, gruppspel i turneringar. |
 | 🌍 **Ligor** | Premier League, LaLiga, Serie A och Champions League som standard – välj bland 16 ligor och turneringar under Inställningar. |
 | ⭐ **Lagläge** | Tryck på ett lag i tabellen: nästa match med nedräkning, senaste match med V/O/F, lagets tabellrad och form – i alla turneringar laget spelar i. |
-| 🔴 **Live** | Ställning och matchminut, med tilläggstid, uppdateras var 60:e sekund under pågående matcher. |
+| 🔴 **Live** | Ställning och matchminut, med tilläggstid, uppdateras var 20:e sekund under pågående matcher. |
 | ⚽ **Matchdetaljer** | Tryck på en match för målskyttar, straffar, självmål, gula och röda kort. |
 | 🔐 **Låst backup** | Spara dina inställningar som en fil som bara ditt lösenord öppnar. |
 | 📴 **Offline** | Senast hämtad data visas med tidsstämpel när nätet saknas. |

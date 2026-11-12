@@ -108,7 +108,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Under Inställningar → Allmänt → Hjälp och manual. Samma text som `docs/MANUAL.md` (ändra båda): lägen, välja och byta lag, ligaväljaren, offline och vad ESPN ser.
 
 ### Kortet Data
-- Enligt `../STANDARD.md` punkt 5 (undantag U5), mönstret från budget-buddy (`packData`/`unpackData`/`exportText`/`importText` i `store.js`, `backup.js`).
+- Enligt `../STANDARD.md` punkt 5 (undantag U5), mönstret från budget-buddy (`packData`/`unpackData`/`exportText`/`importText` i `store.js`, `backup.js`). Lösenordsgenerator och Kopiera som simple-nutrition (2026-11-13): **Skapa slumpmässigt lösenord**, färgkodad förhandsvisning, **Kopiera** bara för genererat lösenord (U5), dolt användarnamn ”Football not soccer backup”.
 - Exporteras: valt lag, vald liga, senast följda lag (utan matchdata) och kortordning. Vald flik exporteras inte. Matchcachen exporteras aldrig – den hämtas om.
 - Import validerar varje fält som vid läsning från `localStorage`; okänt `leagueId` eller lag-id som inte är `^\d{1,10}$` förkastas.
 - **Radera all data** sist i kortet: tar bort alla `fns.*`-nycklar.

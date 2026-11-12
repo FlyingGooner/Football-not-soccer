@@ -28,4 +28,4 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 ## Offline och data
 
 - Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.
-- Under Inställningar → Data sparar du en krypterad backup-fil med valt lag, liga och senast följda lag. Matchdata ingår inte, den hämtas igen.
+- Under Inställningar → Data sparar du en krypterad backup-fil med valt lag, liga och senast följda lag. Matchdata ingår inte, den hämtas igen. **Skapa slumpmässigt lösenord** fyller i ett starkt lösenord som du kan kopiera – spara det i en lösenordshanterare.
