@@ -236,16 +236,24 @@
       };
       const onCancel = () => { if (working) return; result = null; dlg.close(); finish(); };
       const onEsc = (e) => { if (working) e.preventDefault(); };   // Esc must not close mid-work
+      // Kopiera (U5, 2026-11-13): only a password made by generatePassword(), only on the user's tap, writeText only.
+      let generated = '';
+      const copyState = () => { if (copy) copy.disabled = !generated || p1.value !== generated; };
       const onGen = () => {
         const pwd = generatePassword();
+        generated = pwd;
         p1.value = pwd; p2.value = pwd; err.textContent = '';
-        show.checked = true; onShow();
+        show.checked = true; onShow(); copyState();
         if (note) note.textContent = 'Skriv upp lösenordet. Utan det går backupen inte att läsa in.';
       };
+      const onInput = () => { if (p1.value !== generated) generated = ''; copyState(); drawPreview(); };
+      const selectIt = () => { p1.select(); if (note) note.textContent = 'Markera och kopiera lösenordet'; };
       const onCopy = () => {
-        navigator.clipboard?.writeText(p1.value).then(() => { if (note) note.textContent = 'Kopierat'; })
-          .catch(() => { p1.select(); if (note) note.textContent = 'Markera och kopiera lösenordet'; })
-          ?? (p1.select(), note && (note.textContent = 'Markera och kopiera lösenordet'));
+        if (!generated || p1.value !== generated) return;
+        if (!navigator.clipboard) { selectIt(); return; }
+        navigator.clipboard.writeText(p1.value)
+          .then(() => { if (note) note.textContent = 'Kopierat. Lösenordet ligger kvar i urklipp – klistra in det i en lösenordshanterare och töm sedan urklipp.'; })
+          .catch(selectIt);
       };
       // Each opening ends itself synchronously (finish) when it closes the dialog. The close event only covers other
       // ways out (Esc) and is ignored while the dialog is open: a late close event from the previous opening used to end
@@ -258,10 +266,11 @@
         dlg.removeEventListener('close', onClose);
         busy(false);
         p1.value = ''; p2.value = ''; err.textContent = ''; hide();
+        generated = ''; copyState();
         if (note) note.textContent = '';
         dlg.removeEventListener('cancel', onEsc);
         form.removeEventListener('submit', onOk); ok.removeEventListener('click', onClick); dlg.removeEventListener('keydown', onKey); cancel.removeEventListener('click', onCancel);
-        show.removeEventListener('change', onShow); p1.removeEventListener('input', drawPreview);
+        show.removeEventListener('change', onShow); p1.removeEventListener('input', onInput);
         gen?.removeEventListener('click', onGen); copy?.removeEventListener('click', onCopy);
         resolve(result);
       };
@@ -271,12 +280,12 @@
       ok.addEventListener('click', onClick); dlg.addEventListener('keydown', onKey);
       cancel.addEventListener('click', onCancel);
       show.addEventListener('change', onShow);
-      p1.addEventListener('input', drawPreview);
+      p1.addEventListener('input', onInput);
       gen?.addEventListener('click', onGen);
       copy?.addEventListener('click', onCopy);
       dlg.addEventListener('cancel', onEsc);
       dlg.addEventListener('close', onClose);
-      p1.value = ''; p2.value = '';
+      p1.value = ''; p2.value = ''; copyState();
       dlg.showModal();
       // In an artifact the page can sit in an iframe as tall as the page: the modal is then centred out of sight and the
       // app looks frozen (mobile, 2026-11-12). Scroll it into view; harmless when the frame is the viewport.
