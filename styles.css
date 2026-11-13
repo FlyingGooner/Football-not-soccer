@@ -311,3 +311,8 @@ ul.mlist li.tap { cursor: pointer; }
 #view-team .lchip { height: 34px; min-width: 38px; }
 #view-team .lchip img, #view-team .lchip .ph { width: 20px; height: 20px; }
 #view-team .lrow .v img, #view-team .lrow .v .ph { width: 16px; height: 16px; object-fit: contain; vertical-align: -3px; }
+#view-team .lrow .v { display: flex; align-items: center; gap: 6px; font-weight: 400; }
+#view-team .lrow .v .w { flex: none; font-variant-numeric: tabular-nums; }
+#view-team .lrow .v .n { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+#view-team .lrow .v .ha { flex: none; font-size: .6875rem; color: var(--muted); }
+#view-team .lrow .v img, #view-team .lrow .v .ph { flex: none; vertical-align: 0; }
