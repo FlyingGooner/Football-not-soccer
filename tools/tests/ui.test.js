@@ -18,7 +18,7 @@ T.test('säkerhet: CSP-nätverk bara ESPN, no-referrer', () => {
 T.test('struktur: rubrik med version, meny nertill med fyra flikar', () => {
   T.eq(T.$('.brand').textContent, 'Football, not soccer');
   T.ok(T.$('#version').textContent.startsWith('v'), 'version');
-  T.eq([...document.querySelectorAll('#tabbar .tab')].map((t) => t.textContent), ['⚽Matcher', '📋Tabell', '⭐Lag', '⚙️Inst.']);
+  T.eq([...document.querySelectorAll('#tabbar .tab')].map((t) => t.textContent), ['⚽Matcher', '📋Tabell', '☆Favorit', '⭐Lag', '⚙️Inst.']);
 });
 T.test('första start: Matcher i PL, pågående överst, resultat', async () => {
   await settle();
@@ -142,63 +142,104 @@ T.test('säkerhet: data från källan renderas som text, aldrig HTML', () => {
   T.ok(T.$('#table-full').textContent.includes('<img src=x onerror=alert(1)>'), 'namnet visas som text');
   T.eq(document.querySelectorAll('img[src="x"]').length, 0);
 });
-T.test('Lag utan valt lag: tom vy med knapp till tabellen', () => {
+const follows = () => (JSON.parse(localStorage.getItem('fns.teams.v1')) || { follow: [] }).follow.map((t) => t.id);
+const favorite = () => (JSON.parse(localStorage.getItem('fns.teams.v1')) || {}).favorite ?? null;
+const realRows = (sel) => document.querySelectorAll(`${sel} li:not(.lmx)`).length;
+T.test('utan lag: Favorit och Lag tomma, Välj lag öppnar lagväljaren, ← tillbaka', () => {
+  tab('fav');
+  T.ok(!T.$('#team-empty').hidden && T.$('#arr-fav [data-card="next"]').hidden, 'tom favoritvy');
   tab('team');
-  T.ok(!T.$('#team-empty').hidden && T.$('#arr-team [data-card="next"]').hidden, 'tom vy');
-  click('#team-pick');
-  T.eq(view, 'table');
-});
-T.test('följa lag: dialog → fliken Lag, lagets liga och senast följda sparas', async () => {
-  await settle();
-  click(tableRows()[1]);
-  T.ok(T.$('#pick').open, 'dialogen öppnas');
-  T.ok(T.$('#pick-text').textContent.includes('Följ Esp 2'), T.$('#pick-text').textContent);
-  click('#pick-ok');
-  await settle();
+  T.ok(!T.$('#lag-empty').hidden, 'tom lagvy');
+  click('#lag-empty [data-open-pick]');
+  T.eq(view, 'pick');
+  T.eq(document.querySelectorAll('#pick-list .pick-l').length, LEAGUES.filter((l) => l.kind === 'league').length, 'bara ligor');
+  click('#pick-back');
   T.eq(view, 'team');
-  T.eq(T.$('#teambar-name').textContent, 'Esp 2');
-  T.eq(JSON.parse(localStorage.getItem('fns.team.v2')).leagueId, 'esp.1');
-  T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
-  T.ok(T.$('[data-kickoff]') || T.$('#view-team').textContent.includes('LIVE'), 'nedräkning eller live (ligans pågående match syns i Lag)');
-  T.eq(document.querySelectorAll('#team-next-list li').length, 3, 'lika många som Senaste match');
-  T.eq(document.querySelectorAll('#team-last-list li').length, 3);
-  T.eq(document.querySelectorAll('#team-form .dot').length, 5);
-  T.ok(!T.$('#view-team table'), 'ingen tabell under Lag');
-  click('#team-last-list [data-more]');
-  T.eq(document.querySelectorAll('#team-last-list li').length, 5);
-  click('#team-last-list [data-more]');
 });
-T.test('byta lag och senast följda', async () => {
+T.test('Tabell: tryck följer direkt utan dialog, egen färg, Ångra', async () => {
   tab('table');
   await settle();
-  click(tableRows()[2]);
-  T.eq(T.$('#pick-ok').textContent, 'Byt');
-  click('#pick-ok');
-  await settle();
-  T.eq(T.$('#teambar-name').textContent, 'Esp 3');
-  T.eq([...document.querySelectorAll('#recent .rchip')].map((b) => b.textContent), ['Esp 2']);
-  click('#recent .rchip');
-  await settle();
-  T.eq(T.$('#teambar-name').textContent, 'Esp 2');
-  T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202', '203']);
+  click(tableRows()[1]);
+  T.eq(follows(), ['202']);
+  T.eq(favorite(), null);
+  T.ok(tableRows()[1].classList.contains('me') && tableRows()[1].style.getPropertyValue('--tc') === '#3366cc', 'markerad med lagets färg');
+  T.ok(T.$('#snack-text').textContent.includes('Följer Esp 2'), T.$('#snack-text').textContent);
+  click('#snack-action');
+  T.eq(follows(), []);
+  click(tableRows()[1]); click(tableRows()[2]);
+  T.eq(follows(), ['202', '203']);
 });
-T.test('Inst.: grupper, ta bort ur senast följda tar bort lagets cache', () => {
+T.test('lagväljaren: liga fälls ut, ☆ favorit (ersätter, gamla följs), + följer, högst 8', async () => {
+  tab('team');
+  click('#lag-chips .add');
+  T.eq(view, 'pick');
+  click('[data-pick-league="eng.1"]');
+  await T.until(() => T.$('#pick-list [data-team="101"]'), 'lagen i PL');
+  const btn = (id, c) => T.$(`#pick-list [data-team="${id}"] .${c}`);
+  click(btn('101', 'pk-fav'));
+  T.eq([favorite(), follows()], ['101', ['202', '203', '101']]);
+  click(btn('102', 'pk-fav'));
+  T.eq([favorite(), follows()], ['102', ['202', '203', '101', '102']]);
+  for (const id of ['103', '104', '105', '106']) click(btn(id, 'pk-fol'));
+  T.eq(follows().length, 8);
+  click(btn('107', 'pk-fol'));
+  T.eq(follows().length, 8, 'det 9:e följs inte');
+  T.ok(T.$('#snack-text').textContent.includes('högst 8'), T.$('#snack-text').textContent);
+  click(btn('106', 'pk-fol'));
+  T.eq(follows().length, 7);
+  T.eq(T.$('#pick-count').textContent, '7 av 8 följda');
+});
+T.test('Favorit: mittknappen visar laget, form, listor, spelad match → mål via summary (inga kort)', async () => {
+  tab('fav');
+  await settle();
+  T.eq(T.$('#tab-fav-name').textContent, 'Eng 2');
+  T.eq(T.$('#teambar-name').textContent, 'Eng 2');
+  T.eq(document.querySelectorAll('#team-form .dot').length, 5);
+  T.eq(realRows('#team-last-list'), 3);
+  T.ok(!T.$('#view-fav table') && !T.$('#team-last .evs'), 'ingen tabell, inga mål innan tryck');
+  const m = T.$('#team-last .hero');
+  click(m);
+  await T.until(() => ((T.$('#team-last .evs') || {}).textContent || '').includes('S. Summary'), 'mål från summary');
+  T.ok(!T.$('#team-last .evs').textContent.includes('🟨'), 'spelad match: bara mål');
+  T.ok(__calls.some((c) => /\/eng\.1\/summary\?event=\d+$/.test(c.url)), 'summary-anrop');
+  T.eq(Object.keys(JSON.parse(localStorage.getItem('fns.goals.v1'))).length, 1);
+  const n = __calls.length;
+  click(m); click(m);
+  T.eq(__calls.length, n, 'sparade mål hämtas inte igen');
+});
+T.test('Lag: märkesrad, favoriten först, filter, pågående match, Kommande/Spelad fälls ut', async () => {
+  tab('team');
+  await settle();
+  const cards = () => [...document.querySelectorAll('#lag-cards .card.lag')].map((c) => c.dataset.team);
+  T.eq(cards()[0], '102');
+  T.eq(cards().length, 7);
+  T.eq(document.querySelectorAll('#lag-chips .lchip').length, 9, 'Alla + 7 + [+]');
+  T.ok(!T.$('#lag-live').hidden && T.$('#lag-live-list .lm'), 'pågående match');
+  click('#lag-chips [data-chip="202"]');
+  T.eq(cards(), ['202']);
+  click('#lag-chips [data-chip="202"]');
+  T.eq(cards().length, 7);
+  click('[data-lag="102:past"]');
+  const sel = '#lag-cards [data-team="102"]';
+  const k = realRows(sel);
+  T.ok(k > 0 && k <= 5, 'högst 5: ' + k);
+  click('[data-lag="102:past"]');
+  T.eq(realRows(sel), 0);
+});
+T.test('Inst.: följda lag, ★ byter favorit, ✕ slutar följa och tar bort cachen', () => {
   tab('settings');
-  T.eq(T.$('#hint-team').textContent, 'Esp 2');
-  T.eq(T.$('#hint-recent').textContent, '2 av 5');
-  click(document.querySelectorAll('#recent-list .rdel')[1]);
-  T.eq(JSON.parse(localStorage.getItem('fns.recent.v1')).map((t) => t.id), ['202']);
-  T.ok(!('203' in JSON.parse(localStorage.getItem('fns.cache.v4')).teams), 'cachen borttagen');
+  T.eq(T.$('#hint-team').textContent, 'Eng 2');
+  T.eq(T.$('#hint-follow').textContent, '7 av 8');
+  click(document.querySelectorAll('#follow-list .rfav')[0]);   // Esp 2
+  T.eq(favorite(), '202');
+  click(document.querySelectorAll('#follow-list .rdel')[0]);
+  T.eq([favorite(), follows().includes('202')], [null, false]);
+  T.ok(!('202' in JSON.parse(localStorage.getItem('fns.cache.v4')).teams), 'cachen borttagen');
+  T.eq(T.$('#tab-fav-name').textContent, 'Favorit');
   T.ok(T.$('#foot').textContent.includes('v' + self.APP_VERSION), 'version i foten');
 });
 T.test('fliken sparas och appen öppnas på den', () => {
   T.eq(localStorage.getItem('fns.tab.v1'), '"settings"');
-});
-T.test('✕ slutar följa laget', () => {
-  tab('team');
-  click('#teambar-close');
-  T.eq(localStorage.getItem('fns.team.v2'), null);
-  T.ok(!T.$('#team-empty').hidden, 'tom vy');
 });
 T.test('CL: lag får sin inhemska liga', async () => {
   tab('table');
@@ -207,21 +248,20 @@ T.test('CL: lag får sin inhemska liga', async () => {
   await settle();
   T.eq(T.$('#table-title').textContent, 'Champions League');
   click(tableRows()[3]);   // Ita 1
-  click('#pick-ok');
-  await T.until(() => JSON.parse(localStorage.getItem('fns.team.v2')).leagueId === 'ita.1', 'inhemsk liga hittades inte');
-  await T.wait(50);
-  await settle();
-  T.ok(T.$('#teambar-name').textContent === 'Ita 1' && document.querySelectorAll('#team-form .dot').length > 0, 'form i lagraden');
+  await T.until(() => (JSON.parse(localStorage.getItem('fns.teams.v1')).follow.find((t) => t.id === '301') || {}).leagueId === 'ita.1', 'inhemsk liga hittades inte');
 });
-T.test('matchdetaljer fälls ut med målskytt', async () => {
+T.test('matchdetaljer: spelad visar bara mål, pågående även kort', async () => {
   tab('matches');
   await settle();
   click('#mtabs [data-mtab="past"]');
   const row = T.$('#match-list .lm.tap');
   click(row);
   T.ok(T.$('#match-list .evs').textContent.includes('A. Skytt'), 'målskytt');
-  T.ok(T.$('#match-list .evs').textContent.includes('🟨'), 'gult kort');
+  T.ok(!T.$('#match-list .evs').textContent.includes('🟨'), 'inget kort');
   T.eq(row.getAttribute('aria-expanded'), 'true');
+  click('#mtabs [data-mtab="now"]');
+  click(T.$('#match-list .lm.tap'));
+  T.ok(T.$('#match-list .evs').textContent.includes('🟨'), 'gult kort i pågående');
 });
 T.test('matchdetaljer: andra gula visas 🟨🟥, live-tid med tilläggstid och HT', () => {
   const m = { home: { id: '1' }, away: { id: '2' }, events: [{ kind: 'yellow', min: "20'", name: 'X', teamId: '1' }, { kind: 'red', min: "70'", name: 'X', teamId: '1' }, { kind: 'red', min: "80'", name: 'Y', teamId: '2' }] };
@@ -233,20 +273,20 @@ T.test('matchdetaljer: andra gula visas 🟨🟥, live-tid med tilläggstid och 
 T.test('export: bara inställningar, ingen matchdata', () => {
   const t = exportText(settings(), '2026-11-11');
   T.ok(!t.includes('matches') && !t.includes('homeScore'), 'ingen matchdata');
-  T.eq(JSON.parse(t).data.recent.length, 2);
+  T.eq(JSON.parse(t).data.teams.follow.length, 7);
 });
 T.test('import: dialog, ersätt och ångra', async () => {
   tab('settings');
-  const text = JSON.stringify({ app: 'football-not-soccer', format: 1, exported: '2026-11-01', data: { league: 'eng.1', team: { id: '105', name: 'Eng 5', leagueId: 'eng.1' } } });
+  const text = JSON.stringify({ app: 'football-not-soccer', format: 1, exported: '2026-11-01', data: { league: 'eng.1', teams: { favorite: '105', follow: [{ id: '105', name: 'Eng 5', leagueId: 'eng.1' }] } } });
   T.$('#import-text').value = text;
   click('#import-btn');
   await T.until(() => T.$('#import-dialog').open, 'importdialog');
-  T.ok(T.$('#imp-sum').textContent.includes('Eng 5'), T.$('#imp-sum').textContent);
+  T.ok(T.$('#imp-sum').textContent.includes('Favorit: Eng 5'), T.$('#imp-sum').textContent);
   click('#imp-ok');
   T.$('#import-dialog').close();
   T.eq(T.$('#hint-team').textContent, 'Eng 5');
   click('#snack-action');   // Ångra
-  T.eq(JSON.parse(localStorage.getItem('fns.team.v2')).id, '301');
+  T.ok(follows().includes('301') && favorite() === null, 'återställt');
 });
 T.test('offline: sparad data och felmeddelande, aldrig blank skärm', async () => {
   tab('table');
@@ -266,22 +306,22 @@ T.test('radera all data: alla fns.*-nycklar, andra appars nycklar kvar', () => {
   T.$('#confirm-dialog').close();
   T.eq(Object.keys(localStorage).filter((k) => k.startsWith('fns.')), []);
   T.eq(localStorage.getItem('bb.data'), '1');
-  T.eq(T.$('#hint-team').textContent, 'Inget lag');
+  T.eq(T.$('#hint-team').textContent, 'Inga lag');
 });
 T.test('kortordning: flytta och dölja kort, sparas och återställs', async () => {
   tab('settings');
   T.ok(!T.$('.lay-list[data-view="matches"]'), 'Matcher har bara ett kort, ingen lista');
-  const list = () => [...document.querySelectorAll('.lay-list[data-view="team"] li .row-name')].map((n) => n.textContent);
-  T.eq(list(), ['Nästa match', 'Senaste match', 'Senast följda lag']);
-  click(T.$('.lay-list[data-view="team"] [aria-label="Flytta upp Senaste match"]'));
-  T.eq(list(), ['Senaste match', 'Nästa match', 'Senast följda lag']);
-  click(T.$('.lay-list[data-view="team"] [aria-label="Dölj Senast följda lag"]'));
-  T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).team, { order: ['last', 'next', 'recent'], hidden: ['recent'] });
+  const list = () => [...document.querySelectorAll('.lay-list[data-view="fav"] li .row-name')].map((n) => n.textContent);
+  T.eq(list(), ['Nästa match', 'Senaste match']);
+  click(T.$('.lay-list[data-view="fav"] [aria-label="Flytta upp Senaste match"]'));
+  T.eq(list(), ['Senaste match', 'Nästa match']);
+  click(T.$('.lay-list[data-view="fav"] [aria-label="Dölj Nästa match"]'));
+  T.eq(JSON.parse(localStorage.getItem('fns.layout.v1')).fav, { order: ['last', 'next'], hidden: ['next'] });
   T.eq(T.$('#hint-layout').textContent, 'Egen');
-  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['last', 'next', 'recent']);
-  click('[data-reset="team"]');
+  T.eq([...T.$('#arr-fav').children].map((n) => n.dataset.card), ['last', 'next']);
+  click('[data-reset="fav"]');
   T.eq(localStorage.getItem('fns.layout.v1'), null);
-  T.eq([...T.$('#arr-team').children].map((n) => n.dataset.card), ['next', 'last', 'recent']);
+  T.eq([...T.$('#arr-fav').children].map((n) => n.dataset.card), ['next', 'last']);
 });
 T.test('byte av vy: Matcher öppnas på Kommande, utfällda matcher återställs', async () => {
   tab('matches');

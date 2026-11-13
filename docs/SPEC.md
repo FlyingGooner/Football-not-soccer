@@ -18,15 +18,15 @@ De flesta fotbollsappar är fulla av nyheter, reklam, notiser och konton. Den h�
 ## Begrepp
 - **Liga**: en av `CONFIG.leagues` – Premier League (`eng.1`), LaLiga (`esp.1`), Serie A (`ita.1`). Vald liga sparas; första start är Premier League.
 - **Ligavy**: flikarna Matcher och Tabell visar vald liga som helhet.
-- **Lagvy**: fliken Lag visar valt lag: tabellrad i lagets egen liga, matcher och form. Lagets liga sparas med laget, så att Real Madrid alltid visar LaLiga-tabellen. Valt lag sparas.
+- **Favorit**: ett lag (mittknappen), visas som hel lagvy. **Följda lag**: högst 8 inklusive favoriten, visas samlat under Lag. Varje lags liga sparas med laget, så att Real Madrid alltid hämtar LaLiga.
 - **Match**: en match i någon av de konfigurerade turneringarna, med tillstånd `pre` (kommande), `in` (pågår) eller `post` (spelad).
 - **Turneringar** i lagläge: lagets liga, Champions League, Europa League och Conference League (`CONFIG.teamCompetitions`). Matcher hämtas från alla och slås ihop; turneringar där laget saknar matcher syns inte.
 - **Zoner** i tabellen, per liga (`CONFIG.leagues[].zones`): Champions League (1–4), Europa (5–6) och nedflyttning (18–20). Antal lag läses från tabellen.
 - **Form**: V/O/F i lagets 5 senaste ligamatcher.
-- **Flik**: en av fyra vyer i menyn nertill. Vald flik sparas (`fns.tab.v1`) och appen öppnas på den; första start är Matcher (Lag om ett lag redan är valt).
+- **Flik**: en av fem vyer i menyn nertill. Vald flik sparas (`fns.tab.v1`) och appen öppnas på den; första start är Matcher (Favorit om en favorit redan är vald).
 
 ## Skärmar
-Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens namn och versionsetikett, och under namnet en liten statusrad ("Uppdaterad 14:32", datum bara om inte idag, fel och offline; beslut 2026-11-11, sparar plats), innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
+Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens namn och versionsetikett, och under namnet en liten statusrad ("Uppdaterad 14:32", datum bara om inte idag, fel och offline; beslut 2026-11-11, sparar plats), innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · [favoritens märke] · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
 
 ### 1. Matcher
 ```
@@ -67,25 +67,41 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 ### 2. Tabell
 - Hela tabellen för vald liga (placering, lag, M, V, O, F, MS, P) med zonfärger och förklaring. På smal skärm döljs V/O/F. Raderna är tryckbara för att följa laget.
 
-### 3. Lag
-- **Hela vyn får plats utan scroll** på en vanlig telefon (beslut 2026-11-11): kompakta kort, matchrader på en rad.
-- Valt lag: rad med märke, namn, **formen** (5 senaste ligamatcher, V/O/F) och **✕** (slutar följa, utan bekräftelse). Neutral bakgrund (`--surface-container-high`), lagets färg bara som kant till vänster. Ingen placering, ingen tabell (finns under Tabell).
-- **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 20:e sekund. Under: 3 kommande (lika många som under Senaste match) på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande som finns (lagets hela schema i de turneringar som hämtas).
-- **Senaste match**: kompakt: resultat, V/O/F, turnering, datum och målskyttar (kort visas inte; de syns när en matchrad fälls ut). Under: 3 matcher innan, en rad var; **Visa fler** fäller ut resten. Utfällt läge gäller bara under sessionen.
-- **Senast följda lag** längst ned.
-- Inget lag valt: "Inget lag valt" och en knapp till Tabell.
+### 3. Favorit (mittknappen, beslut 2026-11-13)
+- Mittknappen i menyn är favoritlagets märke (namn under). Utan favorit: tom ☆ "Favorit", vyn visar "Inget favoritlag valt" och knappen **Välj lag** (öppnar lagväljaren).
+- **Hela vyn får plats utan scroll** på en vanlig telefon: kompakta kort, matchrader på en rad.
+- Favoritlaget: rad med märke, namn och **formen** (5 senaste ligamatcher, V/O/F). Neutral bakgrund (`--surface-container-high`), lagets färg bara som kant till vänster. Ingen placering, ingen tabell.
+- **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 20:e sekund. Under: 3 kommande på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande.
+- **Senaste match**: resultat, V/O/F, turnering och datum – inga målskyttar eller kort. Under: 3 matcher innan; **Visa fler** fäller ut resten. Tryck på en spelad match → målen (se Matchdetaljer). Utfällt läge gäller bara under sessionen.
 
-### 4. Inställningar
-- Grupper som fälls ut, som i simple-nutrition: **Lag** (Senast följda lag, ta bort), **Utseende** (Kortordning) och **Allmänt** (Data, Hjälp och manual, Installera appen). Sist en rad med version och "matchdata från ESPN".
+### 4. Lag (alla följda lag, beslut 2026-11-13)
+```
+│ [Alla] (ARS)(LIV)(RMA) [+]  │
+│ ● PÅGÅR NU                  │
+│ RMA 1–1 BAR      67' LaLiga │
+│▌🔴 Arsenal                  │
+│  Kommande  lör 18:30 CHE (H)│
+│  Spelad    V 1–0 HUL  7 nov▸│
+```
+- **Märkesrad** överst: **Alla**, sedan ett märke per följt lag (favoriten först) och **[+]** (öppnar lagväljaren). Tryck på ett märke → bara det lagets kort och pågående match; tryck igen (eller Alla) → alla.
+- **Pågår nu** (bara när någon följd match pågår): en rad per match med ställning, minut och turnering, uppdateras var 20:e sekund. Tryck → målen.
+- **Ett kort per lag**: favoriten först, sedan efter nästa avspark. Lagnamn, sedan raderna **Kommande** (nästa match: dag, tid, motståndare (H/B)) och **Spelad** (V/O/F, resultat, motståndare, datum). Pågår lagets match visas den under Pågår nu och Kommande är matchen efter.
+- Tryck på **Kommande** eller **Spelad** → 5 matcher till i samma kolumn, **Visa fler** → resten; tryck igen fäller ihop. Tryck på en spelad match → målen. Utfällt läge gäller bara under sessionen.
+- Inga lag följda: "Inga lag följda" och knappen **Välj lag**.
 
-### Välja och byta lag
-- Tryck på ett lag i tabellen → dialog "Följ {lag}?" (inget lag valt) eller "Byt till {lag}?" (ett lag valt); efter Följ/Byt visas fliken Lag med **Följ/Byt** och **Avbryt**.
-- Valt lags rad markeras med lagets egen färg från datakällan (vänsterkant och svag bakgrundston). Saknas färg används primärfärgen.
+### 5. Inställningar
+- Grupper som fälls ut, som i simple-nutrition: **Lag** (följda lag: ★ gör till favorit, ✕ slutar följa, samt **Välj lag**), **Utseende** (Kortordning) och **Allmänt** (Data, Hjälp och manual, Installera appen). Sist en rad med version och "matchdata från ESPN".
+
+### Lagväljaren (beslut 2026-11-13)
+- Egen vy (← tillbaka) från [+] under Lag, **Välj lag** och Inställningar → Lag. Listar ligorna i `LEAGUES` (inte cuper), alla ihopfällda. Tryck på en liga → dess lag i bokstavsordning (märke, namn, **☆/★** favorit, **+/✓** följ); flera ligor kan vara öppna.
+- Lagen tas ur ligans tabell (cachad tabell först, annars ett anrop när ligan fälls ut).
+- Högst 8 följda lag, favoriten inräknad; det 9:e ger ett meddelande. Bara en favorit; ny favorit ersätter den gamla, som fortsätter följas. Favorit följs automatiskt; slutar man följa favoriten finns ingen favorit.
+- Tabellen har ingen följ-dialog längre. Följda lags rader markeras med lagets egen färg (vänsterkant och svag bakgrundston), saknas färg används primärfärgen.
 
 ### Matchdetaljer
-- Pågående och spelade matcher är tryckbara och fäller ut händelserna i tidsordning per lag (hemma vänster, borta höger): minut, ⚽ och målskytt, "(str.)" för straff, "(sj.)" för självmål, 🟨 gult kort och 🟥 rött kort (andra gula: 🟨🟥) med spelare. Saknas data: "Ingen matchinfo tillgänglig."
-- I lagläge visas samma händelser direkt under ställningen i Nästa/Senaste match.
-- Datan kommer från scoreboardens `details` (mål, gula och röda kort), inga extra anrop. Utfällt läge gäller bara under sessionen.
+- Pågående och spelade matcher är tryckbara och fäller ut händelserna i tidsordning per lag (hemma vänster, borta höger): minut, ⚽ och målskytt, "(str.)" för straff, "(sj.)" för självmål. **Pågående** matcher visar även 🟨 gult och 🟥 rött kort (andra gula: 🟨🟥); **spelade** visar bara mål (beslut 2026-11-13). Saknas data: "Ingen matchinfo tillgänglig."
+- Inga händelser visas direkt i listorna, bara efter tryck.
+- Datan kommer från scoreboardens `details` när matchen finns i ligacachen. Annars (t.ex. från lagets schema, som saknar mål) hämtas `summary` för matchen vid tryck (ett anrop, "Hämtar…" under tiden) och målen sparas permanent i `fns.goals.v1` (högst 200 matcher, äldst tas bort först). Utfällt läge gäller bara under sessionen.
 
 ### Ligor och turneringar (beslut 2026-11-11)
 - Alla i `LEAGUES` (`store.js`), med data kontrollerad hos ESPN 2026-11-11:
@@ -97,19 +113,18 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Lag i en europacups tabell kan följas; laget får då sin inhemska liga om den är en av ligorna ovan, annars visas bara cupens data. **Landslag** kan följas från turneringens tabell; laget får turneringen som liga och bara den turneringens matcher hämtas (inga europacuper).
 - Reserven "varje lags schema" används bara för ligor, aldrig för cuper och landslagsturneringar (för många anrop).
 
-### Senast följda lag
-- Längst ned under Lag: rad med upp till 5 senast följda lag (märke + kort namn), samma lag som har sparad data (`CONFIG.teamCacheMax`). Ett tryck byter lag direkt utan dialog. Under Inställningar → Lag tar ✕ bort laget ur listan och dess cache.
-- Är inte "flera lag samtidigt": bara ett lag är valt åt gången.
+### Följda lags data
+- Sparad data behålls för alla följda lag (högst 8); slutar man följa ett lag tas dess cache bort. Ersätter "Senast följda lag" (2026-11-13): `fns.team.v2` och `fns.recent.v1` läses en gång – valt lag blir favorit, senast följda blir följda (högst 8).
 
 ### Kortordning
-- Som simple-nutrition: Inställningar → Utseende → Kortordning har en lista per vy (Matcher: bara kortet Matcher, så listan visas inte för vyn; Lag: Nästa match, Senaste match, Senast följda lag). ↑ ↓ flyttar, ●/○ visar/döljer, "Återställ" ger standard. Okända kort-id ignoreras, nya kort läggs sist.
+- Som simple-nutrition: Inställningar → Utseende → Kortordning har en lista per vy (Matcher: bara kortet Matcher, så listan visas inte för vyn; Favorit: Nästa match, Senaste match). ↑ ↓ flyttar, ●/○ visar/döljer, "Återställ" ger standard. Okända kort-id ignoreras, nya kort läggs sist.
 
 ### Kortet Hjälp
 - Under Inställningar → Allmänt → Hjälp och manual. Samma text som `docs/MANUAL.md` (ändra båda): lägen, välja och byta lag, ligaväljaren, offline och vad ESPN ser.
 
 ### Kortet Data
 - Enligt `../STANDARD.md` punkt 5 (undantag U5), mönstret från budget-buddy (`packData`/`unpackData`/`exportText`/`importText` i `store.js`, `backup.js`). Lösenordsgenerator och Kopiera som simple-nutrition (2026-11-13): **Skapa slumpmässigt lösenord**, färgkodad förhandsvisning, **Kopiera** bara för genererat lösenord (U5), dolt användarnamn ”Football not soccer backup”.
-- Exporteras: valt lag, vald liga, senast följda lag (utan matchdata) och kortordning. Vald flik exporteras inte. Matchcachen exporteras aldrig – den hämtas om.
+- Exporteras: följda lag och favorit, vald liga (utan matchdata) och kortordning. Vald flik exporteras inte. Matchcachen exporteras aldrig – den hämtas om.
 - Import validerar varje fält som vid läsning från `localStorage`; okänt `leagueId` eller lag-id som inte är `^\d{1,10}$` förkastas.
 - **Radera all data** sist i kortet: tar bort alla `fns.*`-nycklar.
 
@@ -117,10 +132,10 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 | Nyckel | Innehåll |
 |---|---|
 | `fns.cache.v4` | Senast hämtad data (se nedan) |
-| `fns.recent.v1` | Senast följda lag, upp till 5: `[{ id, name, logo, color, leagueId }]`, nyast först |
-| `fns.team.v2` | Valt lag `{ id, name, logo, color, leagueId }` eller saknas (= ligaläge). `.v1` (utan `leagueId`) läses en gång som `eng.1` |
+| `fns.teams.v1` | Följda lag `{ favorite: id eller null, follow: [{ id, name, logo, color, leagueId }] }`, högst 8, i den ordning de lades till. Ersätter `fns.team.v2` och `fns.recent.v1` (läses en gång, tas sedan bort) |
+| `fns.goals.v1` | Mål för spelade matcher hämtade via `summary`: `{ "<match-id>": { ts, events: [{ kind: "goal", min, name, teamId, pen, og }] } }`, högst 200 |
 | `fns.league.v1` | Vald liga i ligaläge, ett id ur `CONFIG.leagues` |
-| `fns.tab.v1` | Vald flik: `matches`, `table`, `team` eller `settings` |
+| `fns.tab.v1` | Vald flik: `matches`, `table`, `fav`, `team` eller `settings` |
 | `fns.layout.v1` | Kortordning per vy: `{ matches, team: { order: [kort-id], hidden: [kort-id] } }`, bara vyer som skiljer sig från standard |
 
 ```json
@@ -141,7 +156,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 ```
 - Cachen (`fns.cache.v4`) har `table`, `league`, `range` (hämtade månader `YYYY-MM`), `used` (senast använd) och `updatedAt` per liga-id: `{ "leagues": { "esp.1": { … } }, "colors": …, "teams": … }`. `kind` är `goal`, `yellow` eller `red`. Gammal `.v3` ignoreras (en första hämtning per liga).
 - All cachad data valideras fält för fält vid läsning (`store.js`), eftersom den kan vara gammal eller manipulerad.
-- Sparad data för de 5 senast valda lagen behålls (`CONFIG.teamCacheMax`).
+- Sparad data behålls för de följda lagen (högst 8, `CONFIG.teamMax`).
 - Ny struktur → ny nyckelversion (`.v4`); gammal data ignoreras.
 
 ## Datakälla och uppdatering
@@ -152,6 +167,8 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
   - Lagets matcher: `/apis/site/v2/sports/soccer/all/teams/{lag-id}/schedule` (+ `?fixture=true` för kommande) – alla tävlingar i 2 anrop; varje matchs `league.slug` mappas till ett id i `COMPS`, övriga (vänskapsmatcher, ligacuper) tas bort. Schemat saknar mål och kort; de fylls i från ligans månadscache (samma match-id).
   - Hemmaliga för ett lag som följs från en turneringstabell: `/apis/site/v2/sports/soccer/{turnering}/teams/{lag-id}` → `defaultLeague.slug` (1 anrop), godtas bara om det är en liga i `LEAGUES`. Finns laget redan i en cachad tabell används den.
   - Live: dagens scoreboard för pågående matchers turnering.
+  - Mål för en spelad match utanför ligacachen (beslut 2026-11-13): `/apis/site/v2/sports/soccer/{turnering}/summary?event={match-id}` (`keyEvents` med `scoringPlay`), bara vid tryck, en gång per match (sparas i `fns.goals.v1`).
+  - Lag-fliken: varje följt lags schema enligt reglerna ovan (högst 8 lag, högst en gång per dygn per lag eller när en av lagets matcher har börjat), hämtas parallellt.
 - All åtkomst via adapterfunktioner (`fetchTable()`, `fetchTeamMatches()`, `fetchMonths()`, `fetchLive()`) i `app.js`, så att källan kan bytas.
 - **När data hämtas:** bara det den öppna fliken visar – när appen öppnas, när den visas igen, när fliken byts, när nätet kommer tillbaka och vid byte av liga eller lag – och bara om cachen inte längre gäller (nedan). Inställningar hämtar inget. Inga anrop i bakgrunden.
   - Byte av liga (knapp eller svep) väntar 0,4 s innan något hämtas, så ligor man sveper förbi hämtas inte.
@@ -162,7 +179,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
   - Tabellen hämtas bara när en match i ligan har gått till `post` efter förra tabellhämtningen (eller saknas/är äldre än 6 timmar).
   - Lag: ligans matcher tas ur ligacachen (fliken Lag hämtar lagets liga som ovan); lagets schema för alla tävlingar högst en gång per dygn eller när en av lagets matcher har börjat.
   - Cachen behåller högst 6 ligor (de senast använda, plus vald liga och lagets liga), för att inte fylla `localStorage`.
-- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 20:e sekund. Matcher: alla pågående ligamatcher; Lag: lagets match. Uppdateringen skrivs till både ligans och lagens cache.
+- **Live:** under pågående match, med appen synlig, uppdateras ställningen var 20:e sekund. Matcher: alla pågående ligamatcher; Favorit och Lag: de följda lagens matcher. Uppdateringen skrivs till både ligans och lagens cache.
 - ESPN:s `Cache-Control` är bara 3–18 s, så webbläsarens HTTP-cache hjälper inte: `cache:'no-store'`, appens egen cache i `localStorage` gäller.
 - Cachad data visas direkt vid start och ersätts sedan av färsk data.
 
@@ -185,7 +202,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - **Avböjt – smalare `img-src`:** kräver verifiering mot ESPN och körtest; `logo()` kräver redan `https://`.
 - **Infört vid ombygget (2026-11-11) – central tolkning av API-svar:** `store.js` tolkar ESPN-svaren och kör samma validering som för cachen (`cleanMatch`, `cleanRow`): id `^\d+$`, färg strikt `#rrggbb`, klubbmärken bara `https://a.espncdn.com/…`, text utan styr- och riktningstecken, max 60 tecken. Ersätter det tidigare avböjda beslutet.
 - URL:er byggs bara av `espnUrl()` i `store.js` (turnering ur `LEAGUES`/`EUROPE`, lag-id `^\d{1,10}$`, månad `^\d{6}$`, fasta sökvägen `all` bara för lagschema; annars kastas fel). `fetch` alltid med `credentials:'omit'`, `cache:'no-store'`, `referrerPolicy:'no-referrer'` och timeout 10 s (`AbortSignal.timeout`); svar över 8 000 000 tecken avvisas före `JSON.parse` (`parseResponse` i `store.js`).
-- Ny lagring: `fns.team.v2`, `fns.league.v1`, `fns.recent.v1`, `fns.cache.v4` (se Datamodell); **Radera all data** tar bort alla `fns.*` och inget annat. Backup-fil enligt U5 (krypterad), bara inställningar.
+- Ny lagring: `fns.teams.v1`, `fns.goals.v1` (2026-11-13), `fns.league.v1`, `fns.cache.v4` (se Datamodell); **Radera all data** tar bort alla `fns.*` och inget annat. Backup-fil enligt U5 (krypterad), bara inställningar.
 - Tester (`tools/tests/`): flödestesterna kör mot en fejkad `fetch` (`ui-before.js`, laddas av `tools/test.ps1` före appen) och använder aldrig nätet. De kontrollerar CSP:ns nätverksdirektiv, att alla anrop går till `site.api.espn.com` med rätt fetch-inställningar, att märken från andra värdar inte laddas och att data från källan renderas som text. Exakt CSP i `index.html` kontrolleras av `tools/check.ps1`.
 
 ## PWA-krav

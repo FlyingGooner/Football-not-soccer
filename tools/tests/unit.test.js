@@ -39,11 +39,32 @@ T.test('valt lag: v2 valideras, v1 läses som Premier League', () => {
   T.eq(loadTeam({ id: '86', leagueId: 'xyz' }, null), null);
   T.eq(loadTeam({ id: '8a', leagueId: 'esp.1' }, null), null);
 });
-T.test('senast följda: max 5, inga dubbletter, nyast först', () => {
-  let r = [];
-  for (const id of ['1', '2', '3', '2', '4', '5', '6']) r = addRecent(r, { id, name: 'L' + id, leagueId: 'eng.1' });
-  T.eq(r.map((t) => t.id), ['6', '5', '4', '2', '3']);
-  T.eq(loadRecent([{ id: 'bad' }, { id: '1', leagueId: 'eng.1' }, { id: '1', leagueId: 'eng.1' }]).length, 1);
+T.test('följda lag: max 8, inga dubbletter, favoriten måste följas, gamla nycklar migreras', () => {
+  const t = (id) => ({ id, name: 'L' + id, leagueId: 'eng.1' });
+  const v = loadTeams({ favorite: '2', follow: ['1', '2', '2', 'bad', '3', '4', '5', '6', '7', '8', '9'].map(t) });
+  T.eq([v.favorite, v.follow.map((x) => x.id)], ['2', ['1', '2', '3', '4', '5', '6', '7', '8']]);
+  T.eq(loadTeams({ favorite: '99', follow: [t('1')] }).favorite, null);
+  T.eq(loadTeams({ favorite: '__proto__', follow: 'x' }), { favorite: null, follow: [] });
+  T.eq(loadTeams(null), null);
+  const m = loadSettings({ team: t('5'), recent: [t('1'), t('5'), t('2')] }).teams;
+  T.eq([m.favorite, m.follow.map((x) => x.id)], ['5', ['5', '1', '2']]);
+});
+T.test('summary: bara mål, URL valideras, mål-cache max 200', () => {
+  T.eq(espnUrl('summary', 'eng.1', { event: '740000' }), 'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary?event=740000');
+  for (const bad of [() => espnUrl('summary', 'eng.1', { event: '1&x=2' }), () => espnUrl('summary', 'evil', { event: '1' })]) {
+    let threw = false; try { bad(); } catch { threw = true; } T.ok(threw, String(bad));
+  }
+  const g = parseSummaryGoals({ keyEvents: [
+    { scoringPlay: true, type: { text: 'Goal - Penalty' }, clock: { displayValue: "40'" }, team: { id: '359' }, participants: [{ athlete: { shortName: 'B. Saka' } }] },
+    { type: { text: 'Yellow Card' }, clock: { displayValue: "50'" }, team: { id: '1' }, participants: [{ athlete: { shortName: 'X' } }] },
+    { scoringPlay: true, type: { text: 'Own Goal' }, clock: { displayValue: "60'" }, team: { id: '1' }, participants: [{ athlete: { shortName: '<b>Y' } }] }] });
+  T.eq(g.map((e) => [e.kind, e.min, e.name, e.pen, e.og]), [['goal', "40'", 'B. Saka', true, false], ['goal', "60'", '<b>Y', false, true]]);
+  T.eq(parseSummaryGoals({ keyEvents: 'x' }), []);
+  const many = {};
+  for (let i = 1; i <= 210; i++) many[String(i)] = { ts: i, events: [{ kind: 'goal', min: '1', name: 'A', teamId: '1' }, { kind: 'red' }] };
+  many.bad = { ts: 999, events: [] };
+  const lg = loadGoals(many);
+  T.eq([Object.keys(lg).length, '1' in lg, '210' in lg, lg['210'].events.length], [200, false, true, 1]);
 });
 T.test('cache: ogiltiga ligor, matcher och nycklar tas bort', () => {
   const good = { id: '700', leagueId: 'esp.1', date: '2026-11-07T15:00Z', state: 'post', home: { id: '86', name: 'Real' }, away: { id: '83', name: 'Barça' }, homeScore: 2, awayScore: 1, events: [{ kind: 'goal', min: "12'", name: 'X', teamId: '86' }, { kind: 'evil' }] };
@@ -89,12 +110,15 @@ T.test('zoner: per liga, nedflyttning räknas från botten', () => {
   T.eq(zoneOf('uefa.champions', 36, 36), null);
 });
 T.test('export/import: inställningar fram och tillbaka, ingen cache', () => {
-  const s = loadSettings({ team: { id: '86', name: 'Real', leagueId: 'esp.1' }, league: 'ita.1', recent: [{ id: '86', name: 'Real', leagueId: 'esp.1' }] });
+  const s = loadSettings({ teams: { favorite: '86', follow: [{ id: '359', name: 'Arsenal', leagueId: 'eng.1' }, { id: '86', name: 'Real', leagueId: 'esp.1' }] }, league: 'ita.1' });
   const t = exportText(s, '2026-11-11');
   const r = importText(t);
   T.eq(r.data, s);
   T.eq(r.exported, '2026-11-11');
-  T.eq(Object.keys(JSON.parse(t).data).sort(), ['league', 'recent', 'team']);
+  T.eq(Object.keys(JSON.parse(t).data).sort(), ['league', 'teams']);
+  // An older export (team + recent) is migrated.
+  const old = importText(JSON.stringify({ app: 'football-not-soccer', format: 1, data: { league: 'eng.1', team: { id: '86', name: 'Real', leagueId: 'esp.1' }, recent: [{ id: '359', name: 'A', leagueId: 'eng.1' }] } }));
+  T.eq([old.data.teams.favorite, old.data.teams.follow.map((x) => x.id)], ['86', ['86', '359']]);
 });
 T.test('import avvisar fel app, format, okänd liga och dåliga lag-id', () => {
   T.ok(importText('{').error);
@@ -102,15 +126,18 @@ T.test('import avvisar fel app, format, okänd liga och dåliga lag-id', () => {
   T.ok(importText(JSON.stringify({ app: 'football-not-soccer', format: 2, data: {} })).error);
   const r = importText(JSON.stringify({ app: 'football-not-soccer', format: 1, data: { league: 'evil.1', team: { id: '1;x', leagueId: 'eng.1' },
     recent: [{ id: '5', leagueId: 'zzz' }, { id: '6', name: 'Ok', leagueId: 'ita.1' }] } }));
-  T.eq([r.data.league, r.data.team, r.data.recent.map((t) => t.id), r.skipped], ['eng.1', null, ['6'], 2]);
+  T.eq([r.data.league, r.data.teams.favorite, r.data.teams.follow.map((t) => t.id), r.skipped], ['eng.1', null, ['6'], 2]);
+  const r2 = importText(JSON.stringify({ app: 'football-not-soccer', format: 1, data: { league: 'eng.1', teams: { favorite: '1', follow: [{ id: '1;x', leagueId: 'eng.1' }, { id: '6', leagueId: 'ita.1' }] } } }));
+  T.eq([r2.data.teams.favorite, r2.data.teams.follow.map((t) => t.id), r2.skipped], [null, ['6'], 1]);
 });
 T.test('flik: bara kända flikar', () => {
-  T.eq(TABS, ['matches', 'table', 'team', 'settings']);
+  T.eq(TABS, ['matches', 'table', 'fav', 'team', 'settings']);
   T.eq(loadTab('team'), 'team');
   T.eq(loadTab('evil'), null);
 });
 T.test('kortordning: okända id bort, nya kort sist, standard sparas inte', () => {
-  T.eq(layoutOf({ team: { order: ['last', 'evil', 'last'], hidden: ['recent', 'table'] } }, 'team'), { order: ['last', 'next', 'recent'], hidden: ['recent'] });
+  T.eq(layoutOf({ fav: { order: ['last', 'evil', 'last'], hidden: ['recent', 'next'] } }, 'fav'), { order: ['last', 'next'], hidden: ['next'] });
+  T.eq(loadLayout({ team: { order: ['last'], hidden: ['recent'] } }), { fav: { order: ['last', 'next'], hidden: [] } });   // before 2026-11-13: "team"
   T.eq(loadLayout({ matches: { order: ['today', 'next', 'last'], hidden: ['today'] }, evil: { order: [] } }), {});   // old Matcher layout dropped
 });
 T.test('cache v4: månadsintervall valideras, gula kort tolkas och behålls', () => {
@@ -122,8 +149,8 @@ T.test('cache v4: månadsintervall valideras, gula kort tolkas och behålls', ()
       { redCard: true, type: { text: 'Red Card' }, clock: { displayValue: "80'" }, team: { id: '2' }, athletesInvolved: [{ shortName: 'G' }] }] }] }] }, 'eng.1');
   T.eq(ms[0].events.map((e) => e.kind), ['yellow', 'red']);
   T.eq(loadCache({ leagues: { 'eng.1': { league: ms } } }).leagues['eng.1'].league[0].events.length, 2);
-  T.eq(Object.keys(loadLayout({ team: { hidden: ['recent'] } })), ['team']);
-  const s = loadSettings({ league: 'eng.1', layout: { team: { order: ['table'] } } });
+  T.eq(Object.keys(loadLayout({ fav: { hidden: ['last'] } })), ['fav']);
+  const s = loadSettings({ league: 'eng.1', layout: { fav: { order: ['last'] } } });
   T.eq(importText(exportText(s, '2026-11-11')).data.layout, s.layout);
 });
 T.test('ligor: standardväljare, ordning och dolda valideras, minst en visas', () => {

@@ -142,27 +142,45 @@ function loadCache(c) {
   };
 }
 
-// ---------- Settings: chosen team, league, recent teams; open tab ----------
-const TABS = ['matches', 'table', 'team', 'settings'];
+// ---------- Settings: followed teams + favourite, league; open tab ----------
+const TABS = ['matches', 'table', 'fav', 'team', 'settings'];
 const loadTab = (v) => (TABS.includes(v) ? v : null);
-const RECENT_MAX = 5;
+const TEAM_MAX = 8;
 const loadLeague = (v) => (isLeague(v) ? v : DEFAULT_LEAGUE);
-// fns.team.v2, or once from fns.team.v1 (no leagueId – that version only had the Premier League).
+// Old fns.team.v2, or fns.team.v1 (no leagueId – that version only had the Premier League).
 const loadTeam = (v2, v1) => cleanTeam(v2) || cleanTeam(v1, DEFAULT_LEAGUE);
-function loadRecent(list) {
+function cleanTeams(list, max = TEAM_MAX) {
   const out = [];
   for (const t of Array.isArray(list) ? list : []) {
     const c = cleanTeam(t);
     if (c && !out.some((x) => x.id === c.id)) out.push(c);
-    if (out.length >= RECENT_MAX) break;
+    if (out.length >= max) break;
   }
   return out;
 }
-// Recent list after following t: t first, no duplicates, at most RECENT_MAX.
-const addRecent = (list, t) => loadRecent([t, ...list.filter((x) => x.id !== t.id)]);
+// fns.teams.v1: { favorite: id | null, follow: [team] } – the favourite is always followed.
+function loadTeams(v) {
+  if (!isObj(v)) return null;
+  const follow = cleanTeams(v.follow), fav = validId(v.favorite);
+  return { favorite: fav && follow.some((t) => t.id === fav) ? fav : null, follow };
+}
+// Once from the old keys: chosen team → favourite, recently followed → followed.
+function migrateTeams(team, recent) {
+  const t = cleanTeam(team);
+  return { favorite: t ? t.id : null, follow: cleanTeams([t, ...(Array.isArray(recent) ? recent : [])]) };
+}
+const emptyTeams = () => ({ favorite: null, follow: [] });
 function loadSettings(s) {
   const o = isObj(s) ? s : {};
-  return { team: cleanTeam(o.team), league: loadLeague(o.league), recent: loadRecent(o.recent), layout: loadLayout(o.layout) };
+  return { teams: loadTeams(o.teams) || migrateTeams(o.team, o.recent), league: loadLeague(o.league), layout: loadLayout(o.layout) };
+}
+// Goals fetched via summary (fns.goals.v1): { [matchId]: { ts, events } }, at most GOALS_MAX, oldest dropped.
+const GOALS_MAX = 200;
+function loadGoals(v) {
+  const out = idMap(v, (k, x) => (/^\d{1,12}$/.test(k) && isObj(x) && Array.isArray(x.events)
+    ? { ts: ts(x.ts) || 1, events: x.events.map(cleanEvent).filter((e) => e && e.kind === 'goal').slice(0, 40) } : null));
+  for (const id of Object.keys(out).sort((a, b) => out[b].ts - out[a].ts).slice(GOALS_MAX)) delete out[id];
+  return out;
 }
 
 // ---------- Export/import as text (U5, shared standard: format 1 = slim JSON in an envelope) ----------
@@ -172,14 +190,14 @@ const EXPORT_FORMAT = 1;
 const MAX_IMPORT_CHARS = 100000;
 function packData(s) {
   const out = { league: s.league };
-  if (s.team) out.team = { ...s.team };
-  if (s.recent.length) out.recent = s.recent.map((t) => ({ ...t }));
+  if (s.teams.follow.length) out.teams = { favorite: s.teams.favorite, follow: s.teams.follow.map((t) => ({ ...t })) };
   if (Object.keys(s.layout).length) out.layout = s.layout;
   return out;
 }
+// Older exports have team + recent instead of teams; they are migrated like the old keys.
 function unpackData(p) {
   if (!isObj(p)) return null;
-  return { team: p.team ?? null, league: p.league, recent: Array.isArray(p.recent) ? p.recent : [], layout: isObj(p.layout) ? p.layout : {} };
+  return { teams: p.teams ?? null, team: p.team ?? null, league: p.league, recent: Array.isArray(p.recent) ? p.recent : [], layout: isObj(p.layout) ? p.layout : {} };
 }
 function exportText(s, today) {
   return JSON.stringify({ app: EXPORT_APP, format: EXPORT_FORMAT, exported: today, data: packData(s) });
@@ -195,9 +213,9 @@ function importText(text) {
   const raw = unpackData(env.data);
   if (!raw) return { error: 'Exporten saknar data.' };
   const data = loadSettings(raw);
-  const inCount = raw.recent.length + (raw.team ? 1 : 0);
-  return { data, counts: { team: data.team ? 1 : 0, recent: data.recent.length },
-    skipped: Math.max(0, inCount - data.recent.length - (data.team ? 1 : 0)),
+  const inCount = isObj(raw.teams) ? (Array.isArray(raw.teams.follow) ? raw.teams.follow.length : 0)
+    : new Set([raw.team, ...raw.recent].filter(isObj).map((t) => t.id)).size;
+  return { data, skipped: Math.max(0, inCount - data.teams.follow.length),
     exported: typeof env.exported === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(env.exported) ? env.exported : '' };
 }
 
@@ -220,6 +238,10 @@ function espnUrl(kind, compId, opt = {}) {
   if (kind === 'team') {
     if (!validId(opt.team)) throw new Error('espnUrl: ogiltigt lag-id');
     return `${site}/teams/${opt.team}`;
+  }
+  if (kind === 'summary') {
+    if (typeof opt.event !== 'string' || !/^\d{1,12}$/.test(opt.event)) throw new Error('espnUrl: ogiltigt match-id');
+    return `${site}/summary?event=${opt.event}`;
   }
   if (kind === 'schedule') {
     if (!validId(opt.team)) throw new Error('espnUrl: ogiltigt lag-id');
@@ -259,6 +281,12 @@ function keyEvents(details) {
       pen: goal && (d.penaltyKick === true || t.includes('penalty')), og: goal && (d.ownGoal === true || t.includes('own goal')) });
   }
   return out;
+}
+// summary → the match's goals (keyEvents with scoringPlay), same shape as from the scoreboard.
+function parseSummaryGoals(data) {
+  const ke = isObj(data) && Array.isArray(data.keyEvents) ? data.keyEvents.filter((d) => isObj(d) && d.scoringPlay === true) : [];
+  const evs = keyEvents(ke.map((d) => ({ ...d, athletesInvolved: (Array.isArray(d.participants) ? d.participants : []).map((p) => (isObj(p) ? p.athlete : null)) })));
+  return evs.map(cleanEvent).filter((e) => e && e.kind === 'goal').slice(0, 40);
 }
 function parseEvent(ev, compId) {
   if (!isObj(ev) || ev.id == null) return null;
@@ -328,14 +356,15 @@ function zoneOf(leagueId, rank, rows) {
 // ---------- Card order per view (as simple-nutrition): { [view]: { order: [id], hidden: [id] } } ----------
 // Ids are fixed; unknown ids are dropped and new cards go last, so a saved order never breaks.
 const LAYOUT = Object.freeze({
-  team: [['next', 'Nästa match'], ['last', 'Senaste match'], ['recent', 'Senast följda lag']],
+  fav: [['next', 'Nästa match'], ['last', 'Senaste match']],
   // League picker (Matcher and Tabell): the default four first, the rest hidden until chosen.
   leagues: [...DEFAULT_PICKER, ...LEAGUES.map((l) => l.id).filter((id) => !DEFAULT_PICKER.includes(id))].map((id) => [id, leagueById(id).name]),
 });
 const LAYOUT_HIDDEN = Object.freeze({ leagues: LEAGUES.map((l) => l.id).filter((id) => !DEFAULT_PICKER.includes(id)) });
-const LAYOUT_VIEWS = Object.freeze({ leagues: 'Ligor', team: 'Lag' });   // Matcher has one card only, so no list
+const LAYOUT_VIEWS = Object.freeze({ leagues: 'Ligor', fav: 'Favorit' });   // Matcher has one card only, so no list
 function layoutOf(layout, v) {
-  const def = LAYOUT[v].map(([id]) => id), saved = isObj(layout) && isObj(layout[v]) && layout[v], L = saved || {};
+  const def = LAYOUT[v].map(([id]) => id);
+  const saved = isObj(layout) && ((isObj(layout[v]) && layout[v]) || (v === 'fav' && isObj(layout.team) && layout.team)), L = saved || {};   // "team" = before 2026-11-13
   const ids = (a) => (Array.isArray(a) ? a : []);
   const order = ids(L.order).filter((id, i, a) => def.includes(id) && a.indexOf(id) === i);
   def.forEach((id) => { if (!order.includes(id)) order.push(id); });

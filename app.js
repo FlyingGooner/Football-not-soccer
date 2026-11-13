@@ -15,13 +15,14 @@ const CONFIG = {
   monthsMax: 3,                 // Visa fler fetches one month at a time, at most 3 back and 3 ahead of the current month
   minRows: 5,
   livePollMs: 20000,
-  teamCacheMax: RECENT_MAX,
+  teamCacheMax: TEAM_MAX,       // followed teams (favourite included)
+  moreStep: 5,                  // Lag: a tap on Kommande/Spelad shows 5 more
   leagueCacheMax: 6,            // leagues kept in the cache (most recently used)
   teamAllMs: 24 * 3600e3,       // a team's all-competition schedule: at most once a day (or when its match has started)
   sameUrlMs: 60000,             // the same URL at most once a minute (not the live poll)
   leagueDebounceMs: 400,        // league switch/swipe: wait before fetching, so passed leagues are not fetched
   maxAgeMs: 6 * 3600e3,         // cache valid until next kickoff, but never longer than this
-  keys: { cache: 'fns.cache.v4', team: 'fns.team.v2', teamV1: 'fns.team.v1', league: 'fns.league.v1', recent: 'fns.recent.v1', tab: 'fns.tab.v1', layout: 'fns.layout.v1' },
+  keys: { cache: 'fns.cache.v4', teams: 'fns.teams.v1', goals: 'fns.goals.v1', team: 'fns.team.v2', teamV1: 'fns.team.v1', league: 'fns.league.v1', recent: 'fns.recent.v1', tab: 'fns.tab.v1', layout: 'fns.layout.v1' },
   prefix: 'fns.',
   slug: 'football-not-soccer',
 };
@@ -116,30 +117,33 @@ async function fetchLive(live) {
 
 // ---------- State ----------
 let cache = emptyCache();
-let team = null;                 // { id, name, logo, color, leagueId } or null
+let teams = emptyTeams();        // { favorite: id | null, follow: [{ id, name, logo, color, leagueId }] }, at most TEAM_MAX
+let team = null;                 // the favourite (derived from teams by syncFav)
 let league = DEFAULT_LEAGUE;     // chosen league for Matcher and Tabell
-let recent = [];
 let layout = {};              // card order per view (Inställningar → Utseende)
+let goals = Object.create(null); // fns.goals.v1: goals of played matches fetched via summary
 let view = 'matches';
 let liveTimer = null;
 const tableDue = new Set();     // leagues where a match finished but the table is not refetched yet
+const syncFav = () => { team = teams.follow.find((t) => t.id === teams.favorite) || null; };
+const isFollowed = (id) => teams.follow.some((t) => t.id === id);
 // A match has kicked off or is live since the data was fetched → the cache is no longer valid.
 const started = (list) => (list || []).some((m) => m.state === 'in' || (m.state === 'pre' && new Date(m.date) <= Date.now()));
-// The Lag tab shows the team; the other tabs show the chosen league.
-const teamView = () => view === 'team' && !!team;
+// Favorit shows the favourite; Matcher and Tabell show the chosen league.
+const teamView = () => view === 'fav' && !!team;
 const viewLeague = () => (teamView() ? team.leagueId : league);
 const L = (id) => cache.leagues[id] || (cache.leagues[id] = emptyLeague());
 const saveCache = () => { if (!store.set(CONFIG.keys.cache, cache)) { trimCache(0); store.set(CONFIG.keys.cache, cache); } };
-const settings = () => ({ team, league, recent, layout });
+const settings = () => ({ teams, league, layout });
 function saveSettings() {
-  store.set(CONFIG.keys.team, team);
+  syncFav();
+  store.set(CONFIG.keys.teams, teams);
   store.set(CONFIG.keys.league, league);
-  store.set(CONFIG.keys.recent, recent);
   store.set(CONFIG.keys.layout, Object.keys(layout).length ? layout : null);
 }
-// Team cache: only the recently followed teams (and the current one).
+// Team cache: only the followed teams.
 function trimCache(max = CONFIG.teamCacheMax) {
-  const keep = new Set([...recent.slice(0, max).map((t) => t.id), team && team.id].filter(Boolean));
+  const keep = new Set(teams.follow.slice(0, max).map((t) => t.id).concat(team ? [team.id] : []));
   for (const id of Object.keys(cache.teams)) if (!keep.has(id)) delete cache.teams[id];
   // Leagues: the open ones plus the most recently used, at most CONFIG.leagueCacheMax (localStorage size).
   const open = new Set([league, team && team.leagueId].filter(Boolean));
@@ -147,22 +151,41 @@ function trimCache(max = CONFIG.teamCacheMax) {
   let n = 0;
   for (const id of ids) if (!open.has(id) && ++n > Math.max(0, CONFIG.leagueCacheMax - open.size)) delete cache.leagues[id];
 }
-// The team's matches: its own schedule (all competitions) plus every cached league month, which has goals and cards.
-function teamData() {
-  if (!team) return null;
-  const td = cache.teams[team.id], id = team.id;
+// A team's matches: its own schedule (all competitions) plus every cached league month, which has goals and cards.
+function teamData(t = team) {
+  if (!t) return null;
+  const td = cache.teams[t.id], id = t.id;
   const fromLeagues = Object.values(cache.leagues).map((e) => (e.league || []).filter((m) => m.home.id === id || m.away.id === id));
   if (!td && !fromLeagues.some((l) => l.length)) return null;
   return { matches: mergeMatches([td ? td.matches : [], ...fromLeagues]), color: (td && td.color) || cache.colors[id] || null };
 }
 
-// ---------- Perspective helpers (Lag) ----------
-const isHomeFor = (m) => team && m.home.id === team.id;
-const opponent = (m) => (isHomeFor(m) ? m.away : m.home);
-function resultOf(m) {
-  if (!team || m.homeScore == null || m.awayScore == null) return null;
-  const home = isHomeFor(m), us = home ? m.homeScore : m.awayScore, them = home ? m.awayScore : m.homeScore;
+// ---------- Perspective helpers (Favorit, Lag): id = the team whose view it is, default the favourite ----------
+const favId = () => (team ? team.id : null);
+const isHomeFor = (m, id = favId()) => !!id && m.home.id === id;
+const opponent = (m, id = favId()) => (isHomeFor(m, id) ? m.away : m.home);
+function resultOf(m, id = favId()) {
+  if (!id || m.homeScore == null || m.awayScore == null) return null;
+  const home = isHomeFor(m, id), us = home ? m.homeScore : m.awayScore, them = home ? m.awayScore : m.homeScore;
   return us > them ? 'W' : us < them ? 'L' : 'D';
 }
 const RESULT_SHORT = { W: 'V', D: 'O', L: 'F' }, RESULT_LONG = { W: 'Vinst', D: 'Oavgjort', L: 'Förlust' };
 const scoreText = (a, b) => `${a ?? '–'}–${b ?? '–'}`;
+
+// ---------- Goals of a played match outside the league cache: summary, once per match (fns.goals.v1) ----------
+const goalsLoading = new Set();
+// Events to show: the match's own (scoreboard), else saved goals, else undefined (= must be fetched).
+const goalsFailed = new Set();   // summary failed this session → "Ingen matchinfo tillgänglig."
+const matchEvents = (m) => (m.events ? m.events : goals[m.id] ? goals[m.id].events : m.state === 'post' && !goalsFailed.has(m.id) ? undefined : null);
+async function fetchGoals(m, done) {
+  if (goalsLoading.has(m.id) || m.state !== 'post') return;
+  goalsLoading.add(m.id);
+  try {
+    const evs = parseSummaryGoals(await getJSON(espnUrl('summary', m.leagueId, { event: m.id })));
+    goals[m.id] = { ts: Date.now(), events: evs };
+    goals = loadGoals(goals);   // at most GOALS_MAX, oldest out
+    store.set(CONFIG.keys.goals, goals);
+  } catch { goalsFailed.add(m.id); }
+  goalsLoading.delete(m.id);
+  done();
+}

@@ -50,7 +50,9 @@
     const m = u.pathname.match(/soccer\/([a-z.0-9_]+)\/(standings|scoreboard|teams\/(\d+)\/schedule)$/);
     let body = { events: [] };
     if (u.searchParams.has("dates") && !/^\d{6}$/.test(u.searchParams.get("dates"))) return Promise.resolve(new Response("{}", { status: 400 }));   // as ESPN: day ranges give 400
-    if (a) { const lid = ofTeam(a[1]); body = schedule(lid, a[1], u.searchParams.get("fixture") === "true"); body.events.forEach((e) => { e.league = { slug: lid }; }); body.events.push({ ...ev("eng.1", 1, { id: a[1], name: "X" }, { id: "999", name: "Vän" }, now - 3 * day, "post", 1, 0), league: { slug: "club.friendly" } }); }
+    if (a) { const lid = ofTeam(a[1]); body = schedule(lid, a[1], u.searchParams.get("fixture") === "true"); body.events.forEach((e) => { e.league = { slug: lid }; delete e.competitions[0].details; }); body.events.push({ ...ev("eng.1", 1, { id: a[1], name: "X" }, { id: "999", name: "Vän" }, now - 3 * day, "post", 1, 0), league: { slug: "club.friendly" } }); }
+    // summary: goals of a played match (the team schedule, as ESPN's, has none); schedule match ids are team id * 100 + n, that team scores.
+    else if (/\/summary$/.test(u.pathname)) body = { keyEvents: [{ scoringPlay: true, type: { text: "Goal" }, clock: { displayValue: "9'" }, team: { id: String(Math.floor(Number(u.searchParams.get("event")) / 100)) }, participants: [{ athlete: { shortName: "S. Summary" } }] }, { type: { text: "Yellow Card" }, clock: { displayValue: "20'" }, team: { id: String(Math.floor(Number(u.searchParams.get("event")) / 100)) }, participants: [{ athlete: { shortName: "Gul" } }] }] };
     else if (t) body = { team: { id: t[1], defaultLeague: { slug: ofTeam(t[1]) || "zzz.1" } } };
     else if (m && m[2] === "standings") body = standings(m[1]);
     else if (m && m[2] === "scoreboard") body = scoreboard(m[1]);

@@ -1,7 +1,7 @@
 // Football, not soccer – Matcher (listor, flikar, Visa fler, svep). Vanligt skript (delar globalt scope med app.js).
 'use strict';
-function formDots(matches) {
-  const pl = (matches || []).filter((m) => m.state === 'post' && m.leagueId === team.leagueId).slice(-5);
+function formDots(matches, t = team) {
+  const pl = (matches || []).filter((m) => m.state === 'post' && m.leagueId === t.leagueId).slice(-5);
   if (!pl.length) return null;
   return el('div', { class: 'form' }, el('span', { class: 'small muted', text: 'Form' }), pl.map((m) => {
     const r = resultOf(m);
@@ -13,7 +13,7 @@ function formDots(matches) {
 function eventsView(m, goalsOnly) {
   const evs = m.events && goalsOnly ? m.events.filter((e) => e.kind === 'goal') : m.events;
   if (!evs) return el('div', { class: 'evs muted small', text: 'Ingen matchinfo tillgänglig.' });
-  if (!evs.length) return el('div', { class: 'evs muted small', text: 'Inga mål eller kort.' });
+  if (!evs.length) return el('div', { class: 'evs muted small', text: goalsOnly ? 'Inga mål.' : 'Inga mål eller kort.' });
   const icon = (e, i) => (e.kind === 'goal' ? '⚽ ' : e.kind === 'yellow' ? '🟨 '
     : evs.some((x, j) => j < i && x.kind === 'yellow' && x.name === e.name && x.teamId === e.teamId) ? '🟨🟥 ' : '🟥 ');   // second yellow
   const line = (e) => el('div', { class: 'ev' }, el('span', { class: 'm', text: e.min }), icon(e, evs.indexOf(e)),
@@ -22,6 +22,26 @@ function eventsView(m, goalsOnly) {
   return el('div', { class: 'evs' }, col(m.home.id, 'h'), col(m.away.id, 'a'));
 }
 const openMatches = new Set();   // expanded match rows (session only)
+// A live or played match that expands its events on tap: live = goals and cards, played = goals only.
+// Goals missing (team schedule) → fetched once via summary ("Hämtar…"). Returns [row, box]; box is a `tag`.
+function expandable(row, m, tag = 'div') {
+  if (m.state === 'pre') return [row];
+  const box = el(tag, { class: 'lmx' });
+  const sync = () => {
+    const open = openMatches.has(m.id);
+    row.setAttribute('aria-expanded', String(open));
+    if (!open) { fill(box); return; }
+    const evs = matchEvents(m);
+    if (evs === undefined) { fill(box, el('div', { class: 'evs muted small', text: 'Hämtar…' })); fetchGoals(m, () => { if (box.isConnected) sync(); }); return; }
+    fill(box, eventsView({ ...m, events: evs }, m.state === 'post'));
+  };
+  const toggle = () => { if (openMatches.has(m.id)) openMatches.delete(m.id); else openMatches.add(m.id); sync(); };
+  row.classList.add('tap'); row.setAttribute('role', 'button'); row.tabIndex = 0;
+  row.addEventListener('click', toggle);
+  row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  sync();
+  return [row, box];
+}
 function matchHero(m, kind) {
   const d = new Date(m.date);
   let mid;
@@ -34,22 +54,22 @@ function matchHero(m, kind) {
   const side = (t) => el('div', { class: 'side' }, logo(t.logo), el('span', { text: t.name }));
   return el('div', { class: 'hero' },
     el('div', { class: 'match-main' }, side(m.home), mid, side(m.away)),
-    m.state !== 'pre' && m.events && m.events.some((e) => e.kind === 'goal') ? eventsView(m, true) : null,
     el('div', { class: 'meta' }, `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`, m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
       m.state === 'pre' && kind === 'next' ? el('span', { class: 'countdown', 'data-kickoff': m.date, text: countdown(d - Date.now()) }) : null));
 }
 const COMP_SHORT = { 'uefa.europa': 'EL', 'uefa.europa.conf': 'ECL' };
-function teamMatchList(list, past) {
+const compShort = (m) => { const c = compById(m.leagueId); return (c && c.short) || COMP_SHORT[m.leagueId] || m.league; };
+function teamMatchList(list, past, id = favId()) {
   if (!list.length) return null;
   return el('ul', { class: 'mlist' }, list.map((m) => {
-    const d = new Date(m.date), o = opponent(m), r = resultOf(m), home = isHomeFor(m);
-    const c = compById(m.leagueId), comp = (c && c.short) || COMP_SHORT[m.leagueId] || m.league;
-    return el('li', null,
+    const d = new Date(m.date), o = opponent(m, id), r = resultOf(m, id), home = isHomeFor(m, id);
+    const comp = compShort(m);
+    return expandable(el('li', null,
       el('span', { class: 'd', text: past ? fmtShort.format(d) : `${fmtShort.format(d)} ${fmtTime.format(d)}` }),
       el('span', { class: 'o', text: `${o.name} (${home ? 'H' : 'B'})` }),
       el('span', { class: 'c', text: comp }),
       past ? el('span', { class: 'r' }, `${scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore)} `, r ? el('span', { class: `badge ${r}`, text: RESULT_SHORT[r] }) : null)
-        : el('span', { class: 'r' }));
+        : el('span', { class: 'r' })), m, 'li');
   }));
 }
 function dayLabel(date) {
@@ -78,15 +98,7 @@ function leagueMatchList(list, emptyText) {
     const row = el('div', { class: 'lm', 'data-match': m.id },
       el('span', { class: 't h' }, el('span', { text: m.home.name }), logo(m.home.logo)), mid,
       el('span', { class: 't' }, logo(m.away.logo), el('span', { text: m.away.name })));
-    if (m.state === 'pre') { group.append(row); continue; }
-    const box = el('div', { class: 'lmx' });
-    const sync = () => { const open = openMatches.has(m.id); row.setAttribute('aria-expanded', String(open)); fill(box, open ? eventsView(m) : null); };
-    const toggle = () => { if (openMatches.has(m.id)) openMatches.delete(m.id); else openMatches.add(m.id); sync(); };
-    row.classList.add('tap'); row.setAttribute('role', 'button'); row.tabIndex = 0;
-    row.addEventListener('click', toggle);
-    row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
-    sync();
-    group.append(row, box);
+    group.append(...expandable(row, m));
   }
   return wrap;
 }

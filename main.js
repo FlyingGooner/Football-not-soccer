@@ -1,26 +1,29 @@
 // Football, not soccer – render, navigering, uppdatering, backup och start – laddas sist. Vanligt skript (delar globalt scope med app.js).
 'use strict';
 function render() {
-  for (const v of TABS) $('view-' + v).hidden = v !== view;
+  for (const v of [...TABS, 'pick']) $('view-' + v).hidden = v !== view;
   for (const t of document.querySelectorAll('#tabbar [data-view]')) {
     const on = t.dataset.view === view;
     t.classList.toggle('on', on);
     if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
   }
-  arrange(); renderPickers(); renderLeagueMatches(); renderTable(); renderTeam(); renderSettings(); renderLayout();
+  // Middle button: the favourite's badge and name, else an empty ☆ "Favorit".
+  fill($('tab-fav-icon'), team ? logo(team.logo) : '☆');
+  $('tab-fav-name').textContent = team ? team.name : 'Favorit';
+  arrange(); renderPickers(); renderLeagueMatches(); renderTable(); renderTeam(); renderFollowed(); renderTeamPicker(); renderSettings(); renderLayout();
 }
 
-// ---------- Router (tabs, see ../STIL.md) ----------
+// ---------- Router (tabs, see ../STIL.md); 'pick' = the team picker, not a tab ----------
 function go(v, fetch = true) {
   const prev = view;
-  view = loadTab(v) || 'matches';
-  if (view !== prev) { mtab = null; openMatches.clear(); teamOpen.next = teamOpen.last = false; extra = { next: 0, past: 0 }; }   // new view: start fresh
+  view = v === 'pick' ? 'pick' : loadTab(v) || 'matches';
+  if (view !== prev) { mtab = null; openMatches.clear(); teamOpen.next = teamOpen.last = false; lagOpen.clear(); extra = { next: 0, past: 0 }; }   // new view: start fresh
   if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view);
-  store.set(CONFIG.keys.tab, view);
+  if (view !== 'pick') store.set(CONFIG.keys.tab, view);
   render();
   renderStatus();
   scrollTo(0, 0);
-  if (!fetch || view === 'settings' || (view === 'team' && !team)) { scheduleLive(); return; }
+  if (!fetch || view === 'settings' || view === 'pick' || (view === 'fav' && !team) || (view === 'team' && !teams.follow.length)) { scheduleLive(); return; }
   refresh();   // fetches only what is no longer valid in the cache
 }
 $('tabbar').addEventListener('click', (ev) => {
@@ -31,7 +34,7 @@ $('tabbar').addEventListener('click', (ev) => {
 });
 addEventListener('hashchange', () => { const v = loadTab(location.hash.slice(1)); if (v && v !== view) go(v); });
 
-// ---------- League, team, recent ----------
+// ---------- League, followed teams, favourite ----------
 function setLeague(id) {
   if (!isLeague(id) || id === league) return;
   league = id;
@@ -44,17 +47,10 @@ function setLeague(id) {
   leagueTimer = setTimeout(() => { leagueTimer = null; refresh(); }, CONFIG.leagueDebounceMs);
 }
 let leagueTimer = null;
-let pending = null;
-function askPick(row, lid) {
-  if (team && row.id === team.id) { go('team'); return; }
-  pending = { ...row, leagueId: lid };
-  fill($('pick-text'), logo(row.logo), el('span', { text: `${team ? 'Byt till' : 'Följ'} ${row.name}?` }));
-  $('pick-ok').textContent = team ? 'Byt' : 'Följ';
-  $('pick').showModal();
-}
-$('pick-ok').addEventListener('click', () => { const r = pending; pending = null; if (r) choose(r); });
-$('pick').addEventListener('click', (e) => { if (e.target === $('pick')) $('pick').close(); });
-$('team-pick').addEventListener('click', () => go('table'));
+let pickFrom = 'team';   // view the picker's ← returns to
+function openPicker() { if (view !== 'pick') pickFrom = view; go('pick', false); }
+document.querySelectorAll('[data-open-pick]').forEach((b) => b.addEventListener('click', openPicker));
+$('pick-back').addEventListener('click', () => go(pickFrom));
 // A team from a cup table gets its domestic league if it is one of ours: cached tables first, else /teams/{id} (one call).
 async function domesticLeagueOf(id, compId) {
   const doms = CONFIG.leagues.filter((l) => l.kind === 'league');
@@ -62,33 +58,44 @@ async function domesticLeagueOf(id, compId) {
   if (hit) return hit.id;
   return parseDefaultLeague(await getJSON(espnUrl('team', compId, { team: id })));
 }
-async function choose(row) {
-  const t = cleanTeam(row);
-  if (!t) return;
-  team = t;
-  recent = addRecent(recent, team);
+async function resolveLeague(t) {
+  if (domestic(t.leagueId) || national(t.leagueId)) return;
+  const lid = await domesticLeagueOf(t.id, t.leagueId).catch(() => null);
+  const f = teams.follow.find((x) => x.id === t.id);
+  if (lid && f) { f.leagueId = lid; saveSettings(); render(); }
+}
+// Follow a team (row from a table, lid = that table's league). The 9th gives a message. Returns the followed team or null.
+function follow(row, lid) {
+  const had = teams.follow.find((t) => t.id === row.id);
+  if (had) return had;
+  if (teams.follow.length >= TEAM_MAX) { snackbar(`Du kan följa högst ${TEAM_MAX} lag`, null, null, 4000); return null; }
+  const t = cleanTeam({ ...row, leagueId: lid || row.leagueId });
+  if (!t) return null;
+  teams.follow.push(t);
   saveSettings();
-  go('team', false);
-  if (!domestic(team.leagueId) && !national(team.leagueId)) {
-    const lid = await domesticLeagueOf(team.id, team.leagueId).catch(() => null);
-    if (lid && team && team.id === t.id) { team = { ...team, leagueId: lid }; recent = addRecent(recent, team); saveSettings(); render(); }
-  }
-  refresh();
+  resolveLeague(t);
+  return t;
 }
-function removeRecent(id) {
-  recent = recent.filter((t) => t.id !== id);
-  if (!team || team.id !== id) delete cache.teams[id];
-  saveSettings(); saveCache(); render();
+// Unfollowing the favourite leaves no favourite; the team's cache goes too.
+function unfollow(id) {
+  teams.follow = teams.follow.filter((t) => t.id !== id);
+  if (teams.favorite === id) teams.favorite = null;
+  if (lagFilter === id) lagFilter = null;
+  delete cache.teams[id];
+  saveSettings(); saveCache(); render(); renderStatus();
 }
-$('teambar-close').addEventListener('click', () => {
-  team = null;
-  store.set(CONFIG.keys.team, null);
-  render();
-  renderStatus();
-});
+const toggleFollow = (row, lid) => { if (isFollowed(row.id)) unfollow(row.id); else if (follow(row, lid)) render(); };
+// ★: one favourite; a new one replaces the old (which stays followed). ★ on the favourite removes it as favourite.
+function toggleFavorite(row, lid) {
+  if (teams.favorite === row.id) teams.favorite = null;
+  else { const t = follow(row, lid); if (!t) return; teams.favorite = t.id; }
+  saveSettings(); render();
+}
 
 // ---------- Live ----------
-const currentMatches = () => (view === 'team' ? (teamData() || {}).matches || [] : view === 'matches' ? L(league).league || [] : []);
+const currentMatches = () => (view === 'fav' ? (teamData() || {}).matches || []
+  : view === 'team' ? mergeMatches(teams.follow.map((t) => (teamData(t) || {}).matches || []))
+  : view === 'matches' ? L(league).league || [] : []);
 function scheduleLive() {
   clearTimeout(liveTimer);
   const live = currentMatches().filter((m) => m.state === 'in');
@@ -145,6 +152,7 @@ async function refresh() {
   if (busy) { again = true; return; }
   busy = true;
   try {
+    if (view === 'team') { await refreshFollowed(); return; }
     const forTeam = teamView() ? team : null, lid = viewLeague(), e = L(lid), onlyTable = view === 'table';
     const now = Date.now();
     e.used = now;
@@ -193,6 +201,20 @@ async function refresh() {
   }
 }
 
+// Lag: every followed team's schedule (at most once a day per team, or when one of its matches has started), in parallel.
+async function refreshFollowed() {
+  const now = Date.now();
+  const jobs = teams.follow.filter((t) => { const td = cache.teams[t.id]; return !td || now - (td.ts || 0) > CONFIG.teamAllMs || started(td.matches); })
+    .map((t) => fetchTeamMatches(t.id).then((v) => { cache.teams[t.id] = { matches: v.matches, color: v.color, ts: now }; }));
+  const all = await Promise.allSettled(jobs);
+  trimCache(); saveCache();
+  if (view !== 'team') { again = true; return; }
+  render();
+  const failed = all.filter((x) => x.status === 'rejected').length;
+  if (failed) renderStatus(!navigator.onLine ? 'Offline – visar sparad data' : failed === all.length ? 'Kunde inte hämta data – visar sparad data' : 'Viss data kunde inte hämtas', true);
+  else renderStatus();
+}
+
 // ---------- Snackbar ----------
 let snackTimer = null;
 function snackbar(text, actionText, action, ms = 5000) {
@@ -208,7 +230,7 @@ function snackbar(text, actionText, action, ms = 5000) {
 
 // ---------- Data: backup (U5), import, reset ----------
 function applySettings(s) {
-  team = s.team; league = pickerLeagues(s.layout).includes(s.league) ? s.league : pickerLeagues(s.layout)[0]; recent = s.recent; layout = s.layout;
+  teams = s.teams; league = pickerLeagues(s.layout).includes(s.league) ? s.league : pickerLeagues(s.layout)[0]; layout = s.layout;
   saveSettings(); trimCache(); saveCache();
   render(); renderStatus();
 }
@@ -241,7 +263,8 @@ function startImport(text) {
   if (r.error) return;
   pendingImport = r.data;
   const d = r.data;
-  $('imp-sum').textContent = `Liga: ${leagueById(d.league).name}. Lag: ${d.team ? d.team.name : 'inget'}. ${d.recent.length} senast följda lag`
+  const fav = d.teams.follow.find((t) => t.id === d.teams.favorite);
+  $('imp-sum').textContent = `Liga: ${leagueById(d.league).name}. Favorit: ${fav ? fav.name : 'ingen'}. ${d.teams.follow.length} följda lag`
     + (r.exported ? `. Exporterad ${r.exported}.` : '.') + (r.skipped ? ` ${r.skipped} ogiltiga hoppas över.` : '');
   $('import-dialog').showModal();
 }
@@ -257,7 +280,7 @@ $('imp-ok').addEventListener('click', () => {
 $('reset').addEventListener('click', () => $('confirm-dialog').showModal());
 $('cd-ok').addEventListener('click', () => {
   store.clear(CONFIG.prefix);
-  cache = emptyCache(); team = null; league = DEFAULT_LEAGUE; recent = []; layout = {};
+  cache = emptyCache(); teams = emptyTeams(); team = null; league = DEFAULT_LEAGUE; layout = {}; goals = Object.create(null); lagFilter = null;
   render(); renderStatus();
   snackbar('All data är raderad', null, null, 3000);
 });
@@ -280,12 +303,17 @@ addEventListener('online', () => { if (!document.hidden && view !== 'settings') 
 addEventListener('offline', () => renderStatus('Offline – visar sparad data', true));
 let startView = 'matches';
 try {
-  const s = loadSettings({ team: store.get(CONFIG.keys.team), league: store.get(CONFIG.keys.league), recent: store.get(CONFIG.keys.recent), layout: store.get(CONFIG.keys.layout) });
-  team = s.team || loadTeam(null, store.get(CONFIG.keys.teamV1));
-  if (store.get(CONFIG.keys.teamV1) != null) { store.set(CONFIG.keys.teamV1, null); if (team) store.set(CONFIG.keys.team, team); }
-  league = pickerLeagues(s.layout).includes(s.league) ? s.league : pickerLeagues(s.layout)[0]; recent = s.recent; layout = s.layout;
-  cache = loadCache(store.get(CONFIG.keys.cache));
-  startView = loadTab(location.hash.slice(1)) || loadTab(store.get(CONFIG.keys.tab)) || (team ? 'team' : 'matches');
+  const k = CONFIG.keys;
+  // fns.team.v2 / .v1 and fns.recent.v1 are read once (favourite + followed), then removed.
+  const s = loadSettings({ teams: store.get(k.teams), team: loadTeam(store.get(k.team), store.get(k.teamV1)), recent: store.get(k.recent),
+    league: store.get(k.league), layout: store.get(k.layout) });
+  teams = s.teams; syncFav();
+  if ([k.team, k.teamV1, k.recent].some((x) => store.get(x) != null)) { store.set(k.teams, teams); [k.team, k.teamV1, k.recent].forEach((x) => store.set(x, null)); }
+  if (store.get(k.layout) && store.get(k.layout).team) store.set(k.layout, Object.keys(s.layout).length ? s.layout : null);
+  league = pickerLeagues(s.layout).includes(s.league) ? s.league : pickerLeagues(s.layout)[0]; layout = s.layout;
+  cache = loadCache(store.get(k.cache));
+  goals = loadGoals(store.get(k.goals));
+  startView = loadTab(location.hash.slice(1)) || loadTab(store.get(k.tab)) || (team ? 'fav' : 'matches');
 } catch {
   cache = emptyCache();
   store.set(CONFIG.keys.cache, null);

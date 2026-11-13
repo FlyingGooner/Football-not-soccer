@@ -1,15 +1,20 @@
 // Football, not soccer – Inställningar, status och Utseende. Vanligt skript (delar globalt scope med app.js).
 'use strict';
 function renderSettings() {
-  $('hint-team').textContent = team ? team.name : 'Inget lag';
-  $('hint-recent').textContent = `${recent.length} av ${RECENT_MAX}`;
-  fill($('recent-list'), recent.length ? recent.map((t) => el('li', { class: 'row' }, logo(t.logo), el('span', { class: 'row-name', text: t.name }),
-    el('span', { class: 'row-sub', text: leagueById(t.leagueId).short }),
-    el('button', { type: 'button', class: 'icon-btn rdel', 'aria-label': `Ta bort ${t.name}`, text: '✕', on: { click: () => removeRecent(t.id) } })))
-    : el('li', { class: 'muted small', text: 'Inga lag än.' }));
+  $('hint-team').textContent = team ? team.name : teams.follow.length ? `${teams.follow.length} lag` : 'Inga lag';
+  $('hint-follow').textContent = `${teams.follow.length} av ${TEAM_MAX}`;
+  fill($('follow-list'), teams.follow.length ? teams.follow.map((t) => {
+    const fav = teams.favorite === t.id;
+    return el('li', { class: 'row' }, logo(t.logo), el('span', { class: 'row-name', text: t.name }),
+      el('span', { class: 'row-sub', text: leagueById(t.leagueId).short }),
+      el('button', { type: 'button', class: 'icon-btn sm rfav', 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Ta bort som favorit' : 'Gör till favorit'}: ${t.name}`, text: fav ? '★' : '☆', on: { click: () => toggleFavorite(t) } }),
+      el('button', { type: 'button', class: 'icon-btn sm rdel', 'aria-label': `Sluta följa ${t.name}`, text: '✕', on: { click: () => unfollow(t.id) } }));
+  }) : el('li', { class: 'muted small', text: 'Inga lag följda.' }));
   $('foot').textContent = `Football, not soccer v${self.APP_VERSION} · matchdata från ESPN`;
 }
 function lastUpdated() {
+  if (view === 'team') return Math.min(...teams.follow.map((t) => (cache.teams[t.id] || {}).ts || 0)) || null;
+  if (view === 'pick') return null;
   const e = cache.leagues[viewLeague()], u = e ? e.updatedAt : {};
   if (view === 'table') return u.table || null;
   const other = teamView() ? (cache.teams[team.id] || {}).ts : u.league;

@@ -12,21 +12,35 @@ const fmtGD = (n) => (n == null ? '–' : n > 0 ? `+${n}` : String(n));
 function tableRow(r, lid, rows, pickable) {
   const v = (x) => (x == null ? '–' : String(x));
   const z = zoneOf(lid, r.rank, rows);
-  const tr = el('tr', { class: [z ? z.cls : '', team && r.id === team.id ? 'me' : ''].join(' ').trim() || null },
+  const followed = teams.follow.find((t) => t.id === r.id);
+  const tr = el('tr', { class: [z ? z.cls : '', followed ? 'me' : ''].join(' ').trim() || null },
     el('td', { class: 'pos', text: v(r.rank) }),
     el('td', { class: 'team' }, el('span', { class: 'tname' }, logo(r.logo), el('span', { text: r.name }))),
     el('td', { text: v(r.played) }),
     el('td', { class: 'wdl', text: v(r.w) }), el('td', { class: 'wdl', text: v(r.d) }), el('td', { class: 'wdl', text: v(r.l) }),
     el('td', { text: fmtGD(r.gd) }), el('td', { class: 'pts', text: v(r.pts) }));
+  // The team's own colour (strict #rrggbb) via CSSOM – never a style attribute.
+  const tc = followed && color(followed.color || r.color || cache.colors[r.id]);
+  if (tc) tr.style.setProperty('--tc', tc);
   if (pickable) {
     tr.tabIndex = 0;
     tr.setAttribute('role', 'button');
-    tr.setAttribute('aria-label', `Följ ${r.name}`);
+    tr.setAttribute('aria-label', `${followed ? 'Sluta följa' : 'Följ'} ${r.name}`);
     tr.dataset.team = r.id;
-    tr.addEventListener('click', () => askPick(r, lid));
-    tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); askPick(r, lid); } });
+    tr.addEventListener('click', () => tapTeam(r, lid));
+    tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tapTeam(r, lid); } });
   }
   return tr;
+}
+// Tap a row: follow/unfollow directly (no dialog), with Ångra.
+function tapTeam(r, lid) {
+  const was = isFollowed(r.id), wasFav = teams.favorite === r.id;
+  toggleFollow(r, lid);
+  if (isFollowed(r.id) === was) return;   // the 9th: the message is already shown
+  snackbar(was ? `Följer inte längre ${r.name}` : `Följer ${r.name}`, 'Ångra', () => {
+    toggleFollow(r, lid);
+    if (wasFav) { teams.favorite = r.id; saveSettings(); render(); }
+  }, 4000);
 }
 const tableHead = () => el('thead', null, el('tr', null,
   el('th', { text: '#' }), el('th', { class: 'team', text: 'Lag' }), el('th', { text: 'M' }),
