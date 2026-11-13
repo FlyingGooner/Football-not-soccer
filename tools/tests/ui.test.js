@@ -217,6 +217,8 @@ T.test('Lag: märkesrad, favoriten först, filter, pågående match, Kommande/Sp
   T.ok(!T.$('#lag-live').hidden && T.$('#lag-live-list .lm'), 'pågående match');
   click('#lag-chips [data-chip="202"]');
   T.eq(cards(), ['202']);
+  T.ok(['next', 'past'].every((k) => T.$(`[data-lag="202:${k}"]`).getAttribute('aria-expanded') === 'true') && realRows('#lag-cards') >= 5,
+    'ett valt lag: båda listorna utfällda och fyller skärmen: ' + realRows('#lag-cards'));
   click('#lag-chips [data-chip="202"]');
   T.eq(cards().length, 7);
   click('[data-lag="102:past"]');

@@ -83,7 +83,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 │  Kommande  lör 18:30 CHE (H)│
 │  Spelad    V 1–0 HUL  7 nov▸│
 ```
-- **Märkesrad** överst: **Alla**, sedan ett märke per följt lag (favoriten först) och **[+]** (öppnar lagväljaren). Tryck på ett märke → bara det lagets kort och pågående match; tryck igen (eller Alla) → alla.
+- **Märkesrad** överst: **Alla**, sedan ett märke per följt lag (favoriten först) och **[+]** (öppnar lagväljaren). Tryck på ett märke → bara det lagets kort och pågående match, med Kommande och Spelad utfällda så att listorna fyller skärmen (hälften var, minst 5; Visa fler → resten); tryck igen (eller Alla) → alla.
 - **Pågår nu** (bara när någon följd match pågår): en rad per match med ställning, minut och turnering, uppdateras var 20:e sekund. Tryck → målen.
 - **Ett kort per lag**: favoriten först, sedan efter nästa avspark. Lagnamn, sedan raderna **Kommande** (nästa match: dag, tid, motståndare (H/B)) och **Spelad** (V/O/F, resultat, motståndare, datum). Pågår lagets match visas den under Pågår nu och Kommande är matchen efter.
 - Tryck på **Kommande** eller **Spelad** → 5 matcher till i samma kolumn, **Visa fler** → resten; tryck igen fäller ihop. Tryck på en spelad match → målen. Utfällt läge gäller bara under sessionen.

@@ -11,7 +11,9 @@ function liveRow(m) {
 }
 // One line: Kommande (day, time, opponent (H/B)) or Spelad (V/O/F, score, opponent, date).
 function lagLine(kind, t, list) {
-  const key = `${t.id}:${kind}`, state = lagOpen.get(key) || 0, m = list[0], past = kind === 'past';
+  // One team chosen in the badge row: both lists open at once and fill the screen (half each).
+  const key = `${t.id}:${kind}`, alone = lagFilter === t.id;
+  const state = lagOpen.get(key) || (alone ? 3 : 0), m = list[0], past = kind === 'past';
   const label = el('span', { class: 'k', text: past ? 'Spelad' : 'Kommande' });
   if (!m) return el('div', { class: 'lrow' }, label, el('span', { class: 'muted', text: past ? 'Inga spelade matcher' : 'Ingen inplanerad match' }));
   const d = new Date(m.date), o = opponent(m, t.id), home = isHomeFor(m, t.id), r = resultOf(m, t.id);
@@ -19,14 +21,16 @@ function lagLine(kind, t, list) {
     ? el('span', { class: 'v' }, r ? el('span', { class: `badge ${r}`, text: RESULT_SHORT[r] }) : null,
       el('span', { class: 'w', text: scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore) }), logo(o.logo), el('span', { class: 'n', text: o.name }), el('span', { class: 'ha', text: home ? 'H' : 'B' }))
     : el('span', { class: 'v' }, el('span', { class: 'w muted', text: `${dayLabel(d)} ${fmtTime.format(d)}` }), logo(o.logo), el('span', { class: 'n', text: o.name }), el('span', { class: 'ha', text: home ? 'H' : 'B' }));
-  const toggle = () => { if (state) lagOpen.delete(key); else lagOpen.set(key, 1); renderFollowed(); };
+  const toggle = () => { if (state === 3) lagOpen.set(key, 2); else if (state) lagOpen.delete(key); else lagOpen.set(key, 1); renderFollowed(); };
   const row = el('div', { class: 'lrow tap', role: 'button', tabindex: '0', 'aria-expanded': String(!!state), 'data-lag': key,
     on: { click: toggle, keydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } } } },
   label, what, el('span', { class: 'muted small', text: past ? fmtShort.format(d) : compShort(m) }));
   if (!state) return row;
-  const rest = list.slice(1), n = state === 2 ? rest.length : CONFIG.moreStep;
+  // Rows that fit: screen minus header, badge row, card head, two lines and the menu (~330 px), shared by two lists of ~33 px rows.
+  const fit = Math.max(CONFIG.moreStep, Math.floor((innerHeight - 330) / 2 / 33));
+  const rest = list.slice(1), n = state === 2 ? rest.length : state === 3 ? fit : CONFIG.moreStep;
   return [row, teamMatchList(rest.slice(0, n), past, t.id),
-    state === 1 && rest.length > n ? el('button', { type: 'button', class: 'btn text more-btn', 'data-more': key, text: `Visa fler (${rest.length - n})`,
+    state !== 2 && rest.length > n ? el('button', { type: 'button', class: 'btn text more-btn', 'data-more': key, text: `Visa fler (${rest.length - n})`,
       on: { click: () => { lagOpen.set(key, 2); renderFollowed(); } } }) : null];
 }
 function renderFollowed() {
