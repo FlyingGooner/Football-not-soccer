@@ -2,7 +2,7 @@
 // match data is cached in localStorage by app.js. Cross-origin requests (ESPN, club logos) pass straight through.
 importScripts('version.js');
 const CACHE_VERSION = 'fns-' + self.APP_VERSION;
-const ASSETS = ['./', 'index.html', 'styles.css', 'app.js', 'store.js', 'backup.js', 'version.js', 'manifest.webmanifest',
+const ASSETS = ['./', 'index.html', 'styles.css', 'app.js', 'views/table.js', 'views/matches.js', 'views/team.js', 'views/settings.js', 'main.js', 'store.js', 'backup.js', 'version.js', 'manifest.webmanifest',
   'icons/icon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
