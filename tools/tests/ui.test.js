@@ -239,6 +239,11 @@ T.test('Lag: märkesrad, favoriten först, filter, pågående match, Kommande/Sp
   T.ok(k > 0 && k <= 5, 'högst 5: ' + k);
   click('[data-lag="102:past"]');
   T.eq(realRows(sel), 0);
+  click('#lag-cards [data-team="202"] .lag-open');
+  T.eq(view, 'fav');
+  T.eq(T.$('#teambar-name').textContent, 'Esp 2', 'lagnamnet öppnar lagets vy');
+  T.eq(T.$('#teambar-fol').textContent, '✓');
+  tab('team');
 });
 T.test('Inst.: följda lag, ★ byter favorit, ✕ slutar följa och tar bort cachen', () => {
   tab('settings');

@@ -58,7 +58,8 @@ function renderFollowed() {
   $('lag-live').hidden = !live.length;
   fill($('lag-live-list'), live.map((m) => expandable(liveRow(m), m)));
   fill($('lag-cards'), shown.map(({ t, ms, up, past }) => el('section', { class: 'card lag', 'data-team': t.id },
-    el('h2', { class: 'lag-h' }, logo(t.logo), el('span', { text: t.name }), t.id === teams.favorite ? el('span', { class: 'star', 'aria-label': 'Favorit', text: '★' }) : null),
+    el('h2', { class: 'lag-h' }, el('button', { type: 'button', class: 'lag-open', 'aria-label': `Visa ${t.name}`, on: { click: () => openTeam(t, t.leagueId) } },
+      logo(t.logo), el('span', { text: t.name }), t.id === teams.favorite ? el('span', { class: 'star', 'aria-label': 'Favorit', text: '★' }) : null)),
     ms ? [lagLine('next', t, up), lagLine('past', t, past)] : el('p', { class: 'muted', text: 'Laddar…' }))));
 }
 
