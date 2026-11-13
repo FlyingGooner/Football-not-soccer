@@ -17,8 +17,8 @@ function lagLine(kind, t, list) {
   const d = new Date(m.date), o = opponent(m, t.id), home = isHomeFor(m, t.id), r = resultOf(m, t.id);
   const what = past
     ? el('span', { class: 'v' }, r ? el('span', { class: `badge ${r}`, text: RESULT_SHORT[r] }) : null,
-      ` ${scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore)} ${o.name} (${home ? 'H' : 'B'})`)
-    : el('span', { class: 'v', text: `${dayLabel(d)} ${fmtTime.format(d)} ${o.name} (${home ? 'H' : 'B'})` });
+      ` ${scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore)} `, logo(o.logo), ` ${o.name} (${home ? 'H' : 'B'})`)
+    : el('span', { class: 'v' }, `${dayLabel(d)} ${fmtTime.format(d)} `, logo(o.logo), ` ${o.name} (${home ? 'H' : 'B'})`);
   const toggle = () => { if (state) lagOpen.delete(key); else lagOpen.set(key, 1); renderFollowed(); };
   const row = el('div', { class: 'lrow tap', role: 'button', tabindex: '0', 'aria-expanded': String(!!state), 'data-lag': key,
     on: { click: toggle, keydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } } } },

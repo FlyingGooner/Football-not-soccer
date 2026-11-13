@@ -310,3 +310,4 @@ ul.mlist li.tap { cursor: pointer; }
 #view-team .lchips { padding-bottom: 4px; }
 #view-team .lchip { height: 34px; min-width: 38px; }
 #view-team .lchip img, #view-team .lchip .ph { width: 20px; height: 20px; }
+#view-team .lrow .v img, #view-team .lrow .v .ph { width: 16px; height: 16px; object-fit: contain; vertical-align: -3px; }
