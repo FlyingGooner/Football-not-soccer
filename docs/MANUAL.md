@@ -14,7 +14,7 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Följer
 
-- Följer visar alla följda lag: överst märkena (tryck för att bara visa ett lag), pågående matcher och ett kort per lag med kommande och senast spelade match. Tryck på ett lagnamn var som helst i appen (tabell, matcher, lagkort) för att se laget som under Favorit. ← i lagraden (eller Bakåt) tar dig tillbaka dit du var. Tryck på Kommande eller Spelad för fler matcher. Under Inställningar → Lag gör ★ ett lag till favorit och ✕ slutar följa det.
+- Följer visar alla följda lag: överst märkena (tryck för att bara visa ett lag), pågående matcher och ett kort per lag med kommande och senast spelade match. Tryck på ett lagnamn var som helst i appen (tabell, matcher, lagkort) för att se laget som under Favorit. ← i lagraden (eller Bakåt) tar dig tillbaka dit du var. Bakåt går genom flikarna du besökt; appen stängs först där du började. Tryck på Kommande eller Spelad för fler matcher. Under Inställningar → Lag gör ★ ett lag till favorit och ✕ slutar följa det.
 
 ## Flytta kort
 

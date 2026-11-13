@@ -270,6 +270,14 @@ T.test('Inst.: följda lag, ★ byter favorit, ✕ slutar följa och tar bort ca
 T.test('fliken sparas och appen öppnas på den', () => {
   T.eq(localStorage.getItem('fns.tab.v1'), '"settings"');
 });
+T.test('Bakåt går igenom flikarna man besökt', async () => {
+  tab('matches'); tab('table'); tab('team');
+  history.back();
+  await T.until(() => view === 'table', 'Bakåt → Tabell');
+  history.back();
+  await T.until(() => view === 'matches', 'Bakåt → Matcher');
+  tab('settings');
+});
 T.test('CL: lag får sin inhemska liga', async () => {
   tab('table');
   await settle();

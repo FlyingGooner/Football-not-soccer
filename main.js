@@ -3,7 +3,7 @@
 function render() {
   for (const v of [...TABS, 'pick']) $('view-' + v).hidden = v !== view;
   for (const t of document.querySelectorAll('#tabbar [data-view]')) {
-    const on = t.dataset.view === (peek && view === 'fav' ? peekFrom : view);   // a peeked team keeps its origin tab marked
+    const on = t.dataset.view === (peek && view === 'fav' ? (peekFrom === 'pick' ? 'team' : peekFrom) : view);   // a peeked team keeps its origin tab marked
     t.classList.toggle('on', on);
     if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
   }
@@ -15,12 +15,16 @@ function render() {
 }
 
 // ---------- Router (tabs, see ../STIL.md); 'pick' = the team picker, not a tab ----------
-function go(v, fetch = true) {
+// push: a new history step (tab change), so Bakåt walks back through the views and only leaves the app at the start view.
+function go(v, fetch = true, push = true) {
   const prev = view;
   view = v === 'pick' ? 'pick' : loadTab(v) || 'matches';
   if (view !== 'fav' && peek) { peek = null; syncFav(); }
   if (view !== prev) { mtab = null; openMatches.clear(); teamOpen.next = teamOpen.last = false; lagOpen.clear(); extra = { next: 0, past: 0 }; }   // new view: start fresh
-  if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view);
+  if (location.hash !== '#' + view) {
+    if (push && view !== prev) history.pushState({ fns: 1 }, '', '#' + view);   // fns: a step this app added (← may go back)
+    else history.replaceState(history.state, '', '#' + view);
+  }
   if (view !== 'pick') store.set(CONFIG.keys.tab, view);
   render();
   renderStatus();
@@ -35,9 +39,18 @@ $('tabbar').addEventListener('click', (ev) => {
   if (t.dataset.view === 'fav' && peek) { peek = null; syncFav(); teamOpen.next = teamOpen.last = false; }   // the middle button always shows the favourite
   go(t.dataset.view);
 });
-// Bakåt (Android, browser) while a team is open: back to the tab it was opened from instead of leaving the app.
-addEventListener('popstate', () => { if (peek && view === 'fav') { const from = peekFrom; peek = null; syncFav(); go(from); } });
-addEventListener('hashchange',() => { const v = loadTab(location.hash.slice(1)); if (v && v !== view) go(v); });
+// Bakåt (Android, Safari swipe, ←): show the view of that history step; an open team closes. No new step.
+// ← buttons: show v at once and replace this history step (the step before may then show the same view once more).
+function backTo(v) {
+  if (peek) { peek = null; syncFav(); teamOpen.next = teamOpen.last = false; }
+  go(v, v !== 'pick', false);   // replaces this step (no async history.back: taps right after must not race it)
+}
+addEventListener('popstate', () => {
+  const h = location.hash.slice(1), v = h === 'pick' ? 'pick' : loadTab(h) || 'matches';
+  if (v === view && !peek) return;
+  if (peek) { peek = null; syncFav(); teamOpen.next = teamOpen.last = false; }
+  go(v, v !== 'pick', false);
+});
 
 // ---------- League, followed teams, favourite ----------
 function setLeague(id) {
@@ -55,7 +68,7 @@ let leagueTimer = null;
 let pickFrom = 'team';   // view the picker's ← returns to
 function openPicker() { if (view !== 'pick') pickFrom = view; go('pick', false); }
 document.querySelectorAll('[data-open-pick]').forEach((b) => b.addEventListener('click', openPicker));
-$('pick-back').addEventListener('click', () => go(pickFrom));
+$('pick-back').addEventListener('click', () => backTo(pickFrom));
 // A team from a cup table gets its domestic league if it is one of ours: cached tables first, else /teams/{id} (one call).
 async function domesticLeagueOf(id, compId) {
   const doms = CONFIG.leagues.filter((l) => l.kind === 'league');
@@ -101,7 +114,7 @@ function toggleFavorite(row, lid) {
 function openTeam(row, lid) {
   const t = cleanTeam({ ...row, leagueId: lid || row.leagueId });
   if (!t) return;
-  if (!peek) { peekFrom = view === 'pick' ? 'team' : view; history.pushState({ peek: 1 }, '', location.hash); }   // Android Bakåt → back to peekFrom
+  if (!peek) { peekFrom = view; if (view === 'fav') history.pushState({ fns: 1 }, '', location.hash); }   // from Favorit itself: go() adds no step, so add one
   peek = teams.follow.find((x) => x.id === t.id) || t;
   syncFav(); teamOpen.next = teamOpen.last = false;
   go('fav');
@@ -113,7 +126,7 @@ function teamName(t, lid, cls = null) {
     on: { click: open, keydown: (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); } } });
 }
 // ← in the team bar: same as Bakåt (popstate below takes us to peekFrom).
-$('teambar-back').addEventListener('click', () => { if (peek) history.back(); });
+$('teambar-back').addEventListener('click', () => { if (peek) backTo(peekFrom); });
 // ★ and +/✓ in the team bar act on the shown team, which stays shown (also after unfollow).
 $('teambar-fav').addEventListener('click', () => { if (!team) return; peek = team; toggleFavorite(team, team.leagueId); });
 $('teambar-fol').addEventListener('click', () => { if (!team) return; peek = team; toggleFollow(team, team.leagueId); syncFav(); render(); });
@@ -344,7 +357,7 @@ try {
   cache = emptyCache();
   store.set(CONFIG.keys.cache, null);
 }
-go(startView);
+go(startView, true, false);
 
 // Service worker + update snackbar ("Ny version finns – Ladda om") instead of a silent reload.
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
