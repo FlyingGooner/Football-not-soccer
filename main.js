@@ -112,6 +112,8 @@ function teamName(t, lid, cls = null) {
   return el('span', { class: cls ? `tlink ${cls}` : 'tlink', role: 'button', tabindex: 0, 'aria-label': `Visa ${t.name}`, text: t.name,
     on: { click: open, keydown: (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); } } });
 }
+// ← in the team bar: same as Bakåt (popstate below takes us to peekFrom).
+$('teambar-back').addEventListener('click', () => { if (peek) history.back(); });
 // ★ and +/✓ in the team bar act on the shown team, which stays shown (also after unfollow).
 $('teambar-fav').addEventListener('click', () => { if (!team) return; peek = team; toggleFavorite(team, team.leagueId); });
 $('teambar-fol').addEventListener('click', () => { if (!team) return; peek = team; toggleFollow(team, team.leagueId); syncFav(); render(); });

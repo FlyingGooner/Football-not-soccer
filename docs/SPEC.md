@@ -65,7 +65,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Raden "Idag i alla ligor" är borttagen (beslut 2026-11-11).
 
 ### 2. Tabell
-- Hela tabellen för vald liga (placering, lag, M, V, O, F, MS, P) med zonfärger och förklaring. På smal skärm döljs V/O/F. Tryck på en rad – eller på ett lagnamn var som helst i appen (matchrader, lagkort, lagväljaren, Inställningar) – → laget visas i Favorit-vyn (samma vy som favoriten, beslut 2026-11-14); där följer man med + och gör till favorit med ☆ i lagraden. I menyn förblir fliken man kom från markerad (tryck på den eller Bakåt i Android → tillbaka dit). Mittknappen visar alltid favoriten igen.
+- Hela tabellen för vald liga (placering, lag, M, V, O, F, MS, P) med zonfärger och förklaring. På smal skärm döljs V/O/F. Tryck på en rad – eller på ett lagnamn var som helst i appen (matchrader, lagkort, lagväljaren, Inställningar) – → laget visas i Favorit-vyn (samma vy som favoriten, beslut 2026-11-14); där följer man med + och gör till favorit med ☆ i lagraden. I menyn förblir fliken man kom från markerad (tryck på den, på ← i lagraden eller Bakåt → tillbaka dit; ← syns bara då, inte för favoriten). Mittknappen visar alltid favoriten igen.
 
 ### 3. Favorit (mittknappen, beslut 2026-11-13)
 - Mittknappen i menyn är favoritlagets märke (namn under). Utan favorit: tom ☆ "Favorit", vyn visar "Inget favoritlag valt" och knappen **Välj lag** (öppnar lagväljaren).

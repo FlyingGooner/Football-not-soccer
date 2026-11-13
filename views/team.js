@@ -11,6 +11,7 @@ function renderTeam() {
   if (!team) return;
   fill($('teambar-logo'), logo(team.logo));
   $('teambar-name').textContent = team.name;
+  $('teambar-back').hidden = !peek;   // ← only for a team opened from somewhere (not the favourite)
   const fav = teams.favorite === team.id, on = isFollowed(team.id), fb = $('teambar-fav'), ob = $('teambar-fol');
   fb.textContent = fav ? '★' : '☆'; fb.setAttribute('aria-pressed', String(fav));
   fb.setAttribute('aria-label', `${fav ? 'Ta bort som favorit' : 'Gör till favorit'}: ${team.name}`);

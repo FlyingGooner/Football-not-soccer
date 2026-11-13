@@ -169,6 +169,10 @@ T.test('Tabell: tryck visar laget som Favorit-vyn, + följer där, egen färg', 
   await T.until(() => view === 'table', 'Bakåt → Tabell');
   T.eq(T.$('#tab-fav-name').textContent, 'Favorit');
   click(tableRows()[1]);
+  T.ok(!T.$('#teambar-back').hidden, '← syns');
+  click('#teambar-back');
+  await T.until(() => view === 'table', '← → Tabell');
+  click(tableRows()[1]);
   T.eq(view, 'fav');
   click('#teambar-fol');
   T.eq(follows(), ['202']);
