@@ -51,7 +51,7 @@ function matchHero(m, kind) {
     mid = el('div', { class: 'mid' }, el('span', { class: 'score', text: scoreText(m.homeScore, m.awayScore) }),
       m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : (r ? el('span', { class: `badge ${r}`, text: RESULT_LONG[r] }) : null));
   }
-  const side = (t) => el('div', { class: 'side' }, logo(t.logo), el('span', { text: t.name }));
+  const side = (t) => el('div', { class: 'side' }, logo(t.logo), teamName(t, m.leagueId));
   return el('div', { class: 'hero' },
     el('div', { class: 'match-main' }, side(m.home), mid, side(m.away)),
     el('div', { class: 'meta' }, `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`, m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
@@ -66,7 +66,7 @@ function teamMatchList(list, past, id = favId()) {
     const comp = compShort(m);
     return expandable(el('li', null,
       el('span', { class: 'd', text: past ? fmtShort.format(d) : `${fmtShort.format(d)} ${fmtTime.format(d)}` }),
-      el('span', { class: 'o', text: `${o.name} (${home ? 'H' : 'B'})` }),
+      el('span', { class: 'o' }, teamName(o, m.leagueId), ` (${home ? 'H' : 'B'})`),
       el('span', { class: 'c', text: comp }),
       past ? el('span', { class: 'r' }, `${scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore)} `, r ? el('span', { class: `badge ${r}`, text: RESULT_SHORT[r] }) : null)
         : el('span', { class: 'r' })), m, 'li');
@@ -96,8 +96,8 @@ function leagueMatchList(list, emptyText) {
       : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore),
         m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : el('span', { class: 'end', text: 'Slut' }));
     const row = el('div', { class: 'lm', 'data-match': m.id },
-      el('span', { class: 't h' }, el('span', { text: m.home.name }), logo(m.home.logo)), mid,
-      el('span', { class: 't' }, logo(m.away.logo), el('span', { text: m.away.name })));
+      el('span', { class: 't h' }, teamName(m.home, m.leagueId), logo(m.home.logo)), mid,
+      el('span', { class: 't' }, logo(m.away.logo), teamName(m.away, m.leagueId)));
     group.append(...expandable(row, m));
   }
   return wrap;

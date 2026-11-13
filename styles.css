@@ -280,6 +280,8 @@ ul.mlist li.tap { cursor: pointer; }
 .lag-h img, .lag-h .ph { width: 22px; height: 22px; object-fit: contain; }
 .lag-h .star { color: var(--primary); }
 .lag-open { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-align: left; }
+.tlink { cursor: pointer; }
+.tlink:hover { text-decoration: underline; }
 .lrow { display: grid; grid-template-columns: 76px 1fr auto; gap: 8px; align-items: center; min-height: 40px; border-top: 1px solid var(--line); font-size: .875rem; }
 .lrow .k { color: var(--muted); font-size: .8125rem; }
 .lrow .v { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; font-weight: 500; }

@@ -103,6 +103,12 @@ function openTeam(row, lid) {
   syncFav(); teamOpen.next = teamOpen.last = false;
   go('fav');
 }
+// A team's name anywhere (match rows, lists): tap → openTeam. Stops the tap so the row (e.g. a match that expands) does not react too.
+function teamName(t, lid, cls = null) {
+  const open = (e) => { e.stopPropagation(); e.preventDefault(); openTeam(t, lid); };
+  return el('span', { class: cls ? `tlink ${cls}` : 'tlink', role: 'button', tabindex: 0, 'aria-label': `Visa ${t.name}`, text: t.name,
+    on: { click: open, keydown: (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); } } });
+}
 // ★ and +/✓ in the team bar act on the shown team, which stays shown (also after unfollow).
 $('teambar-fav').addEventListener('click', () => { if (!team) return; peek = team; toggleFavorite(team, team.leagueId); });
 $('teambar-fol').addEventListener('click', () => { if (!team) return; peek = team; toggleFollow(team, team.leagueId); syncFav(); render(); });

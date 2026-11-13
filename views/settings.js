@@ -5,7 +5,7 @@ function renderSettings() {
   $('hint-follow').textContent = `${teams.follow.length} av ${TEAM_MAX}`;
   fill($('follow-list'), teams.follow.length ? teams.follow.map((t) => {
     const fav = teams.favorite === t.id;
-    return el('li', { class: 'row' }, logo(t.logo), el('span', { class: 'row-name', text: t.name }),
+    return el('li', { class: 'row' }, logo(t.logo), teamName(t, t.leagueId, 'row-name'),
       el('span', { class: 'row-sub', text: leagueById(t.leagueId).short }),
       el('button', { type: 'button', class: 'icon-btn sm rfav', 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Ta bort som favorit' : 'Gör till favorit'}: ${t.name}`, text: fav ? '★' : '☆', on: { click: () => toggleFavorite(t) } }),
       el('button', { type: 'button', class: 'icon-btn sm rdel', 'aria-label': `Sluta följa ${t.name}`, text: '✕', on: { click: () => unfollow(t.id) } }));

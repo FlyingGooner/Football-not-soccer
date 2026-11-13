@@ -5,9 +5,9 @@ const lagOpen = new Map();     // `${teamId}:next|past` → 1 (5 more) or 2 (all
 
 function liveRow(m) {
   return el('div', { class: 'lm', 'data-match': m.id },
-    el('span', { class: 't h' }, el('span', { text: m.home.name }), logo(m.home.logo)),
+    el('span', { class: 't h' }, teamName(m.home, m.leagueId), logo(m.home.logo)),
     el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore), el('span', { class: 'live', text: liveText(m) }), el('span', { class: 'end', text: compShort(m) })),
-    el('span', { class: 't' }, logo(m.away.logo), el('span', { text: m.away.name })));
+    el('span', { class: 't' }, logo(m.away.logo), teamName(m.away, m.leagueId)));
 }
 // One line: Kommande (day, time, opponent (H/B)) or Spelad (V/O/F, score, opponent, date).
 function lagLine(kind, t, list) {
@@ -19,8 +19,8 @@ function lagLine(kind, t, list) {
   const d = new Date(m.date), o = opponent(m, t.id), home = isHomeFor(m, t.id), r = resultOf(m, t.id);
   const what = past
     ? el('span', { class: 'v' }, r ? el('span', { class: `badge ${r}`, text: RESULT_SHORT[r] }) : null,
-      el('span', { class: 'w', text: scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore) }), logo(o.logo), el('span', { class: 'n', text: o.name }), el('span', { class: 'ha', text: home ? 'H' : 'B' }))
-    : el('span', { class: 'v' }, el('span', { class: 'w muted', text: `${dayLabel(d)} ${fmtTime.format(d)}` }), logo(o.logo), el('span', { class: 'n', text: o.name }), el('span', { class: 'ha', text: home ? 'H' : 'B' }));
+      el('span', { class: 'w', text: scoreText(home ? m.homeScore : m.awayScore, home ? m.awayScore : m.homeScore) }), logo(o.logo), teamName(o, m.leagueId, 'n'), el('span', { class: 'ha', text: home ? 'H' : 'B' }))
+    : el('span', { class: 'v' }, el('span', { class: 'w muted', text: `${dayLabel(d)} ${fmtTime.format(d)}` }), logo(o.logo), teamName(o, m.leagueId, 'n'), el('span', { class: 'ha', text: home ? 'H' : 'B' }));
   const toggle = () => { if (state === 3) lagOpen.set(key, 2); else if (state) lagOpen.delete(key); else lagOpen.set(key, 1); renderFollowed(); };
   const row = el('div', { class: 'lrow tap', role: 'button', tabindex: '0', 'aria-expanded': String(!!state), 'data-lag': key,
     on: { click: toggle, keydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } } } },
@@ -67,7 +67,7 @@ function renderFollowed() {
 const pickOpen = new Set(), pickLoading = new Set();
 function pickRow(r, lid) {
   const fav = teams.favorite === r.id, on = isFollowed(r.id);
-  return el('li', { class: 'row', 'data-team': r.id }, logo(r.logo), el('span', { class: 'row-name', text: r.name }),
+  return el('li', { class: 'row', 'data-team': r.id }, logo(r.logo), teamName(r, lid, 'row-name'),
     el('button', { type: 'button', class: 'icon-btn sm pk-fav', 'aria-pressed': String(fav), 'aria-label': `${fav ? 'Ta bort som favorit' : 'Gör till favorit'}: ${r.name}`, text: fav ? '★' : '☆', on: { click: () => toggleFavorite(r, lid) } }),
     el('button', { type: 'button', class: 'icon-btn sm pk-fol', 'aria-pressed': String(on), 'aria-label': `${on ? 'Sluta följa' : 'Följ'} ${r.name}`, text: on ? '✓' : '+', on: { click: () => toggleFollow(r, lid) } }));
 }

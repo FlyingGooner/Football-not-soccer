@@ -343,6 +343,18 @@ T.test('kortordning: flytta och dölja kort, sparas och återställs', async () 
   T.eq(localStorage.getItem('fns.layout.v1'), null);
   T.eq([...T.$('#arr-fav').children].map((n) => n.dataset.card), ['next', 'last']);
 });
+T.test('lagnamn i matchrad öppnar lagets vy, fäller inte ut matchen', async () => {
+  tab('matches');
+  await settle();
+  const n = T.$('#view-matches .lm .tlink');
+  T.ok(n, 'tryckbart lagnamn i matchrad');
+  const name = n.textContent, row = n.closest('.lm');
+  click(n);
+  T.eq(view, 'fav');
+  T.eq(T.$('#teambar-name').textContent, name);
+  T.ok(row.getAttribute('aria-expanded') !== 'true', 'matchen fälldes inte ut');
+  tab('matches');
+});
 T.test('byte av vy: Matcher öppnas på Kommande, utfällda matcher återställs', async () => {
   tab('matches');
   await settle();
