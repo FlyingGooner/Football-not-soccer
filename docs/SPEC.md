@@ -236,7 +236,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 
   - Vald flik, segmenterad knapp och menyns aktiva ikon: `--primary-container` med `--on-primary-container`. Versionsetiketten likadant.
   - `theme-color` = `--surface-container` (ljust `#ecefe5`, mörkt `#1a2521`); manifest `theme_color #1a2521`, `background_color #0c1210` (se PWA-krav).
-  - **Lagtema (beslut 2026-11-13):** favoritlagets färg från ESPN (strikt `#rrggbb`) ersätter `--primary-container`/`--on-primary-container` (vald flik, chips, menyn, lagraden, versionsetiketten). `teamTheme()` i store.js: ljust = lagets färg (för ljusa färger mörkad till luminans ≤ 0,7), mörkt = samma kulör mörkad till luminans ≤ 0,06; text vit/svart resp. ljus ton, alltid kontrast ≥ 4.5:1. Inget favoritlag → grönt. Hörnen behålls (nästan fyrkantiga).
+  - **Lagtema (beslut 2026-11-13):** favoritlagets färg från ESPN (strikt `#rrggbb`) ersätter `--primary-container`/`--on-primary-container` (vald flik, chips, menyn, lagraden, versionsetiketten). `teamTheme()` i store.js: ljust = lagets färg (för ljusa färger mörkad till luminans ≤ 0,7), mörkt = samma kulör mörkad till luminans ≤ 0,06; text vit/svart resp. ljus ton, alltid kontrast ≥ 4.5:1. Andra klubbfärgen (ESPN `alternateColor`, sparas som `color2` i lagcachen, strikt `#rrggbb`) visas som 3 px linje nertill på lagraden när den skiljer sig tydligt från lagfärgen (RGB-avstånd ≥ 100 ljust, ≥ 60 mörkt). Inget favoritlag → grönt. Hörnen behålls (nästan fyrkantiga).
   - Ikonerna (`icons/`) görs om i den nya gröna färgen.
   - Kontrast minst 4.5:1 för text i båda temana (kontrolleras med skärmbild ljust och mörkt).
   - Vid bygget uppdateras nyckelfärgen också i `../CLAUDE.md` och projektets `CLAUDE.md`.

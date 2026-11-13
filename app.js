@@ -96,7 +96,8 @@ async function fetchTeamMatches(teamId) {
   const ok = settled.filter((x) => x.status === 'fulfilled').map((x) => x.value);
   if (!ok.length) throw settled[0].reason;
   const c = ok.map((d) => hexColor(d && d.team && d.team.color)).find(Boolean) || null;
-  return { matches: mergeMatches(ok.map((d) => parseEvents(d, null))), color: c };
+  const c2 = ok.map((d) => hexColor(d && d.team && d.team.alternateColor)).find(Boolean) || null;
+  return { matches: mergeMatches(ok.map((d) => parseEvents(d, null))), color: c, color2: c2 };
 }
 // Current month as "YYYY-MM" (local), n months away.
 const monthAt = (n = 0) => { const d = new Date(); return monthAdd(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, n); };
@@ -157,7 +158,7 @@ function teamData(t = team) {
   const td = cache.teams[t.id], id = t.id;
   const fromLeagues = Object.values(cache.leagues).map((e) => (e.league || []).filter((m) => m.home.id === id || m.away.id === id));
   if (!td && !fromLeagues.some((l) => l.length)) return null;
-  return { matches: mergeMatches([td ? td.matches : [], ...fromLeagues]), color: (td && td.color) || cache.colors[id] || null };
+  return { matches: mergeMatches([td ? td.matches : [], ...fromLeagues]), color: (td && td.color) || cache.colors[id] || null, color2: (td && td.color2) || null };
 }
 
 // ---------- Perspective helpers (Favorit, Lag): id = the team whose view it is, default the favourite ----------

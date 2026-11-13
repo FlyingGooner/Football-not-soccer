@@ -138,7 +138,7 @@ function loadCache(c) {
     } : null)),
     colors: idMap(c.colors, (k, v) => (validId(k) ? color(v) : null)),
     teams: idMap(c.teams, (k, v) => (validId(k) && isObj(v) && Array.isArray(v.matches)
-      ? { matches: cleanMatches(v.matches), color: color(v.color), ts: ts(v.ts) } : null)),
+      ? { matches: cleanMatches(v.matches), color: color(v.color), color2: color(v.color2), ts: ts(v.ts) } : null)),
   };
 }
 
@@ -392,7 +392,7 @@ const overdue = (list, now = Date.now()) => (list || []).some((m) => m.state ===
 const lum = (h) => { const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
 const mix = (h, to, t) => '#' + [1, 3, 5].map((i) => { const a = parseInt(h.slice(i, i + 2), 16), b = parseInt(to.slice(i, i + 2), 16); return Math.round(a + (b - a) * t).toString(16).padStart(2, '0'); }).join('');
-function teamTheme(hex) {
+function teamTheme(hex, alt = null) {
   const c = color(hex); if (!c) return null;
   let l = c; for (let t = 0.1; lum(l) > 0.7 && t <= 1; t += 0.1) l = mix(c, '#000000', t);   // white kits: darken so the pill shows on a light surface
   const ink = (x) => (contrast(x, '#ffffff') >= contrast(x, '#111111') ? '#ffffff' : '#111111');
@@ -400,5 +400,8 @@ function teamTheme(hex) {
   const lInk = ink(l);
   let d = c; for (let t = 0.1; lum(d) > 0.06 && t <= 1; t += 0.1) d = mix(c, '#000000', t);   // dark tone of the same hue
   let dInk = mix(c, '#ffffff', 0.8); if (contrast(d, dInk) < 4.5) dInk = '#ffffff';
-  return { light: l, lightInk: lInk, dark: d, darkInk: dInk };
+  // Second club colour (ESPN alternateColor) as a thin stripe, only where it stands out against the pill.
+  const dist = (x, y) => Math.hypot(...[1, 3, 5].map((i) => parseInt(x.slice(i, i + 2), 16) - parseInt(y.slice(i, i + 2), 16)));   // hue difference counts, not just lightness
+  const a = color(alt), sL = a && dist(a, l) >= 100 ? a : null, dA = a && mix(a, '#000000', 0.3), sD = dA && dist(dA, d) >= 60 ? dA : null;
+  return { light: l, lightInk: lInk, dark: d, darkInk: dInk, stripeLight: sL, stripeDark: sD };
 }

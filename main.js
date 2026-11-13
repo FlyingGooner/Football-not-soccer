@@ -164,7 +164,7 @@ async function refresh() {
     if (forTeam) {
       const td = cache.teams[forTeam.id], id = forTeam.id;
       if (!td || now - (td.ts || 0) > CONFIG.teamAllMs || started(td.matches))
-        jobs.push(fetchTeamMatches(id).then((v) => () => { cache.teams[id] = { matches: v.matches, color: v.color, ts: now }; return v.matches; }));
+        jobs.push(fetchTeamMatches(id).then((v) => () => { cache.teams[id] = { matches: v.matches, color: v.color, color2: v.color2, ts: now }; return v.matches; }));
     }
     const tableJob = () => fetchTable(lid).then((rows) => () => { e.table = rows; e.updatedAt.table = Date.now(); tableDue.delete(lid); return []; });
     const tableFirst = !e.table || now - (e.updatedAt.table || 0) > CONFIG.maxAgeMs || tableDue.has(lid);
@@ -205,7 +205,7 @@ async function refresh() {
 async function refreshFollowed() {
   const now = Date.now();
   const jobs = teams.follow.filter((t) => { const td = cache.teams[t.id]; return !td || now - (td.ts || 0) > CONFIG.teamAllMs || started(td.matches); })
-    .map((t) => fetchTeamMatches(t.id).then((v) => { cache.teams[t.id] = { matches: v.matches, color: v.color, ts: now }; }));
+    .map((t) => fetchTeamMatches(t.id).then((v) => { cache.teams[t.id] = { matches: v.matches, color: v.color, color2: v.color2, ts: now }; }));
   const all = await Promise.allSettled(jobs);
   trimCache(); saveCache();
   if (view !== 'team') { again = true; return; }

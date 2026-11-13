@@ -5,9 +5,9 @@ function renderTeam() {
   $('team-empty').hidden = !!team;
   for (const id of ['next', 'last']) $('arr-fav').querySelector(`[data-card="${id}"]`).hidden = !team;
   const c = team && (team.color || (teamData() && teamData().color));
-  const st = document.documentElement.style, th = teamTheme(c);   // strict #rrggbb only
-  if (th) { st.setProperty('--sel', color(c)); st.setProperty('--tc-l', th.light); st.setProperty('--tc-l-on', th.lightInk); st.setProperty('--tc-d', th.dark); st.setProperty('--tc-d-on', th.darkInk); }
-  else for (const k of ['--sel', '--tc-l', '--tc-l-on', '--tc-d', '--tc-d-on']) st.removeProperty(k);
+  const st = document.documentElement.style, th = teamTheme(c, teamData() && teamData().color2);   // strict #rrggbb only
+  if (th) { st.setProperty('--sel', color(c)); st.setProperty('--tc-l', th.light); st.setProperty('--tc-l-on', th.lightInk); st.setProperty('--tc-d', th.dark); st.setProperty('--tc-d-on', th.darkInk); for (const [k, x] of [['--tc2-l', th.stripeLight], ['--tc2-d', th.stripeDark]]) x ? st.setProperty(k, x) : st.removeProperty(k); }
+  else for (const k of ['--sel', '--tc-l', '--tc-l-on', '--tc-d', '--tc-d-on', '--tc2-l', '--tc2-d']) st.removeProperty(k);
   if (!team) return;
   fill($('teambar-logo'), logo(team.logo));
   $('teambar-name').textContent = team.name;

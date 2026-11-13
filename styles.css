@@ -10,14 +10,14 @@
   /* Semantic (results + table zones) */
   --win: #1b6d3c; --draw: #73796d; --loss: #ba1a1a;
   --zone-cl: #006a60; --zone-eu: #00658e; --zone-rel: #ba1a1a;
-  --sel: #3a6a1e; /* overridden from JS with the chosen team's colour (strict #rrggbb) */
+  --tc2: var(--tc2-l, transparent); --sel: #3a6a1e; /* overridden from JS with the chosen team's colour (strict #rrggbb) */
   --bg: var(--surface); --card: var(--surface-container); --text: var(--on-surface); --muted: var(--on-surface-variant); --line: var(--outline-variant);
   --font: Roboto, "Roboto Flex", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --primary: #c8f57e; --on-primary: #173800;
-    --primary-container: var(--tc-d, #3b7a0c); --on-primary-container: var(--tc-d-on, #e4ffb0);
+    --tc2: var(--tc2-d, transparent); --primary-container: var(--tc-d, #3b7a0c); --on-primary-container: var(--tc-d-on, #e4ffb0);
     --surface: #0c1210; --surface-container: #1a2521; --surface-container-high: #243029;
     --on-surface: #e4e8da; --on-surface-variant: #c4c9bb; --outline: #8d9286; --outline-variant: #3a4640;
     --error: #ffb4ab; --error-container: #93000a; --on-error-container: #ffdad6;
@@ -77,7 +77,7 @@ h2 { font-size: .75rem; font-weight: 500; letter-spacing: .06em; text-transform:
 .ph { display: inline-block; border-radius: 50%; background: var(--surface-container-high); }
 
 /* Team bar */
-#teambar { display: flex; align-items: center; gap: 12px; background: var(--primary-container); color: var(--on-primary-container); border-radius: var(--r-lg); padding: 0 4px 0 16px; min-height: 56px; box-shadow: inset 4px 0 0 var(--sel); }
+#teambar { display: flex; align-items: center; gap: 12px; background: var(--primary-container); color: var(--on-primary-container); border-radius: var(--r-lg); padding: 0 4px 0 16px; min-height: 56px; box-shadow: inset 4px 0 0 var(--sel), inset 0 -3px 0 var(--tc2); }
 #teambar img, #teambar .ph { width: 28px; height: 28px; object-fit: contain; }
 #teambar .n { font-weight: 500; flex: 1; }
 .icon-btn { min-width: 48px; min-height: 48px; border: 0; border-radius: 50%; background: transparent; color: inherit; font-size: 1.125rem; }

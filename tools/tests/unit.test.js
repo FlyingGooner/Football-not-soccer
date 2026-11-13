@@ -201,3 +201,10 @@ T.test('lagtema: färg ger ljus och mörk ton med kontrast ≥ 4.5 och avvisar s
   T.eq(teamTheme('red;x'), null);
   T.eq(teamTheme(null), null);
 });
+T.test('lagtema: andra färgen blir understrykning bara när den syns, skräp avvisas', () => {
+  const b = teamTheme('#a50044', '#004d98');   // Barcelona
+  T.ok(b.stripeLight && b.stripeDark, 'båda lägena');
+  T.eq(teamTheme('#ef0107', null).stripeLight, null);
+  T.eq(teamTheme('#ef0107', 'x;y').stripeLight, null);
+  T.eq(teamTheme('#034694', '#034694').stripeLight, null);   // samma färg → ingen linje
+});
