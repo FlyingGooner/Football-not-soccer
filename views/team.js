@@ -5,8 +5,9 @@ function renderTeam() {
   $('team-empty').hidden = !!team;
   for (const id of ['next', 'last']) $('arr-fav').querySelector(`[data-card="${id}"]`).hidden = !team;
   const c = team && (team.color || (teamData() && teamData().color));
-  if (color(c)) document.documentElement.style.setProperty('--sel', color(c));   // strict #rrggbb only
-  else document.documentElement.style.removeProperty('--sel');
+  const st = document.documentElement.style, th = teamTheme(c);   // strict #rrggbb only
+  if (th) { st.setProperty('--sel', color(c)); st.setProperty('--tc-l', th.light); st.setProperty('--tc-l-on', th.lightInk); st.setProperty('--tc-d', th.dark); st.setProperty('--tc-d-on', th.darkInk); }
+  else for (const k of ['--sel', '--tc-l', '--tc-l-on', '--tc-d', '--tc-d-on']) st.removeProperty(k);
   if (!team) return;
   fill($('teambar-logo'), logo(team.logo));
   $('teambar-name').textContent = team.name;

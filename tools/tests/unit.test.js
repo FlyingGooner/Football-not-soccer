@@ -190,3 +190,14 @@ T.test('avspark passerad men status pre → färsk hämtning, inte 60 s-cachen',
   T.ok(!overdue([{ state: 'pre', date: '2026-11-11T17:00Z' }, { state: 'in', date: '2026-11-11T14:00Z' }], now), 'inget försenat');
   T.ok(!overdue(null, now), 'tom');
 });
+T.test('lagtema: färg ger ljus och mörk ton med kontrast ≥ 4.5 och avvisar skräp', () => {
+  for (const h of ['#ef0107', '#034694', '#6cabdd', '#fde100', '#ffffff', '#000000', '#132257']) {
+    const t = teamTheme(h);
+    T.ok(contrast(t.light, t.lightInk) >= 4.5, h + ' ljust');
+    T.ok(contrast(t.dark, t.darkInk) >= 4.5, h + ' mörkt');
+    T.ok(lum(t.light) <= 0.7 && lum(t.dark) <= 0.06, h + ' toner');
+  }
+  T.eq(teamTheme('#034694').light, '#034694');
+  T.eq(teamTheme('red;x'), null);
+  T.eq(teamTheme(null), null);
+});

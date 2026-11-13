@@ -226,16 +226,17 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 
 | Variabel | Ljust | Mörkt |
 |---|---|---|
-| `--primary` / `--on-primary` | `#3a6a1e` / `#ffffff` | `#a0d57d` / `#173800` |
-| `--primary-container` / `--on-primary-container` | `#bbf296` / `#0a2100` | `#235104` / `#bbf296` |
-| `--surface` (bakgrund) | `#f8fbf1` | `#11140e` |
-| `--surface-container` (kort, menyn nertill) | `#ecefe5` | `#1d2119` |
-| `--surface-container-high` | `#e6e9df` | `#272b23` |
+| `--primary` / `--on-primary` | `#3a6a1e` / `#ffffff` | `#c8f57e` / `#173800` |
+| `--primary-container` / `--on-primary-container` | `#bbf296` / `#0a2100` | `#3b7a0c` / `#e4ffb0` (lagtema: lagets färg) |
+| `--surface` (bakgrund) | `#f8fbf1` | `#0c1210` |
+| `--surface-container` (kort, menyn nertill) | `#ecefe5` | `#1a2521` |
+| `--surface-container-high` | `#e6e9df` | `#243029` |
 | `--on-surface` / `--on-surface-variant` | `#191d16` / `#43483e` | `#e1e4d9` / `#c3c8bb` |
 | `--outline` | `#73796d` | `#8d9286` |
 
   - Vald flik, segmenterad knapp och menyns aktiva ikon: `--primary-container` med `--on-primary-container`. Versionsetiketten likadant.
-  - `theme-color` = `--surface-container` (ljust `#ecefe5`, mörkt `#1d2119`); manifest `theme_color #1d2119`, `background_color #11140e` (se PWA-krav).
+  - `theme-color` = `--surface-container` (ljust `#ecefe5`, mörkt `#1a2521`); manifest `theme_color #1a2521`, `background_color #0c1210` (se PWA-krav).
+  - **Lagtema (beslut 2026-11-13):** favoritlagets färg från ESPN (strikt `#rrggbb`) ersätter `--primary-container`/`--on-primary-container` (vald flik, chips, menyn, lagraden, versionsetiketten). `teamTheme()` i store.js: ljust = lagets färg (för ljusa färger mörkad till luminans ≤ 0,7), mörkt = samma kulör mörkad till luminans ≤ 0,06; text vit/svart resp. ljus ton, alltid kontrast ≥ 4.5:1. Inget favoritlag → grönt. Hörnen behålls (nästan fyrkantiga).
   - Ikonerna (`icons/`) görs om i den nya gröna färgen.
   - Kontrast minst 4.5:1 för text i båda temana (kontrolleras med skärmbild ljust och mörkt).
   - Vid bygget uppdateras nyckelfärgen också i `../CLAUDE.md` och projektets `CLAUDE.md`.
