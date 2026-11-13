@@ -35,7 +35,9 @@ $('tabbar').addEventListener('click', (ev) => {
   if (t.dataset.view === 'fav' && peek) { peek = null; syncFav(); teamOpen.next = teamOpen.last = false; }   // the middle button always shows the favourite
   go(t.dataset.view);
 });
-addEventListener('hashchange', () => { const v = loadTab(location.hash.slice(1)); if (v && v !== view) go(v); });
+// Bakåt (Android, browser) while a team is open: back to the tab it was opened from instead of leaving the app.
+addEventListener('popstate', () => { if (peek && view === 'fav') { const from = peekFrom; peek = null; syncFav(); go(from); } });
+addEventListener('hashchange',() => { const v = loadTab(location.hash.slice(1)); if (v && v !== view) go(v); });
 
 // ---------- League, followed teams, favourite ----------
 function setLeague(id) {
@@ -99,7 +101,7 @@ function toggleFavorite(row, lid) {
 function openTeam(row, lid) {
   const t = cleanTeam({ ...row, leagueId: lid || row.leagueId });
   if (!t) return;
-  if (!peek) peekFrom = view === 'pick' ? 'team' : view;
+  if (!peek) { peekFrom = view === 'pick' ? 'team' : view; history.pushState({ peek: 1 }, '', location.hash); }   // Android Bakåt → back to peekFrom
   peek = teams.follow.find((x) => x.id === t.id) || t;
   syncFav(); teamOpen.next = teamOpen.last = false;
   go('fav');

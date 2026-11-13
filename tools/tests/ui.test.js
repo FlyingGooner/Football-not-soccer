@@ -165,6 +165,11 @@ T.test('Tabell: tryck visar laget som Favorit-vyn, + följer där, egen färg', 
   T.eq(follows(), [], 'tryck följer inte');
   T.eq(T.$('#tab-fav-name').textContent, 'Favorit', 'mittknappen visar fortfarande favoriten');
   T.eq(T.$('#tabbar .on').dataset.view, 'table', 'Tabell förblir markerad');
+  history.back();
+  await T.until(() => view === 'table', 'Bakåt → Tabell');
+  T.eq(T.$('#tab-fav-name').textContent, 'Favorit');
+  click(tableRows()[1]);
+  T.eq(view, 'fav');
   click('#teambar-fol');
   T.eq(follows(), ['202']);
   T.eq(favorite(), null);
