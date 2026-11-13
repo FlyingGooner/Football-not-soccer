@@ -3,7 +3,7 @@
 function render() {
   for (const v of [...TABS, 'pick']) $('view-' + v).hidden = v !== view;
   for (const t of document.querySelectorAll('#tabbar [data-view]')) {
-    const on = t.dataset.view === view;
+    const on = t.dataset.view === (peek && view === 'fav' ? peekFrom : view);   // a peeked team keeps its origin tab marked
     t.classList.toggle('on', on);
     if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
   }
@@ -99,6 +99,7 @@ function toggleFavorite(row, lid) {
 function openTeam(row, lid) {
   const t = cleanTeam({ ...row, leagueId: lid || row.leagueId });
   if (!t) return;
+  if (!peek) peekFrom = view === 'pick' ? 'team' : view;
   peek = teams.follow.find((x) => x.id === t.id) || t;
   syncFav(); teamOpen.next = teamOpen.last = false;
   go('fav');

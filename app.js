@@ -120,7 +120,8 @@ async function fetchLive(live) {
 let cache = emptyCache();
 let teams = emptyTeams();        // { favorite: id | null, follow: [{ id, name, logo, color, leagueId }] }, at most TEAM_MAX
 let team = null;                 // the team shown under Favorit: peek if set, else the favourite (syncFav)
-let peek = null;                 // a team opened by tapping it (e.g. in Tabell), shown under Favorit until another tab
+let peekFrom = 'fav';            // the tab peek was opened from; that tab stays marked in the menu
+let peek = null;               // a team opened by tapping it (e.g. in Tabell), shown under Favorit until another tab
 let league = DEFAULT_LEAGUE;     // chosen league for Matcher and Tabell
 let layout = {};              // card order per view (Inställningar → Utseende)
 let goals = Object.create(null); // fns.goals.v1: goals of played matches fetched via summary
