@@ -9,12 +9,12 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Följa ett lag
 
-- Välj lag (under Lag, Favorit eller Inställningar → Lag) visar ligorna. Tryck på en liga, sedan + för att följa ett lag och ☆ för att göra det till favorit. Du kan också trycka på ett lag i tabellen. Högst åtta lag kan följas.
+- Välj lag (under Följer, Favorit eller Inställningar → Lag) visar ligorna. Tryck på en liga, sedan + för att följa ett lag och ☆ för att göra det till favorit. Du kan också trycka på ett lag i tabellen. Högst åtta lag kan följas.
 - Favorit (mitten i menyn) visar favoritlagets nästa och senaste match i alla turneringar och formen i de fem senaste ligamatcherna. Visa fler fäller ut fler matcher. Appen öppnas på samma flik nästa gång.
 
-## Lag
+## Följer
 
-- Lag visar alla följda lag: överst märkena (tryck för att bara visa ett lag), pågående matcher och ett kort per lag med kommande och senast spelade match. Tryck på Kommande eller Spelad för fler matcher. Under Inställningar → Lag gör ★ ett lag till favorit och ✕ slutar följa det.
+- Följer visar alla följda lag: överst märkena (tryck för att bara visa ett lag), pågående matcher och ett kort per lag med kommande och senast spelade match. Tryck på Kommande eller Spelad för fler matcher. Under Inställningar → Lag gör ★ ett lag till favorit och ✕ slutar följa det.
 
 ## Flytta kort
 

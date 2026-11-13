@@ -26,7 +26,7 @@ De flesta fotbollsappar är fulla av nyheter, reklam, notiser och konton. Den h�
 - **Flik**: en av fem vyer i menyn nertill. Vald flik sparas (`fns.tab.v1`) och appen öppnas på den; första start är Matcher (Favorit om en favorit redan är vald).
 
 ## Skärmar
-Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens namn och versionsetikett, och under namnet en liten statusrad ("Uppdaterad 14:32", datum bara om inte idag, fel och offline; beslut 2026-11-11, sparar plats), innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · [favoritens märke] · ⭐ Lag · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
+Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens namn och versionsetikett, och under namnet en liten statusrad ("Uppdaterad 14:32", datum bara om inte idag, fel och offline; beslut 2026-11-11, sparar plats), innehållet i en kolumn (max 520 px) och menyn nertill: **⚽ Matcher · 📋 Tabell · [favoritens märke] · ⭐ Följer · ⚙️ Inst.** Bara mobillayout (se `../STIL.md`); på bredare skärm centreras kolumnen. Ingen uppdatera-knapp.
 
 ### 1. Matcher
 ```
@@ -74,7 +74,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 20:e sekund. Under: 3 kommande på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande.
 - **Senaste match**: resultat, V/O/F, turnering och datum – inga målskyttar eller kort. Under: 3 matcher innan; **Visa fler** fäller ut resten. Tryck på en spelad match → målen (se Matchdetaljer). Utfällt läge gäller bara under sessionen.
 
-### 4. Lag (alla följda lag, beslut 2026-11-13)
+### 4. Följer (alla följda lag, beslut 2026-11-13)
 ```
 │ [Alla] (ARS)(LIV)(RMA) [+]  │
 │ ● PÅGÅR NU                  │
@@ -93,7 +93,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Grupper som fälls ut, som i simple-nutrition: **Lag** (följda lag: ★ gör till favorit, ✕ slutar följa, samt **Välj lag**), **Utseende** (Kortordning) och **Allmänt** (Data, Hjälp och manual, Installera appen). Sist en rad med version och "matchdata från ESPN".
 
 ### Lagväljaren (beslut 2026-11-13)
-- Egen vy (← tillbaka) från [+] under Lag, **Välj lag** och Inställningar → Lag. Listar ligorna i `LEAGUES` (inte cuper), alla ihopfällda. Tryck på en liga → dess lag i bokstavsordning (märke, namn, **☆/★** favorit, **+/✓** följ); flera ligor kan vara öppna.
+- Egen vy (← tillbaka) från [+] under Följer, **Välj lag** och Inställningar → Lag. Listar ligorna i `LEAGUES` (inte cuper), alla ihopfällda. Tryck på en liga → dess lag i bokstavsordning (märke, namn, **☆/★** favorit, **+/✓** följ); flera ligor kan vara öppna.
 - Lagen tas ur ligans tabell (cachad tabell först, annars ett anrop när ligan fälls ut).
 - Högst 8 följda lag, favoriten inräknad; det 9:e ger ett meddelande. Bara en favorit; ny favorit ersätter den gamla, som fortsätter följas. Favorit följs automatiskt; slutar man följa favoriten finns ingen favorit.
 - Tabellen har ingen följ-dialog längre. Följda lags rader markeras med lagets egen färg (vänsterkant och svag bakgrundston), saknas färg används primärfärgen.

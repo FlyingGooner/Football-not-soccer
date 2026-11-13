@@ -18,7 +18,7 @@ T.test('säkerhet: CSP-nätverk bara ESPN, no-referrer', () => {
 T.test('struktur: rubrik med version, meny nertill med fyra flikar', () => {
   T.eq(T.$('.brand').textContent, 'Football, not soccer');
   T.ok(T.$('#version').textContent.startsWith('v'), 'version');
-  T.eq([...document.querySelectorAll('#tabbar .tab')].map((t) => t.textContent), ['⚽Matcher', '📋Tabell', '☆Favorit', '⭐Lag', '⚙️Inst.']);
+  T.eq([...document.querySelectorAll('#tabbar .tab')].map((t) => t.textContent), ['⚽Matcher', '📋Tabell', '☆Favorit', '⭐Följer', '⚙️Inst.']);
 });
 T.test('första start: Matcher i PL, pågående överst, resultat', async () => {
   await settle();
