@@ -119,14 +119,16 @@ async function fetchLive(live) {
 // ---------- State ----------
 let cache = emptyCache();
 let teams = emptyTeams();        // { favorite: id | null, follow: [{ id, name, logo, color, leagueId }] }, at most TEAM_MAX
-let team = null;                 // the favourite (derived from teams by syncFav)
+let team = null;                 // the team shown under Favorit: peek if set, else the favourite (syncFav)
+let peek = null;                 // a team opened by tapping it (e.g. in Tabell), shown under Favorit until another tab
 let league = DEFAULT_LEAGUE;     // chosen league for Matcher and Tabell
 let layout = {};              // card order per view (Inställningar → Utseende)
 let goals = Object.create(null); // fns.goals.v1: goals of played matches fetched via summary
 let view = 'matches';
 let liveTimer = null;
 const tableDue = new Set();     // leagues where a match finished but the table is not refetched yet
-const syncFav = () => { team = teams.follow.find((t) => t.id === teams.favorite) || null; };
+const favTeam = () => teams.follow.find((t) => t.id === teams.favorite) || null;
+const syncFav = () => { team = peek || favTeam(); };
 const isFollowed = (id) => teams.follow.some((t) => t.id === id);
 // A match has kicked off or is live since the data was fetched → the cache is no longer valid.
 const started = (list) => (list || []).some((m) => m.state === 'in' || (m.state === 'pre' && new Date(m.date) <= Date.now()));

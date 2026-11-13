@@ -65,11 +65,11 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Raden "Idag i alla ligor" är borttagen (beslut 2026-11-11).
 
 ### 2. Tabell
-- Hela tabellen för vald liga (placering, lag, M, V, O, F, MS, P) med zonfärger och förklaring. På smal skärm döljs V/O/F. Raderna är tryckbara för att följa laget.
+- Hela tabellen för vald liga (placering, lag, M, V, O, F, MS, P) med zonfärger och förklaring. På smal skärm döljs V/O/F. Tryck på en rad → laget visas i Favorit-vyn (samma vy som favoriten, beslut 2026-11-14); där följer man med + och gör till favorit med ☆ i lagraden. Mittknappen visar alltid favoriten igen.
 
 ### 3. Favorit (mittknappen, beslut 2026-11-13)
 - Mittknappen i menyn är favoritlagets märke (namn under). Utan favorit: tom ☆ "Favorit", vyn visar "Inget favoritlag valt" och knappen **Välj lag** (öppnar lagväljaren).
-- **Hela vyn får plats utan scroll** på en vanlig telefon: kompakta kort, matchrader på en rad.
+- **Hela vyn får plats utan scroll** på en vanlig telefon: kompakta kort, matchrader på en rad. Lagraden har + (följ) och ☆ (favorit) för laget som visas.
 - Favoritlaget: rad med märke, namn och **formen** (5 senaste ligamatcher, V/O/F). Neutral bakgrund (`--surface-container-high`), lagets färg bara som kant till vänster. Ingen placering, ingen tabell.
 - **Nästa match**: kompakt: märken, namn, tid, datum, turnering, hemma/borta, nedräkning. Pågår matchen visas ställning och LIVE-tid, rubriken blir **Pågår nu** och ställningen uppdateras var 20:e sekund. Under: 3 kommande på en rad var (datum och tid, motståndare (H/B), turnering kort). **Visa fler** fäller ut alla kommande.
 - **Senaste match**: resultat, V/O/F, turnering och datum – inga målskyttar eller kort. Under: 3 matcher innan; **Visa fler** fäller ut resten. Tryck på en spelad match → målen (se Matchdetaljer). Utfällt läge gäller bara under sessionen.

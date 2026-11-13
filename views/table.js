@@ -25,30 +25,22 @@ function tableRow(r, lid, rows, pickable) {
   if (pickable) {
     tr.tabIndex = 0;
     tr.setAttribute('role', 'button');
-    tr.setAttribute('aria-label', `${followed ? 'Sluta följa' : 'Följ'} ${r.name}`);
+    tr.setAttribute('aria-label', `Visa ${r.name}`);
     tr.dataset.team = r.id;
     tr.addEventListener('click', () => tapTeam(r, lid));
     tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tapTeam(r, lid); } });
   }
   return tr;
 }
-// Tap a row: follow/unfollow directly (no dialog), with Ångra.
-function tapTeam(r, lid) {
-  const was = isFollowed(r.id), wasFav = teams.favorite === r.id;
-  toggleFollow(r, lid);
-  if (isFollowed(r.id) === was) return;   // the 9th: the message is already shown
-  snackbar(was ? `Följer inte längre ${r.name}` : `Följer ${r.name}`, 'Ångra', () => {
-    toggleFollow(r, lid);
-    if (wasFav) { teams.favorite = r.id; saveSettings(); render(); }
-  }, 4000);
-}
+// Tap a row: open the team under Favorit (follow it there).
+const tapTeam = (r, lid) => openTeam(r, lid);
 const tableHead = () => el('thead', null, el('tr', null,
   el('th', { text: '#' }), el('th', { class: 'team', text: 'Lag' }), el('th', { text: 'M' }),
   el('th', { class: 'wdl', text: 'V' }), el('th', { class: 'wdl', text: 'O' }), el('th', { class: 'wdl', text: 'F' }),
   el('th', { text: 'MS' }), el('th', { text: 'P' })));
 const tableLegend = (lid) => el('div', { class: 'legend' },
   leagueById(lid).zones.map((z) => el('span', null, el('i', { class: z.cls }), z.label)),
-  el('span', { text: 'Tryck på ett lag för att följa det' }));
+  el('span', { text: 'Tryck på ett lag för att visa det' }));
 const fullTable = (rows, lid) => el('table', { class: 'full' }, tableHead(), el('tbody', { class: 'pick' }, rows.map((r) => tableRow(r, lid, rows.length, true))));
 const noTable = () => el('p', { class: 'muted pad-x', text: 'Ingen tabell tillgänglig.' });
 function renderTable() {

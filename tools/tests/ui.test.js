@@ -156,18 +156,30 @@ T.test('utan lag: Favorit och Lag tomma, Välj lag öppnar lagväljaren, ← til
   click('#pick-back');
   T.eq(view, 'team');
 });
-T.test('Tabell: tryck följer direkt utan dialog, egen färg, Ångra', async () => {
+T.test('Tabell: tryck visar laget som Favorit-vyn, + följer där, egen färg', async () => {
   tab('table');
   await settle();
   click(tableRows()[1]);
+  T.eq(view, 'fav');
+  T.eq(T.$('#teambar-name').textContent, 'Esp 2');
+  T.eq(follows(), [], 'tryck följer inte');
+  T.eq(T.$('#tab-fav-name').textContent, 'Favorit', 'mittknappen visar fortfarande favoriten');
+  click('#teambar-fol');
   T.eq(follows(), ['202']);
   T.eq(favorite(), null);
+  T.eq(T.$('#teambar-fol').textContent, '✓');
+  click('#teambar-fol');
+  T.eq(follows(), [], '✓ slutar följa, laget visas kvar');
+  T.eq(T.$('#teambar-name').textContent, 'Esp 2');
+  click('#teambar-fol');
+  tab('fav');
+  T.ok(T.$('#team-empty').hidden === false, 'mittknappen: favoriten (ingen vald)');
+  tab('table');
+  await settle();
   T.ok(tableRows()[1].classList.contains('me') && tableRows()[1].style.getPropertyValue('--tc') === '#3366cc', 'markerad med lagets färg');
-  T.ok(T.$('#snack-text').textContent.includes('Följer Esp 2'), T.$('#snack-text').textContent);
-  click('#snack-action');
-  T.eq(follows(), []);
-  click(tableRows()[1]); click(tableRows()[2]);
+  click(tableRows()[2]); click('#teambar-fol');
   T.eq(follows(), ['202', '203']);
+  tab('table');
 });
 T.test('lagväljaren: liga fälls ut, ☆ favorit (ersätter, gamla följs), + följer, högst 8', async () => {
   tab('team');
@@ -249,7 +261,8 @@ T.test('CL: lag får sin inhemska liga', async () => {
   pickLeague('uefa.champions');
   await settle();
   T.eq(T.$('#table-title').textContent, 'Champions League');
-  click(tableRows()[3]);   // Ita 1
+  click(tableRows()[3]);   // Ita 1 → Favorit-vyn, + följer
+  click('#teambar-fol');
   await T.until(() => (JSON.parse(localStorage.getItem('fns.teams.v1')).follow.find((t) => t.id === '301') || {}).leagueId === 'ita.1', 'inhemsk liga hittades inte');
 });
 T.test('matchdetaljer: spelad visar bara mål, pågående även kort', async () => {

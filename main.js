@@ -8,8 +8,9 @@ function render() {
     if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
   }
   // Middle button: the favourite's badge and name, else an empty ☆ "Favorit".
-  fill($('tab-fav-icon'), team ? logo(team.logo) : '☆');
-  $('tab-fav-name').textContent = team ? team.name : 'Favorit';
+  const fav = favTeam();
+  fill($('tab-fav-icon'), fav ? logo(fav.logo) : '☆');
+  $('tab-fav-name').textContent = fav ? fav.name : 'Favorit';
   arrange(); renderPickers(); renderLeagueMatches(); renderTable(); renderTeam(); renderFollowed(); renderTeamPicker(); renderSettings(); renderLayout();
 }
 
@@ -17,6 +18,7 @@ function render() {
 function go(v, fetch = true) {
   const prev = view;
   view = v === 'pick' ? 'pick' : loadTab(v) || 'matches';
+  if (view !== 'fav' && peek) { peek = null; syncFav(); }
   if (view !== prev) { mtab = null; openMatches.clear(); teamOpen.next = teamOpen.last = false; lagOpen.clear(); extra = { next: 0, past: 0 }; }   // new view: start fresh
   if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view);
   if (view !== 'pick') store.set(CONFIG.keys.tab, view);
@@ -30,6 +32,7 @@ $('tabbar').addEventListener('click', (ev) => {
   const t = ev.target.closest('[data-view]');
   if (!t) return;
   ev.preventDefault();
+  if (t.dataset.view === 'fav' && peek) { peek = null; syncFav(); teamOpen.next = teamOpen.last = false; }   // the middle button always shows the favourite
   go(t.dataset.view);
 });
 addEventListener('hashchange', () => { const v = loadTab(location.hash.slice(1)); if (v && v !== view) go(v); });
@@ -91,6 +94,18 @@ function toggleFavorite(row, lid) {
   else { const t = follow(row, lid); if (!t) return; teams.favorite = t.id; }
   saveSettings(); render();
 }
+
+// Tap a team (e.g. a row in Tabell): open it under Favorit, same view as the favourite; follow it there with + or ★.
+function openTeam(row, lid) {
+  const t = cleanTeam({ ...row, leagueId: lid || row.leagueId });
+  if (!t) return;
+  peek = teams.follow.find((x) => x.id === t.id) || t;
+  syncFav(); teamOpen.next = teamOpen.last = false;
+  go('fav');
+}
+// ★ and +/✓ in the team bar act on the shown team, which stays shown (also after unfollow).
+$('teambar-fav').addEventListener('click', () => { if (!team) return; peek = team; toggleFavorite(team, team.leagueId); });
+$('teambar-fol').addEventListener('click', () => { if (!team) return; peek = team; toggleFollow(team, team.leagueId); syncFav(); render(); });
 
 // ---------- Live ----------
 const currentMatches = () => (view === 'fav' ? (teamData() || {}).matches || []

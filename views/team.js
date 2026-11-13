@@ -11,6 +11,11 @@ function renderTeam() {
   if (!team) return;
   fill($('teambar-logo'), logo(team.logo));
   $('teambar-name').textContent = team.name;
+  const fav = teams.favorite === team.id, on = isFollowed(team.id), fb = $('teambar-fav'), ob = $('teambar-fol');
+  fb.textContent = fav ? '★' : '☆'; fb.setAttribute('aria-pressed', String(fav));
+  fb.setAttribute('aria-label', `${fav ? 'Ta bort som favorit' : 'Gör till favorit'}: ${team.name}`);
+  ob.textContent = on ? '✓' : '+'; ob.setAttribute('aria-pressed', String(on));
+  ob.setAttribute('aria-label', `${on ? 'Sluta följa' : 'Följ'} ${team.name}`);
   const td = teamData();
   const loading = () => el('span', { class: 'muted', text: 'Laddar…' });
   if (!td) { fill($('team-next'), loading()); fill($('team-last'), loading()); fill($('team-next-list')); fill($('team-last-list')); }
