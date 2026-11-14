@@ -1,8 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#4c8c2b"/>
-  <circle cx="256" cy="256" r="140" fill="#fff"/>
-  <g fill="#4c8c2b" stroke="#4c8c2b" stroke-width="10" stroke-linejoin="round">
-    <polygon points="256,206 304,241 285,297 227,297 208,241"/>
-    <path d="M256 206 V116 M304 241 L389 213 M285 297 L338 369 M227 297 L174 369 M208 241 L123 213" fill="none"/>
+  <rect width="512" height="512" fill="#c9eeb3"/>
+  <circle cx="256" cy="264" r="170" fill="#000" opacity=".12"/>
+  <circle cx="256" cy="256" r="170" fill="#4c8c2b"/>
+  <g transform="translate(256 256) scale(.74) translate(-256 -256)">
+    <circle cx="256" cy="256" r="150" fill="#fff"/>
+    <path d="M256 106 A150 150 0 0 1 406 256 A150 150 0 0 1 256 406 Z" fill="#e8eaed"/>
+    <g fill="#263238" stroke="#263238" stroke-width="12" stroke-linejoin="round" stroke-linecap="round">
+      <polygon points="256,206 304,241 285,297 227,297 208,241"/>
+      <path d="M256 206 V110 M304 241 L395 211 M285 297 L341 374 M227 297 L171 374 M208 241 L117 211" fill="none"/>
+    </g>
   </g>
+  <circle cx="374" cy="374" r="34" fill="#ffca28" stroke="#c9eeb3" stroke-width="12"/>
 </svg>
