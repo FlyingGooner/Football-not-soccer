@@ -66,13 +66,14 @@
   <section>
     <span class="eyebrow">Låst backup</span>
     <h2>Varför backupen alltid har lösenord</h2>
-    <p class="lead">Backup-filen lämnar telefonen – i mejlen, molnet eller på en annan dator. Där kan någon annan få tag på den. Därför låses varje fil, så att den bara är skräp för den som hittar den.</p>
-    <div class="facts">
-      <div><b>AES-256</b><span>samma kryptering som banker och lösenordshanterare använder.</span></div>
-      <div><b>600 000</b><span>varv räknas lösenordet om innan det blir en nyckel – varje gissning blir medvetet långsam.</span></div>
-      <div><b>16 tecken</b><span>i ett slumpat lösenord: fler kombinationer än det går att gissa sig igenom på miljarder år.</span></div>
-      <div><b>0</b><span>lösenord i filen. Ändrar någon i den läses den inte in.</span></div>
+    <p class="lead">Backup-filen lämnar telefonen – i mejlen, molnet eller på en annan dator. Hittar någon den ser de bara obegripliga tecken. Enda vägen in är att gissa lösenordet.</p>
+    <div class="flow">
+      <div class="fbox"><b>🏦 Samma lås som banken</b>Filen krypteras med AES-256, samma metod som banker och lösenordshanterare använder.</div>
+      <div class="fbox"><b>🐢 Varje gissning bromsas</b>Ett av världens snabbaste grafikkort hinner bara runt 10 000 gissningar i sekunden – utan inbromsningen hade det varit miljarder.</div>
+      <div class="fbox"><b>🎲 Lösenord som appen slumpar: över 30 miljarder år</b>Även med en miljon sådana grafikkort samtidigt. Universum är 14 miljarder år.</div>
+      <div class="fbox"><b>⚠️ Hittepå som Sommar2024!: ungefär en dag</b>Vanliga ord, namn och årtal gissas först. Låt appen slumpa, eller använd ett långt eget.</div>
     </div>
+    <p class="note">Uppskattning med dagens snabbaste grafikkort. Lösenordet finns aldrig i filen, och en fil som någon ändrat i läses inte in.</p>
   </section>
 
   <section>
