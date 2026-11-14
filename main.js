@@ -361,6 +361,7 @@ function welcomeCheck() {
     welcomeDlg = el('dialog', { class: 'welcome', 'aria-labelledby': 'wl-title' },
       el('h2', { id: 'wl-title', text: 'Välkommen!' }),
       el('p', { text: 'Välj ett lösenord för att komma igång och skriv ner det på en säker plats, till exempel i din lösenordshanterare. Dina backup-filer skyddas med lösenordet, och det behövs för att läsa in en backup.' }),
+      el('p', { class: 'small', text: 'Använd ett nytt lösenord som du inte har någon annanstans – det sparas på den här enheten. Tryck Skapa slumpmässigt lösenord och spara det i din lösenordshanterare.' }),
       el('p', { class: 'muted small', text: 'Vi samlar ingen data. Allt stannar på din enhet – lösenordet är bara en nyckel som skyddar dina backuper.' }),
       el('div', { class: 'welcome-actions' }, pick, importBtn = el('label', { class: 'btn tonal btn-file' }, 'Jag har en backup-fil att importera', file)),
       err);
@@ -391,7 +392,9 @@ function oneFieldWhenShown() {
     if (show.checked && !row.hidden) { one = true; row.hidden = true; p2.value = p1.value; }
     else if (!show.checked && one) { one = false; row.hidden = false; }
   };
-  new MutationObserver(() => { if (dlg.open) one = false; }).observe(dlg, { attributes: true, attributeFilter: ['open'] });
+  // Sparas lösenordet (Kom ihåg på): påminn om att inte återanvända ett lösenord – det ligger i klartext på enheten.
+  const warn = () => { const w = $id('pw-warn'); if (w && !row.hidden && rememberOn() && !w.textContent.includes('annanstans')) w.textContent += (w.textContent ? ' ' : '') + 'Använd ett nytt lösenord som du inte har någon annanstans – det sparas på den här enheten.'; };
+  new MutationObserver(() => { if (dlg.open) { one = false; warn(); } }).observe(dlg, { attributes: true, attributeFilter: ['open'] });
   show.addEventListener('change', apply);
   gen?.addEventListener('click', () => setTimeout(apply, 0));   // the generator ticks Visa itself
   p1.addEventListener('input', () => { if (one) p2.value = p1.value; });
