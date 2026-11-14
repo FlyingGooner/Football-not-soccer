@@ -127,14 +127,19 @@
   <section>
     <span class="eyebrow">Låst backup</span>
     <h2>Varför backupen alltid har lösenord</h2>
-    <p class="lead">Backup-filen lämnar telefonen – i mejlen, molnet eller på en annan dator. Hittar någon den ser de bara obegripliga tecken. Enda vägen in är att gissa lösenordet.</p>
+    <p class="lead">Backup-filen kan hamna hos någon annan. Då är enda vägen in att gissa lösenordet.</p>
     <div class="flow">
-      <div class="fbox"><b>🏦 Samma lås som banken</b>Filen krypteras med AES-256, samma metod som banker och lösenordshanterare använder.</div>
-      <div class="fbox"><b>🐢 Varje gissning bromsas</b>Ett av världens snabbaste grafikkort hinner bara runt 10 000 gissningar i sekunden – utan inbromsningen hade det varit miljarder.</div>
-      <div class="fbox"><b>🎲 Lösenord som appen slumpar: över 30 miljarder år</b>Även med en miljon sådana grafikkort samtidigt. Universum är 14 miljarder år.</div>
-      <div class="fbox"><b>⚠️ Hittepå som Sommar2024!: ungefär en dag</b>Vanliga ord, namn och årtal gissas först. Låt appen slumpa, eller använd ett långt eget.</div>
+      <div class="fbox"><b>🏦 Bankens lås – och bromsade gissningar</b>AES-256, som banker använder. Även ett av världens snabbaste grafikkort hinner bara ~10 000 gissningar i sekunden.</div>
+      <div class="fbox"><b>🎲 Slumpade tecken – hur långt?</b>Tid att gissa sig igenom alla kombinationer:
+        <table class="cmp">
+          <tr><th>Tecken</th><th>1 grafikkort</th><th>1 000 kort</th></tr>
+          <tr><td>8</td><td>300 år</td><td>4 månader</td></tr>
+          <tr><td>10</td><td>1 miljon år</td><td>1 000 år</td></tr>
+          <tr><td><b>16 (appens)</b></td><td colspan="2">längre än universum funnits</td></tr>
+        </table></div>
+      <div class="fbox"><b>⚠️ Bara om tecknen är slumpade</b>Ord, namn och årtal gissas först: Sommar2024! har 11 tecken men faller på en dag.</div>
     </div>
-    <p class="note">Uppskattning med dagens snabbaste grafikkort. Lösenordet finns aldrig i filen, och en fil som någon ändrat i läses inte in.</p>
+    <p class="note">Uppskattning: slumpade bokstäver och siffror. Lösenordet finns aldrig i filen.</p>
   </section>
 
   <section>
