@@ -321,3 +321,5 @@ ul.mlist li.tap { cursor: pointer; }
 #view-team .lrow .v img, #view-team .lrow .v .ph { flex: none; vertical-align: 0; }
 .pwd-box { margin-top: 8px; }
 .pwd-show { margin: 4px 0; padding: 8px 12px; border-radius: var(--r-md); background: var(--surface-container-high); font-family: ui-monospace, monospace; font-size: 1rem; letter-spacing: .04em; overflow-wrap: anywhere; -webkit-user-select: text; user-select: text; }
+.welcome-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
+.welcome-actions > * { flex: 1 1 12rem; text-align: center; }
