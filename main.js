@@ -20,6 +20,8 @@ function go(v, fetch = true, push = true) {
   const prev = view;
   view = v === 'pick' ? 'pick' : loadTab(v) || 'matches';
   if (view !== 'fav' && peek) { peek = null; syncFav(); }
+  // Leaving Inställningar folds its sections again (as in Stress kontroll and Simple nutrition).
+  if (prev === 'settings' && view !== 'settings') for (const d of document.querySelectorAll('#view-settings details[open]')) d.open = false;
   if (view !== prev) { mtab = null; openMatches.clear(); teamOpen.next = teamOpen.last = false; lagOpen.clear(); extra = { next: 0, past: 0 }; showPwd = false; }   // new view: start fresh
   if (location.hash !== '#' + view) {
     if (push && view !== prev) history.pushState({ fns: 1 }, '', '#' + view);   // fns: a step this app added (← may go back)
