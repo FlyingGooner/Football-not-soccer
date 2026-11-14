@@ -3,6 +3,8 @@
 Mobil-först PWA. Spec: `docs/SPEC.md` (läs bara berört avsnitt). Arbetsflöde, säkerhet och artifact: `../CLAUDE.md`. Standard: `../STANDARD.md`. Stil: `../STIL.md`.
 
 ## Projektets regler
+- Publicering: GitHub Pages byggs från `main`. Ändringar gjorda härifrån (Claude Code) committas och pushas direkt till `main`, med höjd version, så att de syns i appen.
+- Svar till användaren efter en ändring: skriv alltid den nya versionen sist (t.ex. "Version: 0.2.18").
 - Nätverksundantag U6 (`../.claude/agents/granskning.md`): bara ESPN:s öppna API `https://site.api.espn.com` och klubbmärken från `https://a.espncdn.com`. URL:er bara via `espnUrl()` i `store.js`, liga-id bara ur `LEAGUES`/`EUROPE`. All API-data tolkas och valideras i `store.js` innan den används. Inga anrop i bakgrunden: bara vid start, när appen visas igen, vid byte av liga/lag och under pågående match.
 - Data bara i `localStorage`, nycklar `fns.*`; cache-prefix `fns-`. Backup-fil enligt U5 (`backup.js`, delad – ändra bara `template/backup.js`), bara inställningar, aldrig matchdata.
 - Inga beroenden, inget byggsteg; vanliga skript (inga moduler, delar globalt scope) i ordningen `version.js`, `backup.js`, `store.js`, `app.js` (kärna, hämtning, tillstånd), en fil per vy i `views/` (läs bara den vy som ändras), sist `main.js` (render, navigering, uppdatering, backup, start). Ny vyfil → `<script>` i `index.html` före `main.js` och i `ASSETS`. `CONFIG` överst i `app.js`. Rendering med `textContent`/`el()`, aldrig HTML. Aldrig blank skärm vid fel.
