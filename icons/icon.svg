@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" fill="#4c8c2b"/>
-  <text x="256" y="320" text-anchor="middle" font-family="Roboto, system-ui, sans-serif" font-weight="700" font-size="180" fill="#fff">FnS</text>
+  <circle cx="256" cy="256" r="140" fill="#fff"/>
+  <g fill="#4c8c2b" stroke="#4c8c2b" stroke-width="10" stroke-linejoin="round">
+    <polygon points="256,206 304,241 285,297 227,297 208,241"/>
+    <path d="M256 206 V116 M304 241 L389 213 M285 297 L338 369 M227 297 L174 369 M208 241 L123 213" fill="none"/>
+  </g>
 </svg>
