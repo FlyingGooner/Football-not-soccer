@@ -335,14 +335,17 @@ async function openBackupText(text, slug) {
   return Backup.openText(text, slug, MAX_IMPORT_CHARS);
 }
 /* ---------- Välkommen: välj lösenord först (2026-11-14) ----------
-   Tom app utan sparat lösenord: en ruta som inte går att stänga förrän ett lösenord är valt eller en backup är inläst,
-   som att registrera sig. Lösenordet är bara nyckeln till backup-filerna – det sparas på enheten (fns.pwd), aldrig i
+   Utan sparat lösenord är appen låst bakom en ruta tills ett lösenord är valt (eller en krypterad backup är inläst,
+   vars lösenord sparas), som att registrera sig. Lösenordet är bara nyckeln till backup-filerna – det sparas på enheten (fns.pwd), aldrig i
    datan eller i filen. Bockar man ur Kom ihåg visas rutan inte (man har valt att få frågan varje gång). */
-let welcomeDlg = null;
-const needsWelcome = () => !(teams.follow.length) && !savedPassword() && rememberOn();
+let welcomeDlg = null, importBtn = null;
+const welcomeHasData = () => teams.follow.length;
+const needsWelcome = () => !savedPassword() && rememberOn();   // låst tills ett lösenord är valt, även med data
 function closeWelcome() { if (welcomeDlg?.open && !needsWelcome()) welcomeDlg.close(); }
 function welcomeCheck() {
-  if (!needsWelcome() || welcomeDlg?.open || document.querySelector('dialog[open]') || typeof HTMLDialogElement !== 'function') return;
+  if (!needsWelcome() || welcomeDlg?.open || typeof HTMLDialogElement !== 'function') return;
+  const other = document.querySelector('dialog[open]');   // t.ex. backup-påminnelsen: fråga när den stängs
+  if (other) { other.addEventListener('close', () => setTimeout(welcomeCheck, 0), { once: true }); return; }
   if (!welcomeDlg) {
     const err = el('p', { class: 'error', role: 'alert' });
     const file = el('input', { type: 'file', accept: '.txt,.json' });
@@ -359,11 +362,12 @@ function welcomeCheck() {
       el('h2', { id: 'wl-title', text: 'Välkommen!' }),
       el('p', { text: 'Välj ett lösenord för att komma igång och skriv ner det på en säker plats, till exempel i din lösenordshanterare. Dina backup-filer skyddas med lösenordet, och det behövs för att läsa in en backup.' }),
       el('p', { class: 'muted small', text: 'Vi samlar ingen data. Allt stannar på din enhet – lösenordet är bara en nyckel som skyddar dina backuper.' }),
-      el('div', { class: 'welcome-actions' }, pick, el('label', { class: 'btn tonal btn-file' }, 'Jag har en backup-fil att importera', file)),
+      el('div', { class: 'welcome-actions' }, pick, importBtn = el('label', { class: 'btn tonal btn-file' }, 'Jag har en backup-fil att importera', file)),
       err);
     welcomeDlg.addEventListener('cancel', (e) => e.preventDefault());   // inte Esc/Bakåt: ett lösenord först
     document.body.append(welcomeDlg);
   }
+  importBtn.hidden = !!welcomeHasData();   // har man redan data behövs bara lösenordet
   welcomeDlg.showModal();
 }
 async function choosePassword() {
