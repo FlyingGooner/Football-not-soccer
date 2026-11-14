@@ -137,6 +137,8 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 | `fns.league.v1` | Vald liga i ligaläge, ett id ur `CONFIG.leagues` |
 | `fns.tab.v1` | Vald flik: `matches`, `table`, `fav`, `team` eller `settings` |
 | `fns.layout.v1` | Kortordning per vy: `{ matches, team: { order: [kort-id], hidden: [kort-id] } }`, bara vyer som skiljer sig från standard |
+| `fns.pwd` | Sparat backup-lösenord (sparas första gången det skrivs). Bara på enheten, aldrig i backup-filen |
+| `fns.pwdoff` | `1` när Kom ihåg backup-lösenordet är urbockad (då finns ingen `fns.pwd`). Radera all data tar bort båda |
 
 ```json
 {

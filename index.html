@@ -125,6 +125,7 @@
             <button type="button" class="btn filled" id="backup-save">Spara backup-fil</button>
             <label class="btn tonal btn-file">Läs in backup-fil<input type="file" id="import-file" accept=".txt,.json"></label>
           </div>
+          <div class="pwd-box" id="pwd-box"></div>
           <p class="error" id="import-error" role="alert"></p>
           <details class="data-text">
             <summary class="data-text-title">Klistra in text</summary>
@@ -152,7 +153,8 @@
             <p>Tryck på en spelad match för att se målskyttarna, på en pågående även gula och röda kort. Under pågående match uppdateras ställningen var 20:e sekund medan appen är öppen. Övrig data hämtas bara igen när en match har börjat.</p></details>
           <details><summary>Offline och data</summary>
             <p>Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.</p>
-            <p>Under Inställningar → Data sparar du en krypterad backup-fil med följda lag, favorit och liga. Matchdata ingår inte, den hämtas igen. Skapa slumpmässigt lösenord fyller i ett starkt lösenord som du kan kopiera – spara det i en lösenordshanterare.</p></details>
+            <p>Under Inställningar → Data sparar du en krypterad backup-fil med följda lag, favorit och liga. Matchdata ingår inte, den hämtas igen. Skapa slumpmässigt lösenord fyller i ett starkt lösenord som du kan kopiera – spara det i en lösenordshanterare.</p>
+            <p>Backup-lösenordet sparas på enheten första gången du skriver det (när du sparar eller läser in en backup). Sedan sparas backup med ett tryck, utan fråga. Lösenordet ligger bara på den här enheten, aldrig i backup-filen, och filen är lika krypterad som förut. Under Inställningar → Data kan du Visa och Byta lösenordet, eller bocka ur Kom ihåg backup-lösenordet – då glöms det och appen frågar varje gång. Behåll lösenordet i din lösenordshanterare – utan det går backupen inte att öppna på en ny telefon.</p></details>
         </div>
       </details>
       <div class="actions center"><button type="button" class="btn tonal" id="install" hidden>Installera appen</button></div>
