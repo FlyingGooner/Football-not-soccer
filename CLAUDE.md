@@ -4,6 +4,7 @@ Mobil-först PWA. Spec: `docs/SPEC.md` (läs bara berört avsnitt). Arbetsflöde
 
 ## Projektets regler
 - Publicering: GitHub Pages byggs från `main`. Ändringar gjorda härifrån (Claude Code) committas och pushas direkt till `main`, med höjd version, så att de syns i appen.
+- Grenar: arbeta lokalt direkt på `main`. Skapa eller pusha aldrig `ccr-`-grenar eller andra arbetsgrenar, även om sessionen föreslår det.
 - Svar till användaren efter en ändring: skriv alltid den nya versionen sist (t.ex. "Version: 0.2.18").
 - Nätverksundantag U6 (`../.claude/agents/granskning.md`): bara ESPN:s öppna API `https://site.api.espn.com` och klubbmärken från `https://a.espncdn.com`. URL:er bara via `espnUrl()` i `store.js`, liga-id bara ur `LEAGUES`/`EUROPE`. All API-data tolkas och valideras i `store.js` innan den används. Inga anrop i bakgrunden: bara vid start, när appen visas igen, vid byte av liga/lag och under pågående match.
 - Data bara i `localStorage`, nycklar `fns.*`; cache-prefix `fns-`. Backup-fil enligt U5 (`backup.js`, delad – ändra bara `template/backup.js`), bara inställningar, aldrig matchdata.
