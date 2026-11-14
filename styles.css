@@ -323,3 +323,11 @@ ul.mlist li.tap { cursor: pointer; }
 .pwd-show { margin: 4px 0; padding: 8px 12px; border-radius: var(--r-md); background: var(--surface-container-high); font-family: ui-monospace, monospace; font-size: 1rem; letter-spacing: .04em; overflow-wrap: anywhere; -webkit-user-select: text; user-select: text; }
 .welcome-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
 .welcome-actions > * { flex: 1 1 12rem; text-align: center; }
+
+/* Sparat backup-lösenord: en liten ruta med Visa/Byt på samma rad */
+.pwd-card { margin: 4px 0 8px; padding: 6px 6px 10px 14px; border-radius: var(--r-lg); background: var(--surface-container-high); }
+.pwd-head { display: flex; align-items: center; gap: 2px; min-height: 44px; }
+.pwd-head > span { flex: 1; font-weight: 500; }
+.pwd-head .btn, .pwd-head .link { min-height: 40px; padding: 0 12px; }
+.pwd-card .pwd-show { margin: 2px 8px 6px 0; background: var(--surface); }
+.pwd-card .pwd-note { margin: 2px 8px 0 0; }

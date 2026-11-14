@@ -381,20 +381,36 @@ async function choosePassword() {
 // Point 2: the user is told when the remembered password opened the file, and when it did not fit.
 function noteUnlocked() { const s = document.getElementById('imp-sum'); if (s && document.getElementById('import-dialog')?.open) s.textContent += ' Backupen låstes upp med det sparade lösenordet.'; }
 function noteWrongSaved() { const n = document.getElementById('pw-text'); if (n) n.textContent = 'Det sparade lösenordet passade inte till den här filen. Skriv lösenordet du valde när du sparade den.'; }
+// Visa lösenord: ett fält räcker (som i KeePass) – Upprepa döljs och följer det första. Görs här, backup.js är delad.
+function oneFieldWhenShown() {
+  const $id = (id) => document.getElementById(id);
+  const dlg = $id('pw-dialog'), show = $id('pw-show'), p1 = $id('pw-1'), p2 = $id('pw-2'), row = $id('pw-2-row'), gen = $id('pw-gen');
+  if (!dlg || !show || !p1 || !p2 || !row) return;
+  let one = false;   // true while Upprepa is hidden by us (only when saving – reading never shows it)
+  const apply = () => {
+    if (show.checked && !row.hidden) { one = true; row.hidden = true; p2.value = p1.value; }
+    else if (!show.checked && one) { one = false; row.hidden = false; }
+  };
+  new MutationObserver(() => { if (dlg.open) one = false; }).observe(dlg, { attributes: true, attributeFilter: ['open'] });
+  show.addEventListener('change', apply);
+  gen?.addEventListener('click', () => setTimeout(apply, 0));   // the generator ticks Visa itself
+  p1.addEventListener('input', () => { if (one) p2.value = p1.value; });
+}
+oneFieldWhenShown();
 function renderPwd() {
   const box = $('pwd-box'); if (!box) return;
   const p = savedPassword(), on = rememberOn();
   const cb = el('input', { type: 'checkbox', checked: on, on: { change: (e) => setRemember(e.target.checked) } });
+  const toggle = el('button', { type: 'button', class: 'btn text', 'aria-pressed': showPwd ? 'true' : 'false', on: { click: () => { showPwd = !showPwd; renderPwd(); } } }, showPwd ? 'Dölj' : 'Visa');
+  const change = el('button', { type: 'button', class: 'btn text', on: { click: rememberPassword } }, 'Byt');
   fill(box,
     el('label', { class: 'check' }, cb, el('span', { text: 'Kom ihåg backup-lösenordet på den här enheten' })),
     !on ? el('p', { class: 'muted small', text: 'Appen frågar efter lösenordet varje gång.' })
       : !p ? el('p', { class: 'muted small', text: 'Lösenordet du skriver vid nästa backup sparas – sedan räcker ett tryck. Filen är lika skyddad som förut.' })
-      : [el('p', { class: 'small', text: '🔑 Sparat – backup sparas med ett tryck.' }),
+      : el('div', { class: 'pwd-card' },
+        el('div', { class: 'pwd-head' }, el('span', { text: '🔑 Lösenordet är sparat' }), toggle, change),
         showPwd ? el('p', { class: 'pwd-show', text: p }) : null,
-        el('div', { class: 'actions' },
-          el('button', { type: 'button', class: 'btn text', on: { click: () => { showPwd = !showPwd; renderPwd(); } } }, showPwd ? 'Dölj' : 'Visa'),
-          el('button', { type: 'button', class: 'btn text', on: { click: rememberPassword } }, 'Byt')),
-        el('p', { class: 'muted small', text: 'Ha lösenordet kvar i din lösenordshanterare: utan det går backupen inte att öppna på en ny telefon.' })]);
+        el('p', { class: 'muted small pwd-note', text: 'Backup sparas med ett tryck. Ha lösenordet kvar i din lösenordshanterare – utan det går backupen inte att öppna på en ny telefon.' })));
 }
 const BACKUP_MSG = { saved: 'Backup-filen sparades', busy: 'Ett sparfönster är redan öppet', fallback: 'Backup-filen laddas ner',
   error: 'Kunde inte spara filen', nocrypto: 'Den här webbläsaren kan inte kryptera – ingen fil sparades' };
