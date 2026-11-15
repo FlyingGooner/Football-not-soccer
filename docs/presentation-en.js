@@ -673,5 +673,6 @@ I18N.add({
  "Öppnade du länken i Messenger eller en annan app? Välj först Öppna i webbläsare – annars går det inte att installera.": "Did you open the link in Messenger or another app? Choose Open in browser first – otherwise it cannot be installed.",
  "Små appar, stora behov": "Small apps, big needs",
  "stora behov": "big needs",
- "stora behov.": "big needs."
+ "stora behov.": "big needs.",
+ "Hoppa till installation ›": "Jump to installing ›"
 });

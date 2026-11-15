@@ -45,5 +45,13 @@
     b.addEventListener('click', () => I18N.setLang(other));
     slides[0].append(b);
   }
-  go(0);
+  // Hopplänkar (2026-11-15): <a href="#id"> till en bild med det id:t byter bild i stället för att skrolla.
+  const byId = (h) => slides.findIndex((x) => h && x.id === h.slice(1));
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+    const k = byId(a.getAttribute('href')); if (k < 0) return;
+    e.preventDefault(); go(k);
+  });
+  const start = byId(location.hash);
+  go(start < 0 ? 0 : start);
 })();
