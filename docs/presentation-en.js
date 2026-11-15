@@ -670,5 +670,8 @@ I18N.add({
  "Dator": "Computer",
  "I Chrome eller Edge: tryck på installationsikonen till höger i adressfältet.": "In Chrome or Edge: click the install icon on the right of the address bar.",
  "Adress:": "Address:",
- "Öppnade du länken i Messenger eller en annan app? Välj först Öppna i webbläsare – annars går det inte att installera.": "Did you open the link in Messenger or another app? Choose Open in browser first – otherwise it cannot be installed."
+ "Öppnade du länken i Messenger eller en annan app? Välj först Öppna i webbläsare – annars går det inte att installera.": "Did you open the link in Messenger or another app? Choose Open in browser first – otherwise it cannot be installed.",
+ "Små appar, stora behov": "Small apps, big needs",
+ "stora behov": "big needs",
+ "stora behov.": "big needs."
 });

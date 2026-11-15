@@ -11,7 +11,7 @@ No news, no ads, no account. Just what you want to know:
 
 ### [▶ Open the app](https://flyinggooner.github.io/Football-not-soccer/)
 
-[📱 Presentation of the app](https://flyinggooner.github.io/Football-not-soccer/docs/presentation.html) · [🛡️ Small apps, high standard](https://flyinggooner.github.io/Football-not-soccer/docs/standard.html)
+[📱 Presentation of the app](https://flyinggooner.github.io/Football-not-soccer/docs/presentation.html) · [🛡️ Small apps, big needs](https://flyinggooner.github.io/Football-not-soccer/docs/standard.html)
 
 </div>
 
@@ -130,7 +130,7 @@ Plain HTML, CSS and JavaScript – no frameworks, no dependencies, no build step
 | `docs/SPEC.md` | Specification of features and behaviour |
 | `docs/MANUAL.md`, `docs/MANUAL.en.md` | The manual in Swedish and English (the same text as Help in the app) |
 | `docs/presentation.html` | Stand-alone mobile presentation of the app (English by default, Swedish with the button on the first slide) |
-| `docs/standard.html` | Small apps, high standard – what all the apps have in common (synced from the template) |
+| `docs/standard.html` | Small apps, big needs – what all the apps have in common (synced from the template) |
 | `tools/build-single.ps1` | Builds the test file |
 | `tools/tests/` | Unit and flow tests (run in headless Edge, automatically before every release and push) |
 | `CLAUDE.md` | Rules for development |
