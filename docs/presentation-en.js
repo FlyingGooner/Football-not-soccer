@@ -659,5 +659,6 @@ I18N.add({
  "Hur gick det för mitt lag? Tabellen, matcherna live och ditt lag i alla tävlingar – 16 ligor och turneringar. Inga nyheter, inget spel, inga notiser.": "How did my team do? The table, live matches and your team in every competition – 16 leagues and tournaments. No news, no betting, no notifications.",
  "Vad snurrar i huvudet? Skriv ner det som en tråd med nästa steg och släpp tanken. Delmål, deadlines, personer och VAB-dagar – och en överblick över det som brinner.": "What is spinning in your head? Write it down as a thread with the next step and let the thought go. Sub-goals, deadlines, people and days off for sick children – and an overview of what is urgent.",
  "Prova själv": "Try it yourself",
- "Öppna en app": "Open an app"
+ "Öppna en app": "Open an app",
+ "Sist i presentationen kan du öppna apparna direkt i mobilens webbläsare, utan installation, eller läsa vidare i varje apps egen presentation.": "At the end of the presentation you can open the apps right in your phone's browser, without installing, or read more in each app's own presentation."
 });
