@@ -733,5 +733,16 @@ I18N.add({
  "– webbläsaren stoppar alla anrop ut": "– the browser blocks all outgoing requests",
  "Spara lösenordet till backupen i din lösenordshanterare – det finns aldrig i filen, och utan det öppnas den inte.": "Save the backup password in your password manager – it is never in the file, and without it the file does not open.",
  "Enda undantaget: fotbollsappen hämtar resultat från en enda källa – aldrig med din data. Spara lösenordet till backupen i din lösenordshanterare – det finns aldrig i filen, och utan det öppnas den inte.": "The only exception: the football app fetches results from a single source – never with your data. Save the backup password in your password manager – it is never in the file, and without it the file does not open.",
- "Enda undantaget: appen hämtar resultat från en enda källa – aldrig med din data. Spara lösenordet till backupen i din lösenordshanterare – det finns aldrig i filen, och utan det öppnas den inte.": "The only exception: the app fetches results from a single source – never with your data. Save the backup password in your password manager – it is never in the file, and without it the file does not open."
+ "Enda undantaget: appen hämtar resultat från en enda källa – aldrig med din data. Spara lösenordet till backupen i din lösenordshanterare – det finns aldrig i filen, och utan det öppnas den inte.": "The only exception: the app fetches results from a single source – never with your data. Save the backup password in your password manager – it is never in the file, and without it the file does not open.",
+ "Vanliga appar vill för mycket": "Typical apps want too much",
+ "Konto, reklam, avgifter och din data på deras server. Mina appar löser just det.": "Accounts, ads, fees and your data on their server. My apps solve exactly that.",
+ "Dubbletter och premiumvägg": "Duplicates and a paywall",
+ "En officiell källa, gratis": "One official source, free",
+ "Kräver bankkoppling": "Requires a bank connection",
+ "Planera månaden, ingen bank": "Plan the month, no bank",
+ "Nyheter, spel och notiser": "News, betting and notifications",
+ "Tabell och matcher, inget mer": "Table and matches, nothing more",
+ "Prenumeration och ljudbibliotek": "Subscription and sound library",
+ "Skriv ner det och släpp det": "Write it down and let it go",
+ "Gratis, utan konto, utan reklam – och din data lämnar aldrig telefonen.": "Free, no account, no ads – and your data never leaves your phone."
 });
