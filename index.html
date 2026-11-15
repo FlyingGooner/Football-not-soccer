@@ -116,7 +116,13 @@
     </details>
 
     <details class="set-group-wrap" id="g-general">
-      <summary class="set-group"><span class="set-gtitle">Allmänt</span><span class="set-hint">Data, hjälp</span></summary>
+      <summary class="set-group"><span class="set-gtitle">Allmänt</span><span class="set-hint">Språk, data, hjälp</span></summary>
+      <details class="card set-sec" id="card-lang">
+        <summary class="sec-sum"><span class="set-title">Språk</span><span class="set-hint" id="hint-lang"></span></summary>
+        <div class="set-body">
+          <label class="field"><span>Språk</span><select id="s-lang"></select></label>
+        </div>
+      </details>
       <details class="card set-sec" id="card-data">
         <summary class="sec-sum"><span class="set-title">Data</span><span class="set-hint">Backup, import, radera</span></summary>
         <div class="set-body">
@@ -135,7 +141,7 @@
           <div class="actions"><button type="button" class="btn text danger" id="reset">Radera all data</button></div>
         </div>
       </details>
-      <details class="card set-sec help" id="card-help">
+      <details class="card set-sec help" id="card-help" lang="sv" data-no-tr>
         <summary class="sec-sum"><span class="set-title">Hjälp och manual</span><span class="set-hint">Så funkar appen</span></summary>
         <div class="set-body">
           <details><summary>Matcher och tabell</summary>
@@ -151,11 +157,38 @@
             <p>Det finns Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Allsvenskan, Champions League, Europa League, Conference League, VM, EM, Copa América, Afrikanska mästerskapen och Gold Cup. Svep i sidled på Tabell för att byta liga och på Matcher för att byta flik.</p></details>
           <details><summary>Matcher och live</summary>
             <p>Tryck på en spelad match för att se målskyttarna, på en pågående även gula och röda kort. Under pågående match uppdateras ställningen var 20:e sekund medan appen är öppen. Övrig data hämtas bara igen när en match har börjat.</p></details>
+          <details><summary>Språk</summary>
+            <p>Första gången väljer du språk (Svenska eller English) överst i välkomstrutan. Byt senare under Inställningar → Allmänt → Språk. Lag- och liganamn kommer från ESPN och är desamma på båda språken.</p></details>
           <details><summary>Offline och data</summary>
             <p>Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.</p>
             <p>Under Inställningar → Data sparar du en krypterad backup-fil med följda lag, favorit och liga. Matchdata ingår inte, den hämtas igen. Skapa slumpmässigt lösenord fyller i ett starkt lösenord som du kan kopiera – spara det i en lösenordshanterare.</p>
             <p>Backup-lösenordet sparas på enheten första gången du skriver det (när du sparar eller läser in en backup). Sedan sparas backup med ett tryck, utan fråga. Lösenordet ligger bara på den här enheten, aldrig i backup-filen, och filen är lika krypterad som förut. Bockar du i Visa lösenord räcker det att skriva lösenordet en gång. Under Inställningar → Data kan du Visa och Byta lösenordet, eller bocka ur Kom ihåg backup-lösenordet – då glöms det och appen frågar varje gång. Använd ett nytt lösenord som du inte har någon annanstans: det sparas oskyddat på den här enheten. Tryck Skapa slumpmässigt lösenord och spara det i din lösenordshanterare. Behåll lösenordet i din lösenordshanterare – utan det går backupen inte att öppna på en ny telefon.</p>
-            <p>Appen är låst tills du har valt ett lösenord för dina backup-filer – första gången, efter Radera all data och så länge inget lösenord är sparat. Har du en backup-fil kan du läsa in den i stället; lösenordet som öppnar den sparas. Appen samlar ingen data – lösenordet är bara en nyckel som skyddar dina backuper. Läser du in en backup som det sparade lösenordet låser upp står det i sammanfattningen; passar det inte frågar appen efter lösenordet för den filen.</p></details>
+            <p>Appen är låst tills du har valt språk och ett lösenord för dina backup-filer – första gången, efter Radera all data och så länge inget lösenord är sparat. Har du en backup-fil kan du läsa in den i stället; lösenordet som öppnar den sparas. Appen samlar ingen data – lösenordet är bara en nyckel som skyddar dina backuper. Läser du in en backup som det sparade lösenordet låser upp står det i sammanfattningen; passar det inte frågar appen efter lösenordet för den filen.</p></details>
+        </div>
+      </details>
+      <details class="card set-sec help" id="card-help-en" lang="en" data-no-tr>
+        <summary class="sec-sum"><span class="set-title">Help and manual</span><span class="set-hint">How the app works</span></summary>
+        <div class="set-body">
+          <details><summary>Matches and table</summary>
+            <p>Choose Premier League, LaLiga, Serie A or Champions League with the buttons at the top. Under Matches there are the tabs Current (live and today&#x27;s matches), Upcoming and Played, under Table the whole table.</p>
+            <p>The list fills the screen. Show more shows more matches and fetches another week when needed.</p></details>
+          <details><summary>Follow a team</summary>
+            <p>Choose teams (under Following, Favourite or Settings → Teams) shows the leagues. Tap a league, then + to follow a team and ☆ to make it your favourite. If you tap a team in the table it is shown as under Favourite – there you follow it with + and make it your favourite with ☆. At most eight teams can be followed.</p>
+            <p>Favourite (in the middle of the menu) shows the favourite team&#x27;s next and latest match in all competitions and the form in the last five league matches. Show more opens more matches. The app opens on the same tab next time.</p></details>
+          <details><summary>Following</summary>
+            <p>Following shows all followed teams: at the top the badges (tap to show only one team), live matches and a card per team with the upcoming and latest played match. Tap a team name anywhere in the app (table, matches, team card) to see the team as under Favourite. ← in the team row (or Back) takes you back where you were. Back goes through the tabs you have visited; the app closes only where you started. Tap Upcoming or Played for more matches. Under Settings → Teams ★ makes a team your favourite and ✕ stops following it.</p></details>
+          <details><summary>Move cards</summary>
+            <p>Under Settings → Appearance → Leagues and card order you choose which leagues and competitions show in the league picker and in which order, and the order of the cards under Favourite. ↑ ↓ moves, ● shows and ○ hides. Reset restores the default.</p>
+            <p>There are Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Allsvenskan, Champions League, Europa League, Conference League, World Cup, Euros, Copa América, Africa Cup of Nations and Gold Cup. Swipe sideways on Table to change league and on Matches to change tab.</p></details>
+          <details><summary>Matches and live</summary>
+            <p>Tap a played match to see the scorers, and a live one to also see yellow and red cards. During a live match the score updates every 20 seconds while the app is open. Other data is only fetched again when a match has started.</p></details>
+          <details><summary>Language</summary>
+            <p>The first time, you choose the language (Svenska or English) at the top of the welcome box. Change it later under Settings → General → Language. Team and league names come from ESPN and are the same in both languages.</p></details>
+          <details><summary>Offline and data</summary>
+            <p>The latest fetched data is saved and shown offline, with the time of the latest update. Match data is fetched from ESPN directly from your device. ESPN sees your IP address and which leagues and teams are fetched, but no account and no cookies.</p>
+            <p>Under Settings → Data you save an encrypted backup file with followed teams, favourite and league. Match data is not included, it is fetched again. Create random password fills in a strong password you can copy – save it in a password manager.</p>
+            <p>The backup password is stored on the device the first time you enter it (when you save or restore a backup). After that a backup takes one tap, without a question. The password is only on this device, never in the backup file, and the file is just as encrypted as before. With Show password ticked you only need to type the password once. Under Settings → Data you can Show and Change the password, or untick Remember the backup password – it is then forgotten and the app asks every time. Use a new password you do not use anywhere else: it is stored unprotected on this device. Tap Create random password and save it in your password manager. Keep the password in your password manager – without it the backup cannot be opened on a new phone.</p>
+            <p>The app is locked until you have chosen a language and a password for your backup files – the first time, after Delete all data and as long as no password is saved. If you have a backup file you can restore it instead; the password that opens it is saved. The app collects no data – the password is just a key that protects your backups. If you restore a backup that the saved password unlocks, the summary says so; if it does not fit, the app asks for the password for that file.</p></details>
         </div>
       </details>
       <div class="actions center"><button type="button" class="btn tonal" id="install" hidden>Installera appen</button></div>
@@ -218,6 +251,8 @@
 
 <div id="snackbar" role="status" aria-live="polite" hidden><span id="snack-text"></span><button type="button" class="btn text" id="snack-action"></button></div>
 
+<script src="i18n.js"></script>
+<script src="i18n-en.js"></script>
 <script src="version.js"></script>
 <script src="backup.js"></script>
 <script src="store.js"></script>

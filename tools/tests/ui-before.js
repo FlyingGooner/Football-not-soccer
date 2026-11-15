@@ -1,6 +1,7 @@
 // Runs before the app in the UI tests (tools/test.ps1): a fake fetch with ESPN-shaped data, so tests never use the net.
 // Every call is recorded in self.__calls ({ url, opts }) for the security tests.
 (() => {
+  try { if (!localStorage.getItem('fns.lang')) localStorage.setItem('fns.lang', 'sv'); } catch { /* blocked */ }   // testerna kör på svenska
   const P = { 'eng.1': 100, 'esp.1': 200, 'ita.1': 300 };
   const day = 864e5, now = Date.now();
   self.__calls = [];

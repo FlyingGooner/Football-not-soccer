@@ -331,3 +331,9 @@ ul.mlist li.tap { cursor: pointer; }
 .pwd-head .btn, .pwd-head .link { min-height: 40px; padding: 0 12px; }
 .pwd-card .pwd-show { margin: 2px 8px 6px 0; background: var(--surface); }
 .pwd-card .pwd-note { margin: 2px 8px 0 0; }
+/* Språkval i välkomstrutan och Hjälp på valt språk (2026-11-15) */
+.segs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--outline); border-radius: var(--r-md); overflow: hidden; margin: 8px 0 12px; }
+.seg { min-height: 40px; border: 0; background: none; font: inherit; font-weight: 500; color: var(--on-surface); }
+.seg + .seg { border-left: 1px solid var(--outline); }
+.seg.on { background: var(--primary-container); color: var(--on-primary-container); }
+html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { display: none; }
