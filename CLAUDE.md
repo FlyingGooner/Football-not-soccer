@@ -14,3 +14,4 @@ Mobil-först PWA. Spec: `docs/SPEC.md` (läs bara berört avsnitt). Arbetsflöde
 - Ny fil som appen behöver → `ASSETS` i `sw.js`. Version bara i `version.js` (sätts av `release.ps1`). Relativa sökvägar.
 - Tester: `tools/tests/` – `unit.test.js` (store.js), `ui.test.js` mot fejkad ESPN i `ui-before.js`. Testerna får aldrig använda nätet.
 - Manualen: `docs/MANUAL.md` och Hjälp-kortet (`card-help`) har samma text – ändra båda; likaså `docs/MANUAL.en.md` och `card-help-en`.
+- HTML-fil (2026-11-15): `Football-not-soccer.html` = hela appen i en fil (länken Ladda ner (HTML) under Inställningar). Byggs av `tools/build-single.mjs` (Node, samma regler som `build-single.ps1`); GitHub Action `single-html.yml` bygger om den vid push. Bygg om den själv i varje commit: `node tools/build-single.mjs --out Football-not-soccer.html`.

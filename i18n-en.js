@@ -3,12 +3,13 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  'Ladda ner (HTML)': 'Download (HTML)',
+  'Ladda ner (HTML) ger hela appen i en enda fil som du öppnar i webbläsaren, även utan nät. Den sparar sin data för sig – flytta data dit med en backup-fil.': 'Download (HTML) gives the whole app in one file that you open in the browser, even offline. It keeps its own data – move data there with a backup file.',
   'Alla mina appar': 'All my apps',
   'Öppna': 'Open',
   'Ladda ner (zip)': 'Download (zip)',
   ' (den här)': ' (this one)',
   'Spara som app: Android (Chrome) – tryck ⋮ och välj Installera app. iPhone (Safari) – tryck Dela och välj Lägg till på hemskärmen.': 'Save as an app: Android (Chrome) – tap ⋮ and choose Install app. iPhone (Safari) – tap Share and choose Add to Home Screen.',
-  'Köra lokalt: på GitHub, tryck Code → Download ZIP, packa upp och starta en lokal webbserver i mappen, t.ex. python -m http.server.': 'Run locally: on GitHub, tap Code → Download ZIP, unzip it and start a local web server in the folder, e.g. python -m http.server.',
   'Vill du köra appen lokalt på datorn?': 'Want to run the app locally on your computer?',
   'Ladda ner appen från GitHub (zip)': 'Download the app from GitHub (zip)',
   'Packa upp och starta en lokal webbserver i mappen, t.ex. python -m http.server, och öppna adressen den visar.': 'Unzip it and start a local web server in the folder, e.g. python -m http.server, then open the address it shows.',

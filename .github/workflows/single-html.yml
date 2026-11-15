@@ -1,0 +1,23 @@
+# Bygger Football-not-soccer.html (hela appen i en fil, länken Ladda ner (HTML) i Inställningar) vid varje push och committar den om den ändrats.
+# GITHUB_TOKEN-pushar startar inga nya körningar, så det blir ingen loop.
+name: Bygg HTML-fil
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['Football-not-soccer.html']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node tools/build-single.mjs --out Football-not-soccer.html
+      - run: |
+          if git diff --quiet -- Football-not-soccer.html && git ls-files --error-unmatch Football-not-soccer.html >/dev/null 2>&1; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add Football-not-soccer.html
+          git commit -m "Bygg Football-not-soccer.html"
+          git push
