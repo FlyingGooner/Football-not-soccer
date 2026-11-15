@@ -526,7 +526,7 @@ I18N.add({
  "Därför från start": "Why from the start",
  "Valt från början blir backup ett enda tryck – telefonen kommer ihåg lösenordet. Har du redan en backup läser du in den i stället.": "Chosen from the start, a backup is a single tap – the phone remembers the password. If you already have a backup, restore it instead.",
  "Låt appen välja": "Let the app choose",
- "16 slumpade tecken tar längre tid att gissa än universum funnits, även med 1 000 grafikkort. Sommar2024! faller på en dag.": "16 random characters take longer to guess than the universe has existed, even with 1,000 graphics cards. Summer2024! falls in a day.",
+ "Backupen låses med AES-256, och varje gissning måste först räkna 600 000 varv (PBKDF2-SHA256). Det gör varje försök extremt långsamt: 16 slumpade tecken tar längre tid att gissa än universum funnits, även med 1 000 grafikkort. Sommar2024! faller ändå på en dag – det finns i gissningslistorna.": "The backup is locked with AES-256, and every guess must first compute 600,000 rounds (PBKDF2-SHA256). That makes each attempt extremely slow: 16 random characters take longer to guess than the universe has existed, even with 1,000 graphics cards. Summer2024! still falls in a day – it is in the guessing lists.",
  "Ny telefon": "New phone",
  "Spara backup-fil med ett tryck, med påminnelse varje månad. På nya telefonen: läs in filen, skriv lösenordet och tryck Ersätt.": "Save a backup file with one tap, with a reminder every month. On the new phone: restore the file, enter the password and tap Replace.",
  "Spara lösenordet": "Save the password",
