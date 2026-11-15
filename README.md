@@ -46,13 +46,30 @@ Football apps have become news feeds with results somewhere further down. This a
 
 This app holds only which teams you follow – but even that is nobody else's business. Here is why that is safer than in a typical app:
 
-| Risk | Typical app with an account | This app |
-|---|---|---|
-| **Hacked company database** – the most common way sensitive data leaks | Your data sits in a database with millions of others – a prime target | There is no database. Your settings are only in your phone, so an attacker would have to get into *your* phone |
-| **Your data is sold or shared** | Common in free apps, and many paid ones share with partners for ads and analytics | No account, no analytics, no ads, no trackers – and the browser technically blocks every request out except match results from ESPN |
-| **Employees or partners read it** | Possible – the company holds the data | Nobody but you has it |
-| **The company shuts down or is sold** | Your data goes with it | The app and your data stay on your phone |
-| **Backup in the cloud** | Readable by the company | Encrypted with AES-256 and your password before it leaves the phone |
+**Hacked company database** – the most common way sensitive data leaks
+
+- Typical app with an account: Your data sits in a database with millions of others – a prime target
+- **This app:** There is no database. Your settings are only in your phone, so an attacker would have to get into *your* phone
+
+**Your data is sold or shared**
+
+- Typical app with an account: Common in free apps, and many paid ones share with partners for ads and analytics
+- **This app:** No account, no analytics, no ads, no trackers – and the browser technically blocks every request out except match results from ESPN
+
+**Employees or partners read it**
+
+- Typical app with an account: Possible – the company holds the data
+- **This app:** Nobody but you has it
+
+**The company shuts down or is sold**
+
+- Typical app with an account: Your data goes with it
+- **This app:** The app and your data stay on your phone
+
+**Backup in the cloud**
+
+- Typical app with an account: Readable by the company
+- **This app:** Encrypted with AES-256 and your password before it leaves the phone
 
 **Is it the safest possible way?** For personal data like this, keeping it only on your own device, with no server and an encrypted backup, is as safe as a practical app gets – there is simply nothing central to steal. It is not magic, though: your phone itself must be locked and kept updated, the backup password must be strong, and you trust that the code served from GitHub Pages is the published, reviewed code (it is all open on GitHub for anyone to check).
 
