@@ -94,7 +94,7 @@ I18N.add({
  "Lösenordet skickas ingenstans och appen samlar ingen data. Det är bara nyckeln som låser dina backup-filer.": "The password is sent nowhere and the app collects no data. It is just the key that locks your backup files.",
  "Ingen server räddar dig": "No server will save you",
  "Datan finns bara i telefonen. Tappar du den, eller rensar webbläsaren, är backup-filen det enda som finns kvar.": "The data is only in the phone. If you lose it, or clear the browser, the backup file is all that is left.",
- "Därför från start": "Hence from the start",
+ "Därför från start": "Why from the start",
  "Väljs lösenordet först när något redan gått fel är det för sent. Valt från början blir backup ett enda tryck.": "If the password is chosen only when something has already gone wrong, it is too late. Chosen from the start, a backup is a single tap.",
  "Har du redan en backup?": "Already have a backup?",
  "Läs in den i stället. Lösenordet som öppnar filen sparas, och allt är tillbaka.": "Restore it instead. The password that opens the file is saved, and everything is back.",
@@ -518,4 +518,18 @@ I18N.add({
  "Låst även i molnet": "Locked even in the cloud",
  "Backupen krypteras med AES-256 och ditt lösenord innan den lämnar telefonen. Molntjänsten ser bara obegriplig data.": "The backup is encrypted with AES-256 and your password before it leaves the phone. The cloud service only sees unreadable data.",
  "Ärligt: inget är 100 % säkert – lås telefonen, håll den uppdaterad och välj ett starkt lösenord. Men utan server finns inget centralt att stjäla.": "Honestly: nothing is 100 % safe – lock your phone, keep it updated and choose a strong password. But with no server there is nothing central to steal."
+});
+// Bilden "Låst backup" (2026-11-15, ersätter fyra bilder)
+I18N.add({
+ "Ett lösenord från start – sedan ett tryck": "One password from the start – then one tap",
+ "Ingen inloggning, bara nyckeln till dina backup-filer. Ingen server kan rädda datan, så backupen är din livlina.": "No login, just the key to your backup files. No server can rescue the data, so the backup is your lifeline.",
+ "Därför från start": "Why from the start",
+ "Valt från början blir backup ett enda tryck – telefonen kommer ihåg lösenordet. Har du redan en backup läser du in den i stället.": "Chosen from the start, a backup is a single tap – the phone remembers the password. If you already have a backup, restore it instead.",
+ "Låt appen välja": "Let the app choose",
+ "16 slumpade tecken tar längre tid att gissa än universum funnits, även med 1 000 grafikkort. Sommar2024! faller på en dag.": "16 random characters take longer to guess than the universe has existed, even with 1,000 graphics cards. Summer2024! falls in a day.",
+ "Ny telefon": "New phone",
+ "Spara backup-fil med ett tryck, med påminnelse varje månad. På nya telefonen: läs in filen, skriv lösenordet och tryck Ersätt.": "Save a backup file with one tap, with a reminder every month. On the new phone: restore the file, enter the password and tap Replace.",
+ "Spara lösenordet": "Save the password",
+ "Det finns aldrig i filen. Utan det öppnas backupen inte – inte ens av utvecklaren. Lägg det i din lösenordshanterare.": "It is never in the file. Without it the backup cannot be opened – not even by the developer. Put it in your password manager.",
+ "Krypteringen skyddar filen när den lämnar telefonen. I telefonen skyddar skärmlåset.": "The encryption protects the file when it leaves the phone. In the phone, the screen lock protects it."
 });

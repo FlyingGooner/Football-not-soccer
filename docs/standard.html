@@ -76,59 +76,16 @@
   </section>
 
   <section>
-    <span class="eyebrow">Första gången</span>
-    <h2>Varför appen ber om ett lösenord direkt</h2>
-    <p class="lead">Inget konto – men en nyckel. Appen är låst tills du har valt ett lösenord för dina backup-filer.</p>
-    <div class="cols">
-      <div class="card"><div class="ic" aria-hidden="true">🗝️</div><h3>Det är ingen inloggning</h3><p>Lösenordet skickas ingenstans och appen samlar ingen data. Det är bara nyckeln som låser dina backup-filer.</p></div>
-      <div class="card"><div class="ic" aria-hidden="true">📵</div><h3>Ingen server räddar dig</h3><p>Datan finns bara i telefonen. Tappar du den, eller rensar webbläsaren, är backup-filen det enda som finns kvar.</p></div>
-      <div class="card"><div class="ic" aria-hidden="true">⏰</div><h3>Därför från start</h3><p>Väljs lösenordet först när något redan gått fel är det för sent. Valt från början blir backup ett enda tryck.</p></div>
-      <div class="card"><div class="ic" aria-hidden="true">📂</div><h3>Har du redan en backup?</h3><p>Läs in den i stället. Lösenordet som öppnar filen sparas, och allt är tillbaka.</p></div>
-    </div>
-  </section>
-
-  <section>
-    <span class="eyebrow">Så går backupen till</span>
-    <h2>Från första start till ny telefon</h2>
-    <div class="flow">
-      <div class="fbox"><b>1 · Välj lösenord</b>Första gången: tryck Skapa slumpmässigt lösenord (eller skriv ett eget) och spara det i din lösenordshanterare. Telefonen kommer ihåg det.</div>
-      <div class="farr" aria-hidden="true">↓</div>
-      <div class="fbox"><b>2 · Spara backup-fil</b>Inställningar → Data → Spara backup-fil. Ett tryck, ingen fråga. Filen är krypterad (AES-256) – lägg den i molnet, mejlen eller på datorn.</div>
-      <div class="farr" aria-hidden="true">↓</div>
-      <div class="fbox"><b>3 · Påminnelse</b>Appen säger till varje månad om det var länge sedan du sparade.</div>
-      <div class="farr" aria-hidden="true">↓</div>
-      <div class="fbox"><b>4 · Läs in på ny telefon</b>Läs in backup-fil, skriv lösenordet, se sammanfattningen och tryck Ersätt. Ångra finns direkt efteråt.</div>
-    </div>
-    <p class="note">Lösenordet finns aldrig i filen. Utan det går backupen inte att öppna – inte ens av oss.</p>
-  </section>
-
-  <section>
     <span class="eyebrow">Låst backup</span>
-    <h2>Varför backupen alltid har lösenord</h2>
-    <p class="lead">Backup-filen kan hamna hos någon annan. Då är enda vägen in att gissa lösenordet.</p>
-    <div class="flow">
-      <div class="fbox"><b>🏦 Bankens lås – och bromsade gissningar</b>AES-256, som banker använder. Även ett av världens snabbaste grafikkort hinner bara ~10 000 gissningar i sekunden.</div>
-      <div class="fbox"><b>🎲 Slumpade tecken – hur långt?</b>Tid att gissa sig igenom alla kombinationer:
-        <table class="cmp">
-          <tr><th>Tecken</th><th>1 grafikkort</th><th>1 000 kort</th></tr>
-          <tr><td>8</td><td>300 år</td><td>4 månader</td></tr>
-          <tr><td>10</td><td>1 miljon år</td><td>1 000 år</td></tr>
-          <tr><td><b>16 (appens)</b></td><td colspan="2">längre än universum funnits</td></tr>
-        </table></div>
-      <div class="fbox"><b>⚠️ Bara om tecknen är slumpade</b>Ord, namn och årtal gissas först: Sommar2024! har 11 tecken men faller på en dag.</div>
-    </div>
-    <p class="note">Uppskattning: slumpade bokstäver och siffror. Lösenordet finns aldrig i filen.</p>
-  </section>
-
-  <section>
-    <span class="eyebrow">Smidigt ändå</span>
-    <h2>Säkert utan att vara krångligt</h2>
+    <h2>Ett lösenord från start – sedan ett tryck</h2>
+    <p class="lead">Ingen inloggning, bara nyckeln till dina backup-filer. Ingen server kan rädda datan, så backupen är din livlina.</p>
     <div class="cols">
-      <div class="card"><div class="ic" aria-hidden="true">🔑</div><h3>Kommer ihåg lösenordet</h3><p>Appen sparar lösenordet i telefonen första gången. Sedan sparas backup med ett tryck. Det går att stänga av.</p></div>
-      <div class="card"><div class="ic" aria-hidden="true">📱</div><h3>Varför det är rimligt</h3><p>Krypteringen skyddar filen när den lämnar telefonen. Den som redan har din olåsta telefon ser ändå allt i appen – där skyddar telefonens egen skärmlås.</p></div>
-      <div class="card"><div class="ic" aria-hidden="true">🎲</div><h3>Eller låt appen välja</h3><p>Ett starkt slumpat lösenord med ett tryck, som lösenordshanteraren kan spara. Eget lösenord måste ha minst 8 tecken, stor och liten bokstav, siffra och specialtecken.</p></div>
-      <div class="card"><div class="ic" aria-hidden="true">⚠️</div><h3>Ha det någonstans</h3><p>Utan lösenordet öppnas backupen inte på en ny telefon – inte ens av oss. Spara det i din lösenordshanterare.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🗝️</div><h3>Därför från start</h3><p>Valt från början blir backup ett enda tryck – telefonen kommer ihåg lösenordet. Har du redan en backup läser du in den i stället.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">🎲</div><h3>Låt appen välja</h3><p>16 slumpade tecken tar längre tid att gissa än universum funnits, även med 1 000 grafikkort. Sommar2024! faller på en dag.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">📲</div><h3>Ny telefon</h3><p>Spara backup-fil med ett tryck, med påminnelse varje månad. På nya telefonen: läs in filen, skriv lösenordet och tryck Ersätt.</p></div>
+      <div class="card"><div class="ic" aria-hidden="true">⚠️</div><h3>Spara lösenordet</h3><p>Det finns aldrig i filen. Utan det öppnas backupen inte – inte ens av utvecklaren. Lägg det i din lösenordshanterare.</p></div>
     </div>
+    <p class="note">Krypteringen skyddar filen när den lämnar telefonen. I telefonen skyddar skärmlåset.</p>
   </section>
 
   <section>
