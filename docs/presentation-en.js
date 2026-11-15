@@ -746,7 +746,7 @@ I18N.add({
  "Skriv ner det och släpp det": "Write it down and let it go",
  "Gratis, utan konto, utan reklam – och din data lämnar aldrig telefonen.": "Free, no account, no ads – and your data never leaves your phone.",
  "Konto krävs, användarinlagda dubbletter, reklam och premiumvägg för det viktigaste.": "Account required, user-entered duplicates, ads and a paywall for what matters.",
- "Labbanalyserad data från Livsmedelsverket, ett tryck per måltid, egna rätter i matlådor.": "Lab-analysed data from the Swedish Food Agency, one tap per meal, your own dishes in lunch boxes.",
+ "Enkelt eller noggrant – du väljer: färdiga schablonrätter i tre lätta nivåer, eller exakt per livsmedel med data byggd på Livsmedelsverkets databas.": "Simple or detailed – your choice: standard dishes in three easy levels, or exact per food with data built on the Swedish Food Agency's database.",
  "Vill koppla till banken, sorterar varje kaffe och kan sälja insikter om ditt köpbeteende.": "Want to connect to your bank, sort every coffee and may sell insights about your spending.",
  "Planera månad för månad, se var det blir tight framåt – utan bankkoppling.": "Plan month by month, see where things get tight ahead – no bank connection.",
  "Nyheter, spelreklam, notiser och videor i vägen för det du ville se.": "News, betting ads, notifications and videos in the way of what you wanted to see.",
