@@ -674,5 +674,16 @@ I18N.add({
  "Små appar, stora behov": "Small apps, big needs",
  "stora behov": "big needs",
  "stora behov.": "big needs.",
- "Hoppa till installation ›": "Jump to installing ›"
+ "Hoppa till installation ›": "Jump to installing ›",
+ "Problemen med vanliga appar – och mitt alternativ": "The problems with typical apps – and my alternative",
+ "Vanliga appar vill för mycket: konto först, notiser, reklam och uppsälj, och din data på någon annans server. Mina fyra appar är byggda för att lösa just de problemen.": "Typical apps want too much: account first, notifications, ads and upselling, and your data on someone else's server. My four apps are built to solve exactly those problems.",
+ "Vanliga kaloriappar": "Typical calorie apps",
+ "Vanliga budgetappar": "Typical budget apps",
+ "Vanliga fotbollsappar": "Typical football apps",
+ "Vanliga stressappar": "Typical stress apps",
+ "→ Simple nutrition: en officiell källa, inga dubbletter, gratis.": "→ Simple nutrition: one official source, no duplicates, free.",
+ "→ Budget buddy: planera månaden, ingen bankkoppling.": "→ Budget buddy: plan the month, no bank connection.",
+ "→ Football, not soccer: tabell, matcher och ditt lag – inget mer.": "→ Football, not soccer: table, matches and your team – nothing more.",
+ "→ Stress control: skriv ner det, nästa steg, släpp tanken.": "→ Stress control: write it down, next step, let the thought go.",
+ "En fråga, ett bra svar, inget mer – gratis, utan konto och utan reklam.": "One question, one good answer, nothing more – free, no account and no ads."
 });
