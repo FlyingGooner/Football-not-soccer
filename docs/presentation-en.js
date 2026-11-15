@@ -506,3 +506,16 @@ I18N.add({
  "Nästa app – kanske din – byggs från samma mall: låst backup, din data hos dig, testad före varje version och genomtänkt från dag ett.": "The next app – maybe yours – is built from the same template: locked backup, your data with you, tested before every version and well thought out from day one.",
  "Den här appen är byggd från samma mall som alla mina appar. Här är vad det betyder för dig.": "This app is built from the same template as all my apps. Here is what that means for you."
 });
+// Bilden "Varför det är säkrare" (2026-11-15)
+I18N.add({
+ "Varför det är säkrare": "Why it is safer",
+ "Ingen server – inget att stjäla": "No server – nothing to steal",
+ "Känslig data läcker oftast på två sätt: ett företags databas hackas, eller företaget säljer och delar den. En budgetapp vet allt om din ekonomi, en hälsoapp din vikt, en familjeapp dina barns namn.": "Sensitive data usually leaks in two ways: a company's database is hacked, or the company sells and shares it. A budget app knows everything about your finances, a health app your weight, a family app your children's names.",
+ "Ingen databas att hacka": "No database to hack",
+ "Vanliga appar samlar miljontals användare på ett ställe – ett drömmål för hackare. Här finns datan bara i din telefon.": "Typical apps gather millions of users in one place – a dream target for hackers. Here the data is only in your phone.",
+ "Inget att sälja": "Nothing to sell",
+ "Inget konto, ingen analys, ingen reklam. Webbläsaren spärrar anrop ut, så datan kan inte skickas iväg – ens av misstag.": "No account, no analytics, no ads. The browser blocks requests out, so the data cannot be sent anywhere – not even by mistake.",
+ "Låst även i molnet": "Locked even in the cloud",
+ "Backupen krypteras med AES-256 och ditt lösenord innan den lämnar telefonen. Molntjänsten ser bara obegriplig data.": "The backup is encrypted with AES-256 and your password before it leaves the phone. The cloud service only sees unreadable data.",
+ "Ärligt: inget är 100 % säkert – lås telefonen, håll den uppdaterad och välj ett starkt lösenord. Men utan server finns inget centralt att stjäla.": "Honestly: nothing is 100 % safe – lock your phone, keep it updated and choose a strong password. But with no server there is nothing central to steal."
+});

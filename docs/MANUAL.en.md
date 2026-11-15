@@ -7,6 +7,14 @@ The same text is in the app under **Settings → General → Help and manual** w
 - Choose Premier League, LaLiga, Serie A or Champions League with the buttons at the top. Under Matches there are the tabs Current (live and today's matches), Upcoming and Played, under Table the whole table.
 - The list fills the screen. Show more shows more matches and fetches another week when needed.
 
+## Why your data is safe here
+- This app holds which teams you follow – not very sensitive, but nobody else's business. That should not end up with a company, an advertiser or a hacker.
+- **No server to hack.** Most big leaks happen when a company's database with millions of users' data is hacked. There is no such database here: your settings are only in your phone. Anyone who wants it has to get into your particular phone.
+- **Nothing to sell.** Many free apps – and paid ones too – make money from your data or share it with partners for ads and analytics. This app has no account, no analytics, no ads and no trackers. The browser also technically blocks every request out except the results from ESPN, so the data cannot be sent anywhere, not even by mistake.
+- **Locked backup.** The backup file is encrypted with AES-256 and your password. If you put it in the cloud, the cloud service only sees unreadable data.
+- **Open code.** All the code is public on GitHub and can be reviewed by anyone.
+- **Honestly: nothing is 100 % safe.** What remains is your own phone – lock it with a code and keep it updated – a weak backup password, and that the app's code on GitHub Pages is not changed by someone unauthorised. But for this kind of data there is no safer practical way than never letting it leave the phone.
+
 ## Follow a team
 
 - Choose teams (under Following, Favourite or Settings → Teams) shows the leagues. Tap a league, then + to follow a team and ☆ to make it your favourite. If you tap a team in the table it is shown as under Favourite – there you follow it with + and make it your favourite with ☆. At most eight teams can be followed.

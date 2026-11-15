@@ -42,6 +42,20 @@ Football apps have become news feeds with results somewhere further down. This a
 | 📴 **Offline** | The latest fetched data is shown with a timestamp when there is no network. |
 | 🌗 **Theme** | Light and dark, follows the phone's setting. |
 
+## Why your data is safer here 🛡️
+
+This app holds only which teams you follow – but even that is nobody else's business. Here is why that is safer than in a typical app:
+
+| Risk | Typical app with an account | This app |
+|---|---|---|
+| **Hacked company database** – the most common way sensitive data leaks | Your data sits in a database with millions of others – a prime target | There is no database. Your settings are only in your phone, so an attacker would have to get into *your* phone |
+| **Your data is sold or shared** | Common in free apps, and many paid ones share with partners for ads and analytics | No account, no analytics, no ads, no trackers – and the browser technically blocks every request out except match results from ESPN |
+| **Employees or partners read it** | Possible – the company holds the data | Nobody but you has it |
+| **The company shuts down or is sold** | Your data goes with it | The app and your data stay on your phone |
+| **Backup in the cloud** | Readable by the company | Encrypted with AES-256 and your password before it leaves the phone |
+
+**Is it the safest possible way?** For personal data like this, keeping it only on your own device, with no server and an encrypted backup, is as safe as a practical app gets – there is simply nothing central to steal. It is not magic, though: your phone itself must be locked and kept updated, the backup password must be strong, and you trust that the code served from GitHub Pages is the published, reviewed code (it is all open on GitHub for anyone to check).
+
 ## Privacy 🔒
 
 - **Only one data source.** The app fetches match data directly from ESPN's open API – nothing else. No analytics, no ads, no fonts or scripts from outside. This is also blocked technically with a Content Security Policy.

@@ -7,6 +7,14 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 - Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher finns flikarna Aktuella (pågående och dagens matcher), Kommande och Spelade, under Tabell hela tabellen.
 - Listan fyller skärmen. Visa fler visar fler matcher och hämtar en vecka till när det behövs.
 
+## Varför din data är säker här
+- Här finns vilka lag du följer – inte så känsligt, men ingen annans sak. Sådant ska inte hamna hos ett företag, en annonsör eller en hackare.
+- **Ingen server att hacka.** De flesta stora läckor sker när ett företags databas med miljontals användares uppgifter hackas. Här finns ingen sådan databas: dina inställningar finns bara i din telefon. Den som vill åt den måste komma åt just din telefon.
+- **Inget att sälja.** Många gratisappar – och även betalappar – tjänar pengar på din data eller delar den med partner för annonser och analys. Den här appen har inget konto, ingen analys, ingen reklam och inga spårare. Webbläsaren spärrar dessutom tekniskt alla anrop ut utom resultaten från ESPN, så datan kan inte skickas iväg ens av misstag.
+- **Låst backup.** Backup-filen krypteras med AES-256 och ditt lösenord. Lägger du den i molnet ser molntjänsten bara obegriplig data.
+- **Öppen kod.** All kod ligger öppet på GitHub och kan granskas av vem som helst.
+- **Ärligt: inget är 100 % säkert.** Det som återstår är din egen telefon – lås den med kod och håll den uppdaterad – ett svagt backup-lösenord, och att appens kod på GitHub Pages inte ändras av någon obehörig. Men för den här sortens uppgifter finns inget säkrare praktiskt sätt än att de aldrig lämnar telefonen.
+
 ## Följa ett lag
 
 - Välj lag (under Följer, Favorit eller Inställningar → Lag) visar ligorna. Tryck på en liga, sedan + för att följa ett lag och ☆ för att göra det till favorit. Trycker du på ett lag i tabellen visas laget som under Favorit – där följer du det med + och gör det till favorit med ☆. Högst åtta lag kan följas.
