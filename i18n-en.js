@@ -3,6 +3,10 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  'Välj egen kod': 'Choose your own code',
+  'Koden låser dina backup-filer och sparas på den här enheten.': 'The code locks your backup files and is stored on this device.',
+  'Spara kod': 'Save code',
+  'Din egen kod är sparad. Gamla backup-filer öppnas bara med den gamla koden.': 'Your own code is saved. Old backup files open only with the old code.',
   '🔑 Din kod': '🔑 Your code',
   'Kopiera': 'Copy',
   'Ny kod': 'New code',

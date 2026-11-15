@@ -80,9 +80,9 @@
   const PWD_MAX = 200;
   const BAD = 'Fel lösenord eller skadad fil.';
 
-  // '' = ok, otherwise the reason. Export rule (the user's choice): 8+ chars, lower and upper case letter, digit, special char.
+  // '' = ok, otherwise the reason. Export rule (2026-11-15: same as the generated code): 16+ chars, lower and upper case letter, digit, special char.
   function checkPassword(pwd) {
-    if (typeof pwd !== 'string' || pwd.length < 8) return 'Lösenordet måste ha minst 8 tecken.';
+    if (typeof pwd !== 'string' || pwd.length < 16) return 'Lösenordet måste ha minst 16 tecken.';
     if (pwd.length > PWD_MAX) return `Lösenordet får ha högst ${PWD_MAX} tecken.`;
     if (!/\p{Ll}/u.test(pwd) || !/\p{Lu}/u.test(pwd)) return 'Lösenordet måste ha både stor och liten bokstav.';
     if (!/\p{N}/u.test(pwd)) return 'Lösenordet måste ha en siffra.';
