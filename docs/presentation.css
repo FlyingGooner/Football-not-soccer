@@ -132,3 +132,4 @@ a.url { text-decoration: underline; }
 .deck > section:has(.sub) { padding-bottom: 96px; }
 .sub[hidden] { display: none; }
 @media print { .subnav { display: none; } .sub[hidden] { display: block; } }
+.cta + .cta { background: transparent; border: 1px solid #fff; color: #fff; margin-left: 8px; }
