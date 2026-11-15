@@ -704,5 +704,10 @@ I18N.add({
  "iPhone:": "iPhone:",
  "i Safari, tryck på Dela och välj Lägg till på hemskärmen.": "in Safari, tap Share and choose Add to Home Screen.",
  "Då startar appen som en vanlig app, även utan nät. Öppnade du länken i Messenger? Välj först Öppna i webbläsare.": "Then the app starts like a regular app, even offline. Opened the link in Messenger? Choose Open in browser first.",
- "Hoppa till apparna ›": "Jump to the apps ›"
+ "Hoppa till apparna ›": "Jump to the apps ›",
+ "Vad har jag ätit i dag – och hur går vikten? Ett tryck per måltid, kalorier när du vill.": "What have I eaten today – and how is my weight going? One tap per meal, calories when you want.",
+ "Går månaden ihop? Planera månad för månad – utan kvitton och utan bankkoppling.": "Does the month add up? Plan month by month – no receipts and no bank connection.",
+ "Hur gick det för mitt lag? Tabell och matcher live – inga nyheter, inget spel.": "How did my team do? Table and live matches – no news, no betting.",
+ "Vad snurrar i huvudet? Skriv ner det med nästa steg – och släpp tanken.": "What is on your mind? Write it down with the next step – and let it go.",
+ "Samma grund i alla: gör en sak bra, din data stannar i telefonen, snabbt i vardagen och liten kod som går att lita på.": "The same foundation in all: do one thing well, your data stays on the phone, quick in everyday use and small code you can trust."
 });
