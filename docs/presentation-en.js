@@ -695,5 +695,6 @@ I18N.add({
  "Din data är din": "Your data is yours",
  "Ingen server, inget konto. Webbläsaren stoppar alla anrop ut – även om koden skulle försöka.": "No server, no account. The browser blocks all outgoing requests – even if the code tried.",
  "Ett tryck sparar en backup-fil, låst med AES-256 och ditt lösenord. Varje gissning tar 600 000 beräkningar – låt appen välja lösenordet, så går det inte att knäcka.": "One tap saves a backup file, locked with AES-256 and your password. Every guess takes 600,000 computations – let the app pick the password and it cannot be cracked.",
- "Enda undantaget: fotbollsappen hämtar resultat från en enda källa – aldrig med din data.": "The only exception: the football app fetches results from a single source – never with your data."
+ "Enda undantaget: fotbollsappen hämtar resultat från en enda källa – aldrig med din data.": "The only exception: the football app fetches results from a single source – never with your data.",
+ "Ett tryck sparar en backup-fil, låst med ditt lösenord. Krypteringen är samma som banker och lösenordshanterare använder. Låt appen välja lösenordet, så går den inte att knäcka.": "One tap saves a backup file, locked with your password. The encryption is the same that banks and password managers use. Let the app pick the password and it cannot be cracked."
 });
