@@ -9,7 +9,8 @@
   const LANGS = { en: 'English', sv: 'Svenska' };
   const read = () => { try { const v = localStorage.getItem(KEY); return v && v[0] === '"' ? JSON.parse(v) : v; } catch { return null; } };   // "sv" (JSON) går också, t.ex. från testernas seed
   const chosen = () => read() in LANGS;
-  const guess = () => (/^sv\b/i.test(navigator.language || '') ? 'sv' : 'en');
+  let def = null;   // fast standardspråk (presentationerna: engelska); annars gissas det från telefonen
+  const guess = () => def || (/^sv\b/i.test(navigator.language || '') ? 'sv' : 'en');
   const lang = () => (chosen() ? read() : guess());
   const map = new Map();
   const pats = [], late = [];
@@ -227,7 +228,7 @@
     [/^Senaste backup: (.+)\. Spara en ny så att du inte tappar din data\.$/, 'Last backup: $1. Save a new one so you do not lose your data.'],
     [/^Senaste backup: (.+)$/, 'Last backup: $1'],
   ], true);
-  self.I18N = { LANGS, lang, chosen, guess, setLang, tr, add, start, ask, missing, setKey: (k) => { KEY = k; document.documentElement.lang = lang(); }, known: (x) => map.has(x) || enVals.has(x), locale: () => (lang() === 'en' ? 'en-GB' : 'sv-SE') };
+  self.I18N = { LANGS, lang, chosen, guess, setLang, tr, add, start, ask, missing, setKey: (k, d) => { KEY = k; if (d in LANGS) def = d; document.documentElement.lang = lang(); }, known: (x) => map.has(x) || enVals.has(x), locale: () => (lang() === 'en' ? 'en-GB' : 'sv-SE') };
   document.documentElement.lang = lang();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true }); else start();
 })();

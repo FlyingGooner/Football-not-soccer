@@ -117,3 +117,7 @@ pre em { color: var(--key-hi); font-style: normal; }
 .nav button:focus-visible { outline: 3px solid var(--key-hi); outline-offset: 2px; }
 .count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 @media print { .nav { display: none; } .deck > section[hidden] { display: flex; } .deck > section { min-height: 0; page-break-after: always; } }
+
+/* Språkknapp på första bilden (2026-11-15) */
+.lang-btn { position: absolute; top: 16px; right: 16px; z-index: 2; min-height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid currentColor; background: transparent; color: inherit; font: inherit; font-size: .9rem; cursor: pointer; opacity: .85; }
+.lang-btn:hover, .lang-btn:focus-visible { opacity: 1; }

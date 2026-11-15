@@ -1,108 +1,110 @@
 <div align="center">
 
-<img src="icons/icon-192.png" width="88" alt="Football, not soccer-ikon">
+<img src="icons/icon-192.png" width="88" alt="Football, not soccer icon">
 
 # Football, not soccer ⚽
 
-**Tabellen, matcherna och ditt lag – 16 ligor och turneringar i fickan.**
+**The table, the matches and your team – 16 leagues and tournaments in your pocket.**
 
-Inga nyheter, ingen reklam, inget konto. Bara det du vill veta:
-*hur ser tabellen ut, vad spelas härnäst och hur gick det för mitt lag?*
+No news, no ads, no account. Just what you want to know:
+*what does the table look like, what is played next and how did my team do?*
 
-### [▶ Öppna appen](https://flyinggooner.github.io/Football-not-soccer/)
+### [▶ Open the app](https://flyinggooner.github.io/Football-not-soccer/)
 
-[📱 Presentation av appen](https://flyinggooner.github.io/Football-not-soccer/docs/presentation.html) · [🛡️ Små appar, hög nivå](https://flyinggooner.github.io/Football-not-soccer/docs/standard.html)
+[📱 Presentation of the app](https://flyinggooner.github.io/Football-not-soccer/docs/presentation.html) · [🛡️ Small apps, high standard](https://flyinggooner.github.io/Football-not-soccer/docs/standard.html)
 
 </div>
 
 <p align="center">
-<img src="docs/screenshots/matches.png" width="200" alt="Matcher med pågående match">
-<img src="docs/screenshots/table.png" width="200" alt="Tabell med zoner">
-<img src="docs/screenshots/team.png" width="200" alt="Följt lag">
-<img src="docs/screenshots/team-dark.png" width="200" alt="Följt lag i mörkt tema">
+<img src="docs/screenshots/matches.png" width="200" alt="Matches with a live match">
+<img src="docs/screenshots/table.png" width="200" alt="Table with zones">
+<img src="docs/screenshots/team.png" width="200" alt="Followed team">
+<img src="docs/screenshots/team-dark.png" width="200" alt="Followed team in dark theme">
 </p>
-<p align="center"><sub>Påhittade matcher</sub></p>
+<p align="center"><sub>Made-up matches</sub></p>
 
-## Varför?
+## Why?
 
-Fotbollsappar har blivit nyhetsflöden med resultat någonstans längre ner. Den här appen gör tvärtom: öppna den och tabellen, nästa match och senaste resultatet syns direkt – utan att skrolla, utan notiser och utan inloggning. Välj ett lag om du vill följa just det laget.
+Football apps have become news feeds with results somewhere further down. This app does the opposite: open it and the table, the next match and the latest result show right away – without scrolling, without notifications and without logging in. Choose a team if you want to follow that particular team.
 
-## Funktioner
+## Features
 
 | | |
 |---|---|
-| 🏆 **Matcher** | Flikarna Aktuella, Kommande och Spelade. Svep för att byta flik eller liga. |
-| 📋 **Tabell** | Hela tabellen med zoner för Europa och nedflyttning, gruppspel i turneringar. |
-| 🌍 **Ligor** | Premier League, LaLiga, Serie A och Champions League som standard – välj bland 16 ligor och turneringar under Inställningar. |
-| ⭐ **Lagläge** | Tryck på ett lag i tabellen: nästa match med nedräkning, senaste match med V/O/F, lagets tabellrad och form – i alla turneringar laget spelar i. |
-| 🔴 **Live** | Ställning och matchminut, med tilläggstid, uppdateras var 20:e sekund under pågående matcher. |
-| ⚽ **Matchdetaljer** | Tryck på en match för målskyttar, straffar, självmål, gula och röda kort. |
-| 🔐 **Låst backup** | Spara dina inställningar som en fil som bara ditt lösenord öppnar. |
-| 📴 **Offline** | Senast hämtad data visas med tidsstämpel när nätet saknas. |
-| 🌗 **Tema** | Ljust och mörkt, följer telefonens inställning. |
+| 🏆 **Matches** | The tabs Current, Upcoming and Played. Swipe to change tab or league. |
+| 📋 **Table** | The whole table with zones for Europe and relegation, group stages in tournaments. |
+| 🌍 **Leagues** | Premier League, LaLiga, Serie A and Champions League by default – choose from 16 leagues and tournaments under Settings. |
+| ⭐ **Team mode** | Tap a team in the table: next match with a countdown, latest match with W/D/L, the team's table row and form – in every competition the team plays in. |
+| 🔴 **Live** | Score and match minute, with added time, updated every 20 seconds during live matches. |
+| ⚽ **Match details** | Tap a match for scorers, penalties, own goals, yellow and red cards. |
+| 🌐 **Language** | English or Swedish, chosen at the first start and changeable in Settings. |
+| 🔐 **Locked backup** | Save your settings as a file only your password opens. |
+| 📴 **Offline** | The latest fetched data is shown with a timestamp when there is no network. |
+| 🌗 **Theme** | Light and dark, follows the phone's setting. |
 
-## Integritet 🔒
+## Privacy 🔒
 
-- **Bara en datakälla.** Appen hämtar matchdata direkt från ESPN:s öppna API – inget annat. Ingen analys, inga annonser, inga typsnitt eller skript utifrån. Det spärras även tekniskt med en Content Security Policy.
-- **Inget konto, inga cookies.** Valt lag och senast hämtad data sparas bara i din webbläsare (`localStorage`).
-- **Ingen spårning åt ESPN.** Appen skickar inget om dig, inte ens sidans adress. ESPN ser, som alla webbplatser, din IP-adress.
+- **Only one data source.** The app fetches match data directly from ESPN's open API – nothing else. No analytics, no ads, no fonts or scripts from outside. This is also blocked technically with a Content Security Policy.
+- **No account, no cookies.** The chosen team and the latest fetched data are stored only in your browser (`localStorage`).
+- **No tracking for ESPN.** The app sends nothing about you, not even the page's address. ESPN, like every website, sees your IP address.
 
-> Anrop görs bara när du öppnar appen och under pågående matcher – aldrig i bakgrunden.
+> Requests are made only when you open the app and during live matches – never in the background.
 
-### Säkerhetstestad ✅
+### Security tested ✅
 
-Automatiska tester körs före varje ny version och varje uppladdning. Underkänt test = ingen release.
+Automatic tests run before every new version and every upload. Failed test = no release.
 
-**Säkerhetskontroll**
-- [x] **Bara appens egen kod körs** – webbläsaren blockerar allt annat.
-- [x] **Hämtar bara resultat från ESPN** – skickar inget om dig, och stoppar svar som är för långsamma eller för stora.
-- [x] **Din data stannar hos dig** – sparas bara i telefonen; appen rör bara sina egna uppgifter.
-- [x] **Fungerar utan nät** – med bara appens egna filer.
-- [x] **Låst backup** – bara ditt lösenord öppnar filen. Lösenordet sparas aldrig.
+**Security check**
+- [x] **Only the app's own code runs** – the browser blocks everything else.
+- [x] **Only fetches results from ESPN** – sends nothing about you, and stops responses that are too slow or too large.
+- [x] **Your data stays with you** – stored only in the phone; the app only touches its own data.
+- [x] **Works offline** – with only the app's own files.
+- [x] **Locked backup** – only your password opens the file. The password is never stored in the file.
 
-**Funktionstester**
-- [x] **Trasiga filer stoppas** – en backup från fel app, eller som någon ändrat i, läses inte in.
-- [x] **Inget innehåll kan bli kod** – allt visas som vanlig text.
-- [x] **Resultaten kontrolleras** – allt från ESPN granskas innan det visas; det som ser fel ut slängs.
-- [x] **Aldrig en blank skärm** – utan nät visas senast hämtade data.
-- [x] **Testas utan nät** – testerna använder påhittade matcher.
+**Function tests**
+- [x] **Broken files are stopped** – a backup from the wrong app, or one someone has changed, is not restored.
+- [x] **No content can become code** – everything is shown as plain text.
+- [x] **The results are checked** – everything from ESPN is checked before it is shown; anything that looks wrong is thrown away.
+- [x] **Never a blank screen** – without network the latest fetched data is shown.
+- [x] **Tested without network** – the tests use made-up matches.
 
-
-## Installera på mobilen
+## Install on your phone
 
 **Android (Chrome)**
-1. Öppna [appen](https://flyinggooner.github.io/Football-not-soccer/) i Chrome.
-2. Tryck på menyn **⋮** → **Installera app** (eller *Lägg till på startskärmen*).
+1. Open [the app](https://flyinggooner.github.io/Football-not-soccer/) in Chrome.
+2. Tap the menu **⋮** → **Install app** (or *Add to Home screen*).
 
 **iPhone (Safari)**
-1. Öppna [appen](https://flyinggooner.github.io/Football-not-soccer/) i Safari.
-2. Tryck på **Dela** → **Lägg till på hemskärmen**.
+1. Open [the app](https://flyinggooner.github.io/Football-not-soccer/) in Safari.
+2. Tap **Share** → **Add to Home Screen**.
 
-Versionsnumret syns uppe till höger i appen. Nya versioner hämtas automatiskt.
+The version number is shown at the top right of the app. New versions are fetched automatically.
 
-## För utvecklare
+## For developers
 
-Ren HTML, CSS och JavaScript – inga ramverk, inga beroenden, inget byggsteg för appen.
+Plain HTML, CSS and JavaScript – no frameworks, no dependencies, no build step for the app.
 
-**Köra lokalt:** servera mappen statiskt, t.ex. `python3 -m http.server 8080`, och öppna http://localhost:8080 (service workern kräver `localhost` eller HTTPS).
+**Run locally:** serve the folder statically, e.g. `python3 -m http.server 8080`, and open http://localhost:8080 (the service worker needs `localhost` or HTTPS).
 
-**Testfil:** `tools\build-single.ps1` bakar ihop appen till en enda fil, `dist/football-not-soccer.html`, som går att öppna direkt i webbläsaren eller skicka till någon (utan installation och offline).
+**Test file:** `tools\build-single.ps1` bakes the app into a single file, `dist/football-not-soccer.html`, which can be opened directly in the browser or sent to someone (without installation and offline).
 
-| Fil | Innehåll |
+| File | Contents |
 |---|---|
-| `index.html` | Appens markup |
-| `styles.css`, `app.js` | Stil, datakälla och logik |
-| `store.js` | Lagring i `localStorage` och validering av sparad data |
-| `version.js` | Versionsnummer (enda källan) |
-| `sw.js`, `manifest.webmanifest`, `icons/` | Installation som app (PWA) och offline |
-| `docs/SPEC.md` | Specifikation av funktioner och beteende |
-| `docs/presentation.html` | Fristående mobilpresentation av appen |
-| `docs/standard.html` | Små appar, hög nivå – det alla appar har gemensamt (synkas från mallen) |
-| `tools/build-single.ps1` | Bygger testfilen |
-| `tools/tests/` | Enhets- och flödestester (körs i headless Edge, körs automatiskt före varje release och push) |
-| `CLAUDE.md` | Regler för utveckling |
+| `index.html` | The app's markup |
+| `styles.css`, `app.js` | Style, data source and logic |
+| `store.js` | Storage in `localStorage` and validation of saved data |
+| `i18n.js`, `i18n-en.js` | Language support: the source text is Swedish; `i18n.js` (shared by all apps) translates what is drawn with the dictionary in `i18n-en.js` |
+| `version.js` | Version number (single source) |
+| `sw.js`, `manifest.webmanifest`, `icons/` | Installation as an app (PWA) and offline |
+| `docs/SPEC.md` | Specification of features and behaviour |
+| `docs/MANUAL.md`, `docs/MANUAL.en.md` | The manual in Swedish and English (the same text as Help in the app) |
+| `docs/presentation.html` | Stand-alone mobile presentation of the app (English by default, Swedish with the button on the first slide) |
+| `docs/standard.html` | Small apps, high standard – what all the apps have in common (synced from the template) |
+| `tools/build-single.ps1` | Builds the test file |
+| `tools/tests/` | Unit and flow tests (run in headless Edge, automatically before every release and push) |
+| `CLAUDE.md` | Rules for development |
 
-Publiceras till GitHub Pages från `main`.
+Published to GitHub Pages from `main`.
 
 ---
-<sub>Inofficiellt hobbyprojekt, inte kopplat till Premier League eller ESPN. Det heter fotboll.</sub>
+<sub>Unofficial hobby project, not affiliated with the Premier League or ESPN. It is called football.</sub>
