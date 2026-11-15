@@ -2,6 +2,17 @@
 // Nyckel = svensk textbit exakt som i sidan (utan kantblanksteg). Svenska är standard; knappen på första bilden byter språk.
 I18N.setKey("docs.lang", "sv");
 I18N.add({
+ "Välj en app och kom igång": "Pick an app and get started",
+ "Öppna": "Open",
+ "Om appen": "About",
+ "Mat och näring": "Food and nutrition",
+ "Ekonomi månad för månad": "Money month by month",
+ "Resultat och tabeller": "Results and tables",
+ "Släpp det som snurrar": "Let go of what's spinning",
+ "Lägg appen på hemskärmen": "Add the app to your home screen",
+ "Tryck på ⋮ och välj Installera app.": "Tap ⋮ and choose Install app.",
+ "I Safari: tryck på Dela och välj Lägg till på hemskärmen.": "In Safari: tap Share and choose Add to Home Screen.",
+ "Då startar den som en vanlig app, även utan nät. Öppnade du länken i Messenger? Välj först Öppna i webbläsare.": "Then it starts like a regular app, even offline. Opened the link in Messenger? First choose Open in browser.",
  "flyinggooner · Fotboll": "flyinggooner · Football",
  "Tabellen, matcherna och ditt lag – utan reklam, utan konto, utan brus.": "The table, the matches and your team – no ads, no account, no noise.",
  "Filosofi": "Philosophy",
