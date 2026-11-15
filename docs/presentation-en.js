@@ -709,5 +709,13 @@ I18N.add({
  "Går månaden ihop? Planera månad för månad – utan kvitton och utan bankkoppling.": "Does the month add up? Plan month by month – no receipts and no bank connection.",
  "Hur gick det för mitt lag? Tabell och matcher live – inga nyheter, inget spel.": "How did my team do? Table and live matches – no news, no betting.",
  "Vad snurrar i huvudet? Skriv ner det med nästa steg – och släpp tanken.": "What is on your mind? Write it down with the next step – and let it go.",
- "Samma grund i alla: gör en sak bra, din data stannar i telefonen, snabbt i vardagen och liten kod som går att lita på.": "The same foundation in all: do one thing well, your data stays on the phone, quick in everyday use and small code you can trust."
+ "Samma grund i alla: gör en sak bra, din data stannar i telefonen, snabbt i vardagen och liten kod som går att lita på.": "The same foundation in all: do one thing well, your data stays on the phone, quick in everyday use and small code you can trust.",
+ "Simple nutrition löser det": "Simple nutrition solves it",
+ "Budget buddy löser det": "Budget buddy solves it",
+ "Football, not soccer löser det": "Football, not soccer solves it",
+ "Stress control löser det": "Stress control solves it",
+ "En officiell källa, inga dubbletter, gratis.": "One official source, no duplicates, free.",
+ "Planera månaden, ingen bankkoppling.": "Plan the month, no bank connection.",
+ "Tabell, matcher och ditt lag – inget mer.": "Table, matches and your team – nothing more.",
+ "Skriv ner det, nästa steg, släpp tanken.": "Write it down, next step, let the thought go."
 });
