@@ -752,5 +752,7 @@ I18N.add({
  "Nyheter, spelreklam, notiser och videor i vägen för det du ville se.": "News, betting ads, notifications and videos in the way of what you wanted to see.",
  "Tabell, matcher live och ditt lag i alla tävlingar – 16 ligor.": "Table, live matches and your team in every competition – 16 leagues.",
  "Prenumeration, ljudbibliotek och påminnelser – men inget som hjälper dig ta tag i det som stressar.": "Subscription, sound library and reminders – but nothing that helps you deal with what stresses you.",
- "Skriv ner det som snurrar med nästa steg, deadlines och personer – och släpp tanken.": "Write down what is on your mind with the next step, deadlines and people – and let it go."
+ "Skriv ner det som snurrar med nästa steg, deadlines och personer – och släpp tanken.": "Write down what is on your mind with the next step, deadlines and people – and let it go.",
+ "Problemet": "The problem",
+ "↓ löses av": "↓ solved by"
 });
