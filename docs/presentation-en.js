@@ -2,6 +2,8 @@
 // Nyckel = svensk textbit exakt som i sidan (utan kantblanksteg). Svenska är standard; knappen på första bilden byter språk.
 I18N.setKey("docs.lang", "sv");
 I18N.add({
+ "Vanliga att göra- och anteckningsappar": "Typical to-do and note apps",
+ "Konto och moln, och långa listor där allt ser lika viktigt ut. Vem du pratat med och vad som hänt hamnar någon annanstans.": "Account and cloud, and long lists where everything looks equally important. Who you talked to and what happened ends up somewhere else.",
  "Välj en app och kom igång": "Pick an app and get started",
  "Öppna": "Open",
  "Om appen": "About",
