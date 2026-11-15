@@ -342,3 +342,8 @@ html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { displ
 #newcode-dialog .actions, #newcode-dialog .dlg-actions { display: flex; flex-direction: column-reverse; align-items: stretch; gap: 8px; }
 #newcode-dialog .actions .spacer { display: none; }
 #newcode-dialog .actions button, #newcode-dialog .dlg-actions button { width: 100%; margin: 0; }
+
+/* Ladda ner från GitHub (2026-11-15) */
+.dl-src { margin-top: 12px; }
+.dl-src p { margin: 4px 0; }
+.dl-src a { font-weight: 500; color: var(--primary); }

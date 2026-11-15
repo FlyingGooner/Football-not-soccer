@@ -3,6 +3,9 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  'Vill du köra appen lokalt på datorn?': 'Want to run the app locally on your computer?',
+  'Ladda ner appen från GitHub (zip)': 'Download the app from GitHub (zip)',
+  'Packa upp och starta en lokal webbserver i mappen, t.ex. python -m http.server, och öppna adressen den visar.': 'Unzip it and start a local web server in the folder, e.g. python -m http.server, then open the address it shows.',
   'Bara byt': 'Just change',
   'Byt och spara backup': 'Change and save backup',
   'Byta kod?': 'Change code?',
