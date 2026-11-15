@@ -651,5 +651,7 @@ I18N.add({
  "Idag · Vecka · Trend": "Today · Week · Trend",
  "Månad · Översikt · Statistik": "Month · Overview · Statistics",
  "Matcher · Tabell · Lag": "Matches · Table · Team",
- "Trådar · Överblick · Arkiv": "Threads · Overview · Archive"
+ "Trådar · Överblick · Arkiv": "Threads · Overview · Archive",
+ "Så ser det ut": "What it looks like",
+ "Trådar · Överblick · Arkiv – påhittad exempeldata": "Threads · Overview · Archive – made-up example data"
 });
