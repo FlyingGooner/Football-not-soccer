@@ -687,5 +687,9 @@ I18N.add({
  "→ Stress control: skriv ner det, nästa steg, släpp tanken.": "→ Stress control: write it down, next step, let the thought go.",
  "En fråga, ett bra svar, inget mer – gratis, utan konto och utan reklam.": "One question, one good answer, nothing more – free, no account and no ads.",
  "Vanliga appar vill för mycket. De kräver konto, samlar in din data på sina servrar och delar den ofta med annonsörer. De visar reklam, skickar notiser och kostar ofta en månadsavgift för det viktigaste. Mina fyra appar är byggda för att lösa just de problemen: gratis, ingen reklam, och din data lämnar aldrig telefonen.": "Typical apps want too much. They require an account, collect your data on their servers and often share it with advertisers. They show ads, send notifications and often charge a monthly fee for what matters. My four apps are built to solve exactly those problems: free, no ads, and your data never leaves your phone.",
- "En fråga, ett bra svar, inget mer – utan konto, utan reklam, utan avgift och utan datainsamling.": "One question, one good answer, nothing more – no account, no ads, no fee and no data collection."
+ "En fråga, ett bra svar, inget mer – utan konto, utan reklam, utan avgift och utan datainsamling.": "One question, one good answer, nothing more – no account, no ads, no fee and no data collection.",
+ "En sak per app.": "One thing per app.",
+ "Varje app gör en sak riktigt bra. Allt annat väljs bort.": "Each app does one thing really well. Everything else is left out.",
+ "En sak, gjord riktigt bra – utan konto, utan reklam, utan avgift och utan datainsamling.": "One thing, done really well – no account, no ads, no fee and no data collection.",
+ "En sak, gjord bra.": "One thing, done well."
 });
