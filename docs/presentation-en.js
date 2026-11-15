@@ -533,3 +533,18 @@ I18N.add({
  "Det finns aldrig i filen. Utan det öppnas backupen inte – inte ens av utvecklaren. Lägg det i din lösenordshanterare.": "It is never in the file. Without it the backup cannot be opened – not even by the developer. Put it in your password manager.",
  "Krypteringen skyddar filen när den lämnar telefonen. I telefonen skyddar skärmlåset.": "The encryption protects the file when it leaves the phone. In the phone, the screen lock protects it."
 });
+// Bilden "Det har redan hänt" (2026-11-15)
+I18N.add({
+ "Det har redan hänt": "It has already happened",
+ "När känslig data läcker": "When sensitive data leaks",
+ "Verkliga intrång hos stora tjänster de senaste åren. Vilka bolagen var spelar mindre roll – det är datan som gör ont.": "Real breaches at large services in recent years. Which companies they were matters less – it is the data that hurts.",
+ "Terapijournaler · 2020": "Therapy records · 2020",
+ "En psykoterapiklinik hackades. Anteckningar från tiotusentals samtal läckte, och patienterna utpressades en och en.": "A psychotherapy clinic was hacked. Notes from tens of thousands of sessions leaked, and the patients were blackmailed one by one.",
+ "Hela ekonomin · 2017": "Entire finances · 2017",
+ "Hos en kreditupplysningsfirma kom angripare åt personnummer, adresser och kreditdata för nära 150 miljoner människor.": "At a credit reporting firm, attackers got hold of ID numbers, addresses and credit data for nearly 150 million people.",
+ "Barnens röster · 2017": "Children's voices · 2017",
+ "En uppkopplad leksak sparade barns namn, bilder och röstmeddelanden i en oskyddad databas – öppen för vem som helst.": "A connected toy stored children's names, pictures and voice messages in an unprotected database – open to anyone.",
+ "Kropp och träning · 2018": "Body and training · 2018",
+ "En träningsapp publicerade en karta över användarnas rundor – och avslöjade var hemliga militärbaser låg.": "A fitness app published a map of its users' routes – and revealed where secret military bases were.",
+ "Gemensamt: datan låg samlad på en server. I de här apparna finns ingen sådan server.": "What they share: the data was gathered on a server. These apps have no such server."
+});
