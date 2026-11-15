@@ -697,5 +697,12 @@ I18N.add({
  "Ett tryck sparar en backup-fil, låst med AES-256 och ditt lösenord. Varje gissning tar 600 000 beräkningar – låt appen välja lösenordet, så går det inte att knäcka.": "One tap saves a backup file, locked with AES-256 and your password. Every guess takes 600,000 computations – let the app pick the password and it cannot be cracked.",
  "Enda undantaget: fotbollsappen hämtar resultat från en enda källa – aldrig med din data.": "The only exception: the football app fetches results from a single source – never with your data.",
  "Ett tryck sparar en backup-fil, låst med ditt lösenord. Krypteringen är samma som banker och lösenordshanterare använder. Låt appen välja lösenordet, så går den inte att knäcka.": "One tap saves a backup file, locked with your password. The encryption is the same that banks and password managers use. Let the app pick the password and it cannot be cracked.",
- "Så installerar du": "How to install"
+ "Så installerar du": "How to install",
+ "Öppna – och spara på hemskärmen": "Open – and save to your home screen",
+ "Android:": "Android:",
+ "tryck på ⋮ och välj Installera app.": "tap ⋮ and choose Install app.",
+ "iPhone:": "iPhone:",
+ "i Safari, tryck på Dela och välj Lägg till på hemskärmen.": "in Safari, tap Share and choose Add to Home Screen.",
+ "Då startar appen som en vanlig app, även utan nät. Öppnade du länken i Messenger? Välj först Öppna i webbläsare.": "Then the app starts like a regular app, even offline. Opened the link in Messenger? Choose Open in browser first.",
+ "Hoppa till apparna ›": "Jump to the apps ›"
 });
