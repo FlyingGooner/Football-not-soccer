@@ -337,3 +337,8 @@ ul.mlist li.tap { cursor: pointer; }
 .seg + .seg { border-left: 1px solid var(--outline); }
 .seg.on { background: var(--primary-container); color: var(--on-primary-container); }
 html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { display: none; }
+
+/* Byta kod (2026-11-15): tre knappar staplade, viktigast överst. */
+#newcode-dialog .actions, #newcode-dialog .dlg-actions { display: flex; flex-direction: column-reverse; align-items: stretch; gap: 8px; }
+#newcode-dialog .actions .spacer { display: none; }
+#newcode-dialog .actions button, #newcode-dialog .dlg-actions button { width: 100%; margin: 0; }
