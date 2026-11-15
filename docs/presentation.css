@@ -123,3 +123,12 @@ pre em { color: var(--key-hi); font-style: normal; }
 .lang-btn:hover, .lang-btn:focus-visible { opacity: 1; }
 a.url { text-decoration: underline; }
 .cta { display: inline-block; margin-top: 18px; padding: 12px 22px; min-height: 48px; box-sizing: border-box; border-radius: var(--r-md); background: var(--key); color: #fff; font-weight: 600; text-decoration: none; }
+
+/* Delbilder (2026-11-15): egna pilar ovanför de vanliga, bara på bilder med .sub */
+.subnav { position: fixed; left: 0; right: 0; bottom: 64px; height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px; background: var(--tint); border-top: 1px solid var(--line); }
+.subnav[hidden] { display: none; }
+.subnav button { width: 48px; height: 44px; border-radius: var(--r-md); border: 1px solid var(--key); background: var(--paper); color: var(--key); font: 500 22px var(--font); cursor: pointer; }
+.subnav span { min-width: 170px; text-align: center; font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.deck > section:has(.sub) { padding-bottom: 96px; }
+.sub[hidden] { display: none; }
+@media print { .subnav { display: none; } .sub[hidden] { display: block; } }

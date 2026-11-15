@@ -647,5 +647,9 @@ I18N.add({
  "Prenumeration, ljudbibliotek och påminnelser om att andas – när du bara ville förstå vad som stressar dig och vad som hjälper.": "A subscription, a sound library and reminders to breathe – when you only wanted to understand what stresses you and what helps.",
  "Så ser de ut": "What they look like",
  "Fyra appar – samma känsla": "Four apps – one feel",
- "Påhittad exempeldata. Mer i varje apps egen presentation.": "Made-up example data. More in each app's own presentation."
+ "Bläddra mellan apparna med ‹ › längst ner. Påhittad exempeldata.": "Switch between the apps with ‹ › at the bottom. Made-up example data.",
+ "Idag · Vecka · Trend": "Today · Week · Trend",
+ "Månad · Översikt · Statistik": "Month · Overview · Statistics",
+ "Matcher · Tabell · Lag": "Matches · Table · Team",
+ "Trådar · Överblick · Arkiv": "Threads · Overview · Archive"
 });
