@@ -35,11 +35,11 @@ The same text is in the app under **Settings → General → Help and manual** w
 
 ## Language
 
-- The first time, you choose the language (Svenska or English) at the top of the welcome box. Change it later under Settings → General → Language. Team and league names come from ESPN and are the same in both languages.
+- The app starts in Swedish. Change the language under Settings → General → Language. Team and league names come from ESPN and are the same in both languages.
 
 ## Offline and data
 
 - The latest fetched data is saved and shown offline, with the time of the latest update. Match data is fetched from ESPN directly from your device. ESPN sees your IP address and which leagues and teams are fetched, but no account and no cookies.
 - Under Settings → Data you save an encrypted backup file with followed teams, favourite and league. Match data is not included, it is fetched again. **Create random password** fills in a strong password you can copy – save it in a password manager.
 - The backup password is stored on the device the first time you enter it (when you save or restore a backup). After that a backup takes one tap, without a question. The password is only on this device, never in the backup file, and the file is just as encrypted as before. With **Show password** ticked you only need to type the password once. Under Settings → Data you can **Show** and **Change** the password, or untick **Remember the backup password** – it is then forgotten and the app asks every time. Use a new password you do not use anywhere else: it is stored unprotected on this device. Tap **Create random password** and save it in your password manager. Keep the password in your password manager – without it the backup cannot be opened on a new phone.
-- The app is locked until you have chosen a language and a password for your backup files – the first time, after Delete all data and as long as no password is saved. If you have a backup file you can restore it instead; the password that opens it is saved. The app collects no data – the password is just a key that protects your backups. If you restore a backup that the saved password unlocks, the summary says so; if it does not fit, the app asks for the password for that file.
+- The backup password is created and saved automatically the first time the app starts (and after Delete all data). View or change it under Settings; keep it in a password manager, for example. The app collects no data – the password is just a key that protects your backups. If you restore a backup that the saved password unlocks, the summary says so; if it does not fit, the app asks for the password for that file.

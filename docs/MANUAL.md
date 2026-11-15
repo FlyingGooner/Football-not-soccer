@@ -35,11 +35,11 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Språk
 
-- Första gången väljer du språk (Svenska eller English) överst i välkomstrutan. Byt senare under Inställningar → Allmänt → Språk. Lag- och liganamn kommer från ESPN och är desamma på båda språken.
+- Appen är på svenska från början. Byt språk under Inställningar → Allmänt → Språk. Lag- och liganamn kommer från ESPN och är desamma på båda språken.
 
 ## Offline och data
 
 - Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.
 - Under Inställningar → Data sparar du en krypterad backup-fil med följda lag, favorit och liga. Matchdata ingår inte, den hämtas igen. **Skapa slumpmässigt lösenord** fyller i ett starkt lösenord som du kan kopiera – spara det i en lösenordshanterare.
 - Backup-lösenordet sparas på enheten första gången du skriver det (när du sparar eller läser in en backup). Sedan sparas backup med ett tryck, utan fråga. Lösenordet ligger bara på den här enheten, aldrig i backup-filen, och filen är lika krypterad som förut. Bockar du i **Visa lösenord** räcker det att skriva lösenordet en gång. Under Inställningar → Data kan du **Visa** och **Byta** lösenordet, eller bocka ur **Kom ihåg backup-lösenordet** – då glöms det och appen frågar varje gång. Använd ett nytt lösenord som du inte har någon annanstans: det sparas oskyddat på den här enheten. Tryck **Skapa slumpmässigt lösenord** och spara det i din lösenordshanterare. Behåll lösenordet i din lösenordshanterare – utan det går backupen inte att öppna på en ny telefon.
-- Appen är låst tills du har valt språk och ett lösenord för dina backup-filer – första gången, efter Radera all data och så länge inget lösenord är sparat. Har du en backup-fil kan du läsa in den i stället; lösenordet som öppnar den sparas. Appen samlar ingen data – lösenordet är bara en nyckel som skyddar dina backuper. Läser du in en backup som det sparade lösenordet låser upp står det i sammanfattningen; passar det inte frågar appen efter lösenordet för den filen.
+- Backup-lösenordet skapas och sparas automatiskt första gången appen startas (och efter Radera all data). Se eller byt det under Inställningar; spara det t.ex. i en lösenordshanterare. Appen samlar ingen data – lösenordet är bara en nyckel som skyddar dina backuper. Läser du in en backup som det sparade lösenordet låser upp står det i sammanfattningen; passar det inte frågar appen efter lösenordet för den filen.

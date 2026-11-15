@@ -381,6 +381,7 @@ function autoPassword() {
 }
 function welcomeCheck() {
   autoPassword();
+  return;   // 2026-11-15: ingen välkomstruta – svenska och lösenordet är förvalda, allt ändras under Inställningar
   if (!needsWelcome() || welcomeDlg?.open || typeof HTMLDialogElement !== 'function') return;
   const other = document.querySelector('dialog[open]');   // t.ex. backup-påminnelsen: fråga när den stängs
   if (other) { other.addEventListener('close', () => setTimeout(welcomeCheck, 0), { once: true }); return; }
