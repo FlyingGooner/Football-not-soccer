@@ -642,5 +642,7 @@ I18N.add({
  "Vägningar och viktkurva (VanWormer m.fl. 2008: 11 av 12 studier)": "Weigh-ins and weight curve (VanWormer et al. 2008: 11 of 12 studies)",
  "Skanning eller snabbval?": "Scanning or quick pick?",
  "Streckkodsskanning har inte visats ge bättre resultat – den gör bara loggningen snabbare, och bara för förpackningar. Snabbval tar ett tryck för vilken måltid som helst, även restaurangmat. Förpackningen löser AI:n genom att läsa av näringstabellen, sparad som egen produkt en gång – sedan ett tryck under Senaste.": "Barcode scanning has not been shown to give better results – it only makes logging faster, and only for packages. A quick pick takes one tap for any meal, even restaurant food. For packages, the AI reads the nutrition label; save it as your own product once – then it is one tap under Recent.",
- "Ärligt: två saker hjälper och saknas – påminnelser att logga och stöd från en människa. Ta gärna hjälp av en vän eller coach; det hjälper mer än någon app.": "Honestly: two things help and are missing – reminders to log and support from a person. Get help from a friend or coach; it helps more than any app."
+ "Ärligt: två saker hjälper och saknas – påminnelser att logga och stöd från en människa. Ta gärna hjälp av en vän eller coach; det hjälper mer än någon app.": "Honestly: two things help and are missing – reminders to log and support from a person. Get help from a friend or coach; it helps more than any app.",
+ "Stressappen": "The stress app",
+ "Prenumeration, ljudbibliotek och påminnelser om att andas – när du bara ville förstå vad som stressar dig och vad som hjälper.": "A subscription, a sound library and reminders to breathe – when you only wanted to understand what stresses you and what helps."
 });
