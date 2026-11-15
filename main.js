@@ -289,6 +289,7 @@ function setRemember(on) {
   renderPwd();
 }
 function keep(pwd) {
+  if (welcomeDlg?.open && !Backup.checkPassword(pwd)) { try { localStorage.setItem(PWD_KEY, pwd); } catch { /* blocked */ } }   // backup read in the welcome (only offered without data): its password wins over the auto-created one
   if (!rememberOn() || Backup.checkPassword(pwd) || savedPassword()) return;   // a password from another file never replaces the saved one
   try { localStorage.setItem(PWD_KEY, pwd); } catch { /* no room: asks next time */ }
   closeWelcome();
@@ -337,8 +338,8 @@ async function openBackupText(text, slug) {
   return Backup.openText(text, slug, MAX_IMPORT_CHARS);
 }
 /* ---------- Välkommen: välj språk och lösenord först (2026-11-14, språk 2026-11-15) ----------
-   Utan sparat lösenord är appen låst bakom en ruta tills ett lösenord är valt (eller en krypterad backup är inläst,
-   vars lösenord sparas), som att registrera sig. Lösenordet är bara nyckeln till backup-filerna – det sparas på enheten (fns.pwd), aldrig i
+   Lösenordet skapas automatiskt (autoPassword); läses en krypterad backup in i rutan
+   ersätter dess lösenord det skapade. Lösenordet är bara nyckeln till backup-filerna – det sparas på enheten (fns.pwd), aldrig i
    datan eller i filen. Bockar man ur Kom ihåg visas rutan inte (man har valt att få frågan varje gång). */
 let welcomeDlg = null;
 const welcomeHasData = () => teams.follow.length;
@@ -363,19 +364,21 @@ function fillWelcome() {
       b.addEventListener('click', () => { I18N.setLang(k); if (!needsWelcome()) welcomeDlg.close(); else fillWelcome(); });
       return b;
     }));
-  const pick = el('button', { type: 'button', class: 'btn filled', text: 'Välj lösenord' });
-  pick.addEventListener('click', () => { I18N.setLang(I18N.lang(), false); choosePassword(); });
-  const pw = needsPassword();
   welcomeDlg.replaceChildren(...[   // [].filter: replaceChildren writes false as text
    
     el('h2', { id: 'wl-title', text: 'Välkommen!' }),
     segs,
-    pw && el('p', { text: 'Välj ett lösenord som skyddar dina backup-filer. Spara det i din lösenordshanterare – utan det går en backup inte att läsa in.' }),
-    pw && el('p', { class: 'muted small', text: 'Allt stannar på din enhet. Använd ett nytt lösenord – det sparas här.' }),
-    pw && el('div', { class: 'welcome-actions' }, pick, !welcomeHasData() && el('label', { class: 'btn tonal btn-file' }, 'Jag har en backup-fil', file)),
+    savedPassword() && el('p', { class: 'muted small', text: 'Dina backup-filer krypteras med ett lösenord som har skapats och sparats på enheten. Du kan se eller byta det under Inställningar → Allmänt → Data.' }),
+    !welcomeHasData() && el('div', { class: 'welcome-actions' }, el('label', { class: 'btn tonal btn-file' }, 'Jag har en backup-fil', file)),
     err].filter(Boolean));
 }
+// 2026-11-15: lösenordet skapas och sparas automatiskt – användaren behöver aldrig välja ett. Visa/Byt under Inställningar.
+function autoPassword() {
+  if (!needsPassword()) return;
+  try { localStorage.setItem(PWD_KEY, Backup.generatePassword()); } catch { /* blocked: asks at the first backup */ }
+}
 function welcomeCheck() {
+  autoPassword();
   if (!needsWelcome() || welcomeDlg?.open || typeof HTMLDialogElement !== 'function') return;
   const other = document.querySelector('dialog[open]');   // t.ex. backup-påminnelsen: fråga när den stängs
   if (other) { other.addEventListener('close', () => setTimeout(welcomeCheck, 0), { once: true }); return; }
@@ -394,14 +397,6 @@ function welcomeCheck() {
   sel.addEventListener('change', () => I18N.setLang(sel.value));
   const h = document.getElementById('hint-lang'); if (h) { h.textContent = I18N.LANGS[I18N.lang()]; h.setAttribute('data-no-tr', ''); }
 })();
-async function choosePassword() {
-  const wait = Backup.askPassword('export');   // sets the dialog texts synchronously; ours replace them
-  const set = (id, t) => { const n = document.getElementById(id); if (n) n.textContent = t; };
-  set('pw-title', 'Välj lösenord'); set('pw-text', 'Lösenordet krypterar dina backup-filer och sparas på den här enheten.'); set('pw-ok', 'Spara lösenord');
-  const a = await wait; if (!a) return;
-  keep(a.pwd); renderPwd();
-  snackbar('Lösenordet är sparat. Backup sparas med ett tryck.', null, null, 4000);
-}
 // Point 2: the user is told when the remembered password opened the file, and when it did not fit.
 function noteUnlocked() { const s = document.getElementById('imp-sum'); if (s && document.getElementById('import-dialog')?.open) s.textContent += ' Backupen låstes upp med det sparade lösenordet.'; }
 function noteWrongSaved() { const n = document.getElementById('pw-text'); if (n) n.textContent = 'Det sparade lösenordet passade inte till den här filen. Skriv lösenordet du valde när du sparade den.'; }

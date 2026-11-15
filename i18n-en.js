@@ -3,6 +3,7 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  'Dina backup-filer krypteras med ett lösenord som har skapats och sparats på enheten. Du kan se eller byta det under Inställningar → Allmänt → Data.': 'Your backup files are encrypted with a password that has been created and stored on the device. You can view or change it under Settings → General → Data.',
   'Matcher': 'Matches', 'Tabell': 'Table', 'Favorit': 'Favourite', 'Följer': 'Following', 'Inst.': 'Settings',
   'Visa fler': 'Show more', 'Visa färre': 'Show fewer', 'Välj lag': 'Choose teams', 'Nästa match': 'Next match', 'Senaste match': 'Latest match', 'Inga lag följda.': 'No teams followed.',
   'Pågår nu': 'Live now', 'Lag': 'Teams', 'Följda lag': 'Followed teams',
@@ -29,7 +30,7 @@ I18N.add({
   'Ingen tabell tillgänglig.': 'No table available.', 'Aktuella': 'Current', 'Kommande': 'Upcoming', 'Spelade': 'Played', 'Spelad': 'Played', 'Slut': 'FT',
   'Hemma': 'Home', 'Borta': 'Away', 'Form': 'Form', 'Egen': 'Custom', 'Standard': 'Default', 'Ladda om': 'Reload', 'Offline': 'Offline', 'Snart avspark': 'Kick-off soon', 'Alla': 'All',
   'Inget favoritlag valt.': 'No favourite team chosen.',
-  'Backup-filen innehåller följda lag, favorit och vald liga, och krypteras alltid med ett lösenord du väljer. Matchdata ingår inte, den hämtas igen. Läs in filen på en annan enhet för att flytta inställningarna.': 'The backup file contains followed teams, favourite and chosen league, and is always encrypted with a password you choose. Match data is not included, it is fetched again. Restore the file on another device to move the settings.',
+  'Backup-filen innehåller följda lag, favorit och vald liga, och krypteras alltid med ett lösenord som appen har skapat åt dig (se eller byt det nedan). Matchdata ingår inte, den hämtas igen. Läs in filen på en annan enhet för att flytta inställningarna.': 'The backup file contains followed teams, favourite and chosen league, and is always encrypted with a password the app creates and stores for you the first time it starts (Show and Change in Settings). Match data is not included, it is fetched again. Restore the file on another device to move the settings.',
   '(sj.)': '(o.g.)', '(str.)': '(pen.)', 'Afrika': 'Africa', 'Portugal': 'Portugal', 'Grupp': 'Group', 'Mål': 'Goals', 'Kort': 'Cards',
 }, [
   [/^Du kan följa högst (\d+) lag$/, 'You can follow at most $1 teams'],
