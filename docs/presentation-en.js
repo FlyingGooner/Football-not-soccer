@@ -754,5 +754,6 @@ I18N.add({
  "Prenumeration, ljudbibliotek och påminnelser – men inget som hjälper dig ta tag i det som stressar.": "Subscription, sound library and reminders – but nothing that helps you deal with what stresses you.",
  "Skriv ner det som snurrar med nästa steg, deadlines och personer – och släpp tanken.": "Write down what is on your mind with the next step, deadlines and people – and let it go.",
  "Problemet": "The problem",
- "↓ löses av": "↓ solved by"
+ "↓ löses av": "↓ solved by",
+ "Samma grund i alla: gratis, utan konto och reklam, och din data lämnar aldrig telefonen.": "The same foundation in all: free, no account or ads, and your data never leaves your phone."
 });
