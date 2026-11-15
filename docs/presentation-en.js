@@ -744,5 +744,13 @@ I18N.add({
  "Tabell och matcher, inget mer": "Table and matches, nothing more",
  "Prenumeration och ljudbibliotek": "Subscription and sound library",
  "Skriv ner det och släpp det": "Write it down and let it go",
- "Gratis, utan konto, utan reklam – och din data lämnar aldrig telefonen.": "Free, no account, no ads – and your data never leaves your phone."
+ "Gratis, utan konto, utan reklam – och din data lämnar aldrig telefonen.": "Free, no account, no ads – and your data never leaves your phone.",
+ "Konto krävs, användarinlagda dubbletter, reklam och premiumvägg för det viktigaste.": "Account required, user-entered duplicates, ads and a paywall for what matters.",
+ "Labbanalyserad data från Livsmedelsverket, ett tryck per måltid, egna rätter i matlådor.": "Lab-analysed data from the Swedish Food Agency, one tap per meal, your own dishes in lunch boxes.",
+ "Vill koppla till banken, sorterar varje kaffe och kan sälja insikter om ditt köpbeteende.": "Want to connect to your bank, sort every coffee and may sell insights about your spending.",
+ "Planera månad för månad, se var det blir tight framåt – utan bankkoppling.": "Plan month by month, see where things get tight ahead – no bank connection.",
+ "Nyheter, spelreklam, notiser och videor i vägen för det du ville se.": "News, betting ads, notifications and videos in the way of what you wanted to see.",
+ "Tabell, matcher live och ditt lag i alla tävlingar – 16 ligor.": "Table, live matches and your team in every competition – 16 leagues.",
+ "Prenumeration, ljudbibliotek och påminnelser – men inget som hjälper dig ta tag i det som stressar.": "Subscription, sound library and reminders – but nothing that helps you deal with what stresses you.",
+ "Skriv ner det som snurrar med nästa steg, deadlines och personer – och släpp tanken.": "Write down what is on your mind with the next step, deadlines and people – and let it go."
 });
