@@ -660,5 +660,15 @@ I18N.add({
  "Vad snurrar i huvudet? Skriv ner det som en tråd med nästa steg och släpp tanken. Delmål, deadlines, personer och VAB-dagar – och en överblick över det som brinner.": "What is spinning in your head? Write it down as a thread with the next step and let the thought go. Sub-goals, deadlines, people and days off for sick children – and an overview of what is urgent.",
  "Prova själv": "Try it yourself",
  "Öppna en app": "Open an app",
- "Sist i presentationen kan du öppna apparna direkt i mobilens webbläsare, utan installation, eller läsa vidare i varje apps egen presentation.": "At the end of the presentation you can open the apps right in your phone's browser, without installing, or read more in each app's own presentation."
+ "Sist i presentationen kan du öppna apparna direkt i mobilens webbläsare, utan installation, eller läsa vidare i varje apps egen presentation.": "At the end of the presentation you can open the apps right in your phone's browser, without installing, or read more in each app's own presentation.",
+ "Spara som app på hemskärmen": "Save it as an app on your home screen",
+ "Ingen app-butik behövs. En genväg på hemskärmen startar appen i eget fönster utan adressfält – den ser ut och fungerar som en vanlig app, även utan nät.": "No app store needed. A shortcut on your home screen opens the app in its own window without an address bar – it looks and works like a regular app, even offline.",
+ "Android": "Android",
+ "Öppna i Chrome, Brave eller Samsung Internet. Tryck på ⋮ och välj Installera app eller Lägg till på startskärmen.": "Open in Chrome, Brave or Samsung Internet. Tap ⋮ and choose Install app or Add to Home screen.",
+ "iPhone och iPad": "iPhone and iPad",
+ "Öppna i Safari. Tryck på Dela (fyrkanten med pil uppåt), välj Lägg till på hemskärmen och sedan Lägg till.": "Open in Safari. Tap Share (the square with an arrow up), choose Add to Home Screen and then Add.",
+ "Dator": "Computer",
+ "I Chrome eller Edge: tryck på installationsikonen till höger i adressfältet.": "In Chrome or Edge: click the install icon on the right of the address bar.",
+ "Adress:": "Address:",
+ "Öppnade du länken i Messenger eller en annan app? Välj först Öppna i webbläsare – annars går det inte att installera.": "Did you open the link in Messenger or another app? Choose Open in browser first – otherwise it cannot be installed."
 });
