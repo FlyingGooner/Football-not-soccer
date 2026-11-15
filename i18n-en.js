@@ -3,6 +3,7 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  'Öppna, ladda ner, GitHub': 'Open, download, GitHub',
   'Ladda ner (HTML)': 'Download (HTML)',
   'Ladda ner (HTML) ger hela appen i en enda fil som du öppnar i webbläsaren, även utan nät. Den sparar sin data för sig – flytta data dit med en backup-fil.': 'Download (HTML) gives the whole app in one file that you open in the browser, even offline. It keeps its own data – move data there with a backup file.',
   'Alla mina appar': 'All my apps',
