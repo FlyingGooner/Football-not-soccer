@@ -36,7 +36,7 @@
     else if (e.key === 'ArrowDown' && !sub.hidden) goSub(si + 1);
     else if (e.key === 'ArrowUp' && !sub.hidden) goSub(si - 1);
   });
-  // Språkknapp på första bilden (2026-11-15): engelska är standard, knappen visar det andra språket. Byte laddar om sidan.
+  // Språkknapp på första bilden (2026-11-15): svenska är standard, knappen visar det andra språket. Byte laddar om sidan.
   if (self.I18N) {
     const other = I18N.lang() === 'en' ? 'sv' : 'en';
     const b = document.createElement('button');

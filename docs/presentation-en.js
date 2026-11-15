@@ -1,6 +1,6 @@
 // Engelska för presentationerna, standard.html och startsidan (2026-11-15). Samma fil i alla repon.
-// Nyckel = svensk textbit exakt som i sidan (utan kantblanksteg). Engelska är standard; knappen på första bilden byter språk.
-I18N.setKey("docs.lang", "en");
+// Nyckel = svensk textbit exakt som i sidan (utan kantblanksteg). Svenska är standard; knappen på första bilden byter språk.
+I18N.setKey("docs.lang", "sv");
 I18N.add({
  "flyinggooner · Fotboll": "flyinggooner · Football",
  "Tabellen, matcherna och ditt lag – utan reklam, utan konto, utan brus.": "The table, the matches and your team – no ads, no account, no noise.",

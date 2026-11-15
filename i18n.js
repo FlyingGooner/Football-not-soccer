@@ -6,11 +6,11 @@
 (function () {
   'use strict';
   let KEY = 'lang';   // appens nyckel sätts överst i i18n-en.js (I18N.setKey), t.ex. 'sn.lang'
-  const LANGS = { en: 'English', sv: 'Svenska' };
+  const LANGS = { sv: 'Svenska', en: 'English' };
   const read = () => { try { const v = localStorage.getItem(KEY); return v && v[0] === '"' ? JSON.parse(v) : v; } catch { return null; } };   // "sv" (JSON) går också, t.ex. från testernas seed
   const chosen = () => read() in LANGS;
-  let def = null;   // fast standardspråk (presentationerna: engelska); annars gissas det från telefonen
-  const guess = () => def || (/^sv\b/i.test(navigator.language || '') ? 'sv' : 'en');
+  let def = null;   // fast standardspråk; annars svenska (2026-11-15: svenska är standard överallt)
+  const guess = () => def || 'sv';
   const lang = () => (chosen() ? read() : guess());
   const map = new Map();
   const pats = [], late = [];

@@ -129,7 +129,7 @@ Plain HTML, CSS and JavaScript – no frameworks, no dependencies, no build step
 | `sw.js`, `manifest.webmanifest`, `icons/` | Installation as an app (PWA) and offline |
 | `docs/SPEC.md` | Specification of features and behaviour |
 | `docs/MANUAL.md`, `docs/MANUAL.en.md` | The manual in Swedish and English (the same text as Help in the app) |
-| `docs/presentation.html` | Stand-alone mobile presentation of the app (English by default, Swedish with the button on the first slide) |
+| `docs/presentation.html` | Stand-alone mobile presentation of the app (Swedish by default, English with the button on the first slide) |
 | `docs/standard.html` | Small apps, big needs – what all the apps have in common (synced from the template) |
 | `tools/build-single.ps1` | Builds the test file |
 | `tools/tests/` | Unit and flow tests (run in headless Edge, automatically before every release and push) |
