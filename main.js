@@ -281,24 +281,34 @@ function applySettings(s) {
 // Unticked (fns.pwdoff = 1): forgotten, and the app asks every time. Radera all data removes both keys.
 const PWD_KEY = 'fns.pwd', OFF_KEY = 'fns.pwdoff';
 let showPwd = false, pwdBusy = false;
-function savedPassword() { try { const p = localStorage.getItem(PWD_KEY); return p && !Backup.checkPassword(p) ? p : ''; } catch { return ''; } }
-function rememberOn() { try { return localStorage.getItem(OFF_KEY) !== '1'; } catch { return false; } }
+// 2026-11-15: koden skapas alltid av appen (generatePassword: 16 tecken, kryptografisk slump) och sparas på enheten. Inget eget lösenord.
+function savedPassword() {
+  try { let p = localStorage.getItem(PWD_KEY); if (!p || Backup.checkPassword(p)) { p = Backup.generatePassword(); localStorage.setItem(PWD_KEY, p); } return p; } catch { return ''; }
+}
+function rememberOn() { return true; }   // koden sparas alltid (2026-11-15)
 function setRemember(on) {
   showPwd = false;
   try { if (on) localStorage.removeItem(OFF_KEY); else { localStorage.setItem(OFF_KEY, '1'); localStorage.removeItem(PWD_KEY); } } catch { /* blocked */ }
   renderPwd();
 }
+// En backup som lästs in med en annan kod: den koden används sedan (en kod att hålla reda på, t.ex. på en ny telefon).
 function keep(pwd) {
-  if (welcomeDlg?.open && !Backup.checkPassword(pwd)) { try { localStorage.setItem(PWD_KEY, pwd); } catch { /* blocked */ } }   // backup read in the welcome (only offered without data): its password wins over the auto-created one
-  if (!rememberOn() || Backup.checkPassword(pwd) || savedPassword()) return;   // a password from another file never replaces the saved one
-  try { localStorage.setItem(PWD_KEY, pwd); } catch { /* no room: asks next time */ }
-  closeWelcome();
+  if (Backup.checkPassword(pwd) || pwd === savedPassword()) return;
+  try { localStorage.setItem(PWD_KEY, pwd); } catch { return; }
+  renderPwd(); snackbar('Koden från filen används nu för nya backuper.', null, null, 4000);
 }
 function forgetPassword() { showPwd = false; try { localStorage.removeItem(PWD_KEY); localStorage.removeItem(OFF_KEY); } catch { /* blocked */ } renderPwd(); }
-async function rememberPassword() {
-  const a = await Backup.askPassword('export'); if (!a) return;
-  try { localStorage.setItem(PWD_KEY, a.pwd); } catch { snackbar('Kunde inte spara lösenordet', null, null, 3000); return; }
-  renderPwd(); snackbar('Lösenordet sparas på den här enheten. Ha det kvar i din lösenordshanterare också.', null, null, 6000);
+// Skapa ny kod (2026-11-15): ersätter Byt. Ångra ger tillbaka den gamla.
+function rememberPassword() {
+  const old = savedPassword(), p = Backup.generatePassword();
+  try { localStorage.setItem(PWD_KEY, p); } catch { snackbar('Kunde inte spara koden', null, null, 3000); return; }
+  showPwd = true; renderPwd();
+  snackbar('Ny kod skapad. Gamla backup-filer öppnas bara med den gamla koden.', 'Ångra', () => { try { localStorage.setItem(PWD_KEY, old); } catch { /* blocked */ } renderPwd(); });
+}
+function copyPassword() {
+  const p = savedPassword();
+  if (!p || !navigator.clipboard) { snackbar('Kunde inte kopiera – tryck Visa och skriv av koden', null, null, 4000); return; }
+  navigator.clipboard.writeText(p).then(() => snackbar('Koden är kopierad', null, null, 3000), () => snackbar('Kunde inte kopiera – tryck Visa och skriv av koden', null, null, 4000));
 }
 // Returns the Backup.save result ('saved', 'fallback', 'cancelled', …); null on a double tap.
 async function saveBackupFile(slug, today, getText) {
@@ -421,20 +431,17 @@ function oneFieldWhenShown() {
   p1.addEventListener('input', () => { if (one) p2.value = p1.value; });
 }
 oneFieldWhenShown();
+// Din kod (2026-11-15): skapas alltid av appen. Visa, Kopiera, Ny kod.
 function renderPwd() {
   const box = $('pwd-box'); if (!box) return;
-  const p = savedPassword(), on = rememberOn();
-  const cb = el('input', { type: 'checkbox', checked: on, on: { change: (e) => setRemember(e.target.checked) } });
+  const p = savedPassword();
   const toggle = el('button', { type: 'button', class: 'btn text', 'aria-pressed': showPwd ? 'true' : 'false', on: { click: () => { showPwd = !showPwd; renderPwd(); } } }, showPwd ? 'Dölj' : 'Visa');
-  const change = el('button', { type: 'button', class: 'btn text', on: { click: rememberPassword } }, 'Byt');
-  fill(box,
-    el('label', { class: 'check' }, cb, el('span', { text: 'Kom ihåg backup-lösenordet på den här enheten' })),
-    !on ? el('p', { class: 'muted small', text: 'Appen frågar efter lösenordet varje gång.' })
-      : !p ? el('p', { class: 'muted small', text: 'Lösenordet du skriver vid nästa backup sparas – sedan räcker ett tryck. Filen är lika skyddad som förut.' })
-      : el('div', { class: 'pwd-card' },
-        el('div', { class: 'pwd-head' }, el('span', { text: '🔑 Lösenordet är sparat' }), toggle, change),
-        showPwd ? el('p', { class: 'pwd-show', text: p }) : null,
-        el('p', { class: 'muted small pwd-note', text: 'Backup sparas med ett tryck. Ha lösenordet kvar i din lösenordshanterare – utan det går backupen inte att öppna på en ny telefon.' })));
+  const copy = el('button', { type: 'button', class: 'btn text', on: { click: copyPassword } }, 'Kopiera');
+  const change = el('button', { type: 'button', class: 'btn text', on: { click: rememberPassword } }, 'Ny kod');
+  fill(box, el('div', { class: 'pwd-card' },
+    el('div', { class: 'pwd-head' }, el('span', { text: '🔑 Din kod' }), toggle, copy, change),
+    showPwd && p ? el('p', { class: 'pwd-show', text: p }) : null,
+    el('p', { class: 'muted small pwd-note', text: 'Alla backup-filer låses med den här koden. Spara den i din lösenordshanterare – du behöver den för att öppna en backup på en ny telefon.' })));
 }
 const BACKUP_MSG = { saved: 'Backup-filen sparades', busy: 'Ett sparfönster är redan öppet', fallback: 'Backup-filen laddas ner',
   error: 'Kunde inte spara filen', nocrypto: 'Den här webbläsaren kan inte kryptera – ingen fil sparades' };

@@ -3,6 +3,15 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  '🔑 Din kod': '🔑 Your code',
+  'Kopiera': 'Copy',
+  'Ny kod': 'New code',
+  'Alla backup-filer låses med den här koden. Spara den i din lösenordshanterare – du behöver den för att öppna en backup på en ny telefon.': 'All backup files are locked with this code. Save it in your password manager – you need it to open a backup on a new phone.',
+  'Koden från filen används nu för nya backuper.': 'The code from the file is now used for new backups.',
+  'Kunde inte spara koden': 'Could not save the code',
+  'Ny kod skapad. Gamla backup-filer öppnas bara med den gamla koden.': 'New code created. Old backup files open only with the old code.',
+  'Kunde inte kopiera – tryck Visa och skriv av koden': 'Could not copy – tap Show and copy the code by hand',
+  'Koden är kopierad': 'The code is copied',
   'Är du ny räcker det att välja språk.': 'If you are new, just choose a language.',
   'Din personliga kod (lösenordet till dina backup-filer) har skapats åt dig och finns under Inställningar → Allmänt → Data. Spara den på en säker plats, t.ex. i en lösenordshanterare – utan den går en backup inte att öppna på en ny enhet.': 'Your personal code (the password for your backup files) has been created for you and is under Settings → General → Data. Keep it somewhere safe, e.g. in a password manager – without it a backup cannot be opened on a new device.',
   'Har du använt appen förut, på den här eller en annan enhet? Läs in din backup-fil för att få tillbaka din data.': 'Have you used the app before, on this or another device? Restore your backup file to get your data back.',
@@ -32,7 +41,7 @@ I18N.add({
   'Ingen tabell tillgänglig.': 'No table available.', 'Aktuella': 'Current', 'Kommande': 'Upcoming', 'Spelade': 'Played', 'Spelad': 'Played', 'Slut': 'FT',
   'Hemma': 'Home', 'Borta': 'Away', 'Form': 'Form', 'Egen': 'Custom', 'Standard': 'Default', 'Ladda om': 'Reload', 'Offline': 'Offline', 'Snart avspark': 'Kick-off soon', 'Alla': 'All',
   'Inget favoritlag valt.': 'No favourite team chosen.',
-  'Backup-filen innehåller följda lag, favorit och vald liga, och krypteras alltid med ett lösenord som appen har skapat åt dig (se eller byt det nedan). Matchdata ingår inte, den hämtas igen. Läs in filen på en annan enhet för att flytta inställningarna.': 'The backup file contains followed teams, favourite and chosen league, and is always encrypted with a password the app creates and stores for you the first time it starts (Show and Change in Settings). Match data is not included, it is fetched again. Restore the file on another device to move the settings.',
+  'Backup-filen innehåller följda lag, favorit och vald liga, och låses alltid med din kod nedan. Matchdata ingår inte, den hämtas igen. Läs in filen på en annan enhet för att flytta inställningarna.': 'The backup file contains followed teams, favourite and chosen league, and is always locked with your code below. Match data is not included, it is fetched again. Restore the file on another device to move the settings.',
   '(sj.)': '(o.g.)', '(str.)': '(pen.)', 'Afrika': 'Africa', 'Portugal': 'Portugal', 'Grupp': 'Group', 'Mål': 'Goals', 'Kort': 'Cards',
 }, [
   [/^Du kan följa högst (\d+) lag$/, 'You can follow at most $1 teams'],
