@@ -653,5 +653,11 @@ I18N.add({
  "Matcher · Tabell · Lag": "Matches · Table · Team",
  "Trådar · Överblick · Arkiv": "Threads · Overview · Archive",
  "Så ser det ut": "What it looks like",
- "Trådar · Överblick · Arkiv – påhittad exempeldata": "Threads · Overview · Archive – made-up example data"
+ "Trådar · Överblick · Arkiv – påhittad exempeldata": "Threads · Overview · Archive – made-up example data",
+ "Vad har jag ätit i dag – och hur går vikten? Ett tryck per måltid: följde, fusk eller hoppade över. Kalorier ur Livsmedelsverkets data när du vill, egna rätter delade i matlådor, vikt och träning över tid.": "What have I eaten today – and how is my weight going? One tap per meal: followed, cheat or skipped. Calories from the Swedish Food Agency's data when you want, your own dishes split into lunch boxes, weight and training over time.",
+ "Går månaden ihop? Planera inkomster och kostnader månad för månad i stället för att sortera varje kvitto. Se var det blir tight framåt, sparande och statistik – utan att koppla till banken.": "Does the month add up? Plan income and costs month by month instead of sorting every receipt. See where things get tight ahead, savings and statistics – without connecting to your bank.",
+ "Hur gick det för mitt lag? Tabellen, matcherna live och ditt lag i alla tävlingar – 16 ligor och turneringar. Inga nyheter, inget spel, inga notiser.": "How did my team do? The table, live matches and your team in every competition – 16 leagues and tournaments. No news, no betting, no notifications.",
+ "Vad snurrar i huvudet? Skriv ner det som en tråd med nästa steg och släpp tanken. Delmål, deadlines, personer och VAB-dagar – och en överblick över det som brinner.": "What is spinning in your head? Write it down as a thread with the next step and let the thought go. Sub-goals, deadlines, people and days off for sick children – and an overview of what is urgent.",
+ "Prova själv": "Try it yourself",
+ "Öppna en app": "Open an app"
 });
