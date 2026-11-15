@@ -3,6 +3,12 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  'Byta kod?': 'Change code?',
+  'Byt kod': 'Change code',
+  'Backup-filer du redan har sparat går bara att öppna med den gamla koden. Har du inte kvar den gamla koden blir de värdelösa. Spara en ny backup direkt efter bytet.': 'Backup files you have already saved open only with the old code. If you no longer have the old code they become useless. Save a new backup right after the change.',
+  'Ny kod skapad. Spara en ny backup nu.': 'New code created. Save a new backup now.',
+  'Din egen kod är sparad. Spara en ny backup nu.': 'Your own code is saved. Save a new backup now.',
+  'Spara backup': 'Save backup',
   'Välj egen kod': 'Choose your own code',
   'Koden låser dina backup-filer och sparas på den här enheten.': 'The code locks your backup files and is stored on this device.',
   'Spara kod': 'Save code',

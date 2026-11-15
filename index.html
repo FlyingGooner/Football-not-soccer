@@ -227,6 +227,16 @@
     </div>
   </form>
 </dialog>
+<dialog id="newcode-dialog" aria-labelledby="nk-title">
+  <form method="dialog">
+    <h2 id="nk-title">Byta kod?</h2>
+    <p class="muted">Backup-filer du redan har sparat går bara att öppna med den gamla koden. Har du inte kvar den gamla koden blir de värdelösa. Spara en ny backup direkt efter bytet.</p>
+    <div class="actions"><span class="spacer"></span>
+      <button type="submit" class="btn text" value="cancel">Avbryt</button>
+      <button type="submit" class="btn filled danger-fill" value="ok" id="nk-ok">Byt kod</button>
+    </div>
+  </form>
+</dialog>
 
 <dialog id="pw-dialog" aria-labelledby="pw-title">
   <form method="dialog" novalidate>
