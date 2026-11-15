@@ -691,5 +691,9 @@ I18N.add({
  "En sak per app.": "One thing per app.",
  "Varje app gör en sak riktigt bra. Allt annat väljs bort.": "Each app does one thing really well. Everything else is left out.",
  "En sak, gjord riktigt bra – utan konto, utan reklam, utan avgift och utan datainsamling.": "One thing, done really well – no account, no ads, no fee and no data collection.",
- "En sak, gjord bra.": "One thing, done well."
+ "En sak, gjord bra.": "One thing, done well.",
+ "Din data är din": "Your data is yours",
+ "Ingen server, inget konto. Webbläsaren stoppar alla anrop ut – även om koden skulle försöka.": "No server, no account. The browser blocks all outgoing requests – even if the code tried.",
+ "Ett tryck sparar en backup-fil, låst med AES-256 och ditt lösenord. Varje gissning tar 600 000 beräkningar – låt appen välja lösenordet, så går det inte att knäcka.": "One tap saves a backup file, locked with AES-256 and your password. Every guess takes 600,000 computations – let the app pick the password and it cannot be cracked.",
+ "Enda undantaget: fotbollsappen hämtar resultat från en enda källa – aldrig med din data.": "The only exception: the football app fetches results from a single source – never with your data."
 });
