@@ -347,3 +347,6 @@ html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { displ
 .dl-src { margin-top: 12px; }
 .dl-src p { margin: 4px 0; }
 .dl-src a { font-weight: 500; color: var(--primary); }
+.dl-app { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; padding: 6px 0; border-bottom: 1px solid rgba(127,127,127,.2); }
+.dl-app b { flex: 1 1 100%; font-weight: 500; }
+.dl-src h3 { margin: 0 0 4px; font-size: 1rem; }
