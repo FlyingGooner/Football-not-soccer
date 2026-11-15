@@ -717,5 +717,21 @@ I18N.add({
  "En officiell källa, inga dubbletter, gratis.": "One official source, no duplicates, free.",
  "Planera månaden, ingen bankkoppling.": "Plan the month, no bank connection.",
  "Tabell, matcher och ditt lag – inget mer.": "Table, matches and your team – nothing more.",
- "Skriv ner det, nästa steg, släpp tanken.": "Write it down, next step, let the thought go."
+ "Skriv ner det, nästa steg, släpp tanken.": "Write it down, next step, let the thought go.",
+ "Vanliga appar": "Typical apps",
+ "Mina appar": "My apps",
+ "På företagets server – kan läcka eller säljas": "On the company's server – can leak or be sold",
+ "Konto": "Account",
+ "Krävs, med e-post och lösenord": "Required, with email and password",
+ "Inget": "None",
+ "Backup": "Backup",
+ "I företagets moln": "In the company's cloud",
+ "Låst fil": "Locked file",
+ "med ditt lösenord – samma kryptering som banker använder": "with your password – the same encryption banks use",
+ "Ofta": "Often",
+ "Aldrig": "Never",
+ "– webbläsaren stoppar alla anrop ut": "– the browser blocks all outgoing requests",
+ "Spara lösenordet till backupen i din lösenordshanterare – det finns aldrig i filen, och utan det öppnas den inte.": "Save the backup password in your password manager – it is never in the file, and without it the file does not open.",
+ "Enda undantaget: fotbollsappen hämtar resultat från en enda källa – aldrig med din data. Spara lösenordet till backupen i din lösenordshanterare – det finns aldrig i filen, och utan det öppnas den inte.": "The only exception: the football app fetches results from a single source – never with your data. Save the backup password in your password manager – it is never in the file, and without it the file does not open.",
+ "Enda undantaget: appen hämtar resultat från en enda källa – aldrig med din data. Spara lösenordet till backupen i din lösenordshanterare – det finns aldrig i filen, och utan det öppnas den inte.": "The only exception: the app fetches results from a single source – never with your data. Save the backup password in your password manager – it is never in the file, and without it the file does not open."
 });
