@@ -548,3 +548,24 @@ I18N.add({
  "En träningsapp publicerade en karta över användarnas rundor – och avslöjade var hemliga militärbaser låg.": "A fitness app published a map of its users' routes – and revealed where secret military bases were.",
  "Gemensamt: datan låg samlad på en server. I de här apparna finns ingen sådan server.": "What they share: the data was gathered on a server. These apps have no such server."
 });
+// Bilderna om läckor och affärsmodellen (2026-11-15)
+I18N.add({
+ "Verkliga intrång hos stora tjänster som sparar samma sorts data som de här apparna. Vilka bolagen var spelar mindre roll – det är datan som gör ont.": "Real breaches at large services that store the same kind of data as these apps. Which companies they were matters less – it is the data that hurts.",
+ "Kaloriapp · 2018": "Calorie app · 2018",
+ "En av världens största kaloriappar tappade 150 miljoner konton: e-post, användarnamn och lösenord – nyckeln till dagboken med vikt och mat.": "One of the world's largest calorie apps lost 150 million accounts: email, usernames and passwords – the key to the diary of weight and food.",
+ "En psykoterapiklinik hackades. Anteckningar om oro och mående från tiotusentals samtal läckte, och patienterna utpressades en och en.": "A psychotherapy clinic was hacked. Notes on worries and well-being from tens of thousands of sessions leaked, and the patients were blackmailed one by one.",
+ "Barnens uppgifter · 2024": "Children's data · 2024",
+ "En skolplattform hackades. Namn, adresser och i vissa fall hälsouppgifter för tiotals miljoner elever kom ut.": "A school platform was hacked. Names, addresses and in some cases health information for tens of millions of pupils got out.",
+ "Affärsmodellen": "The business model",
+ "Det som säljs – utan intrång": "What is sold – without a breach",
+ "Läckor är olyckor. Det här är inte det – det är så många appar tjänar pengar. Alla fall ledde till böter eller förlikning hos amerikanska myndigheter.": "Leaks are accidents. This is not – it is how many apps make money. Every case led to fines or settlements with US authorities.",
+ "Mens och graviditet": "Periods and pregnancy",
+ "En mensapp delade användarnas uppgifter om mens och graviditet med annons- och analysföretag – trots löfte om motsatsen.": "A period app shared users' period and pregnancy data with advertising and analytics companies – despite promising not to.",
+ "Psykisk hälsa": "Mental health",
+ "En terapitjänst på nätet skickade svar om användarnas mående till sociala medier, för riktad reklam.": "An online therapy service sent users' answers about their mental health to social media, for targeted ads.",
+ "Mediciner": "Medicines",
+ "En recepttjänst delade vilka läkemedel och diagnoser användarna hade med stora annonsplattformar.": "A prescription service shared which medicines and conditions users had with large advertising platforms.",
+ "Varje köp": "Every purchase",
+ "Bankkopplade budgettjänster kan sälja transaktioner – var du handlar och vad du tjänar – avidentifierade, till investerare och analysföretag.": "Bank-connected budget services can sell transactions – where you shop and what you earn – de-identified, to investors and analytics firms.",
+ "Är du bekväm med att din vikt, din oro eller din lön blir en vara? De här apparna har inget att sälja: inget konto, ingen server, ingen analys.": "Are you comfortable with your weight, your worries or your salary becoming a product? These apps have nothing to sell: no account, no server, no analytics."
+});
