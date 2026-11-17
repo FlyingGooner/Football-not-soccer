@@ -441,3 +441,5 @@ html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { displ
 body { padding-left: 8px; padding-right: 8px; }
 .card { padding: 12px 12px; }
 .tabbar { inset: auto 8px calc(10px + env(safe-area-inset-bottom)) 8px; }
+/* The open status menu is placed in its own grid column, so 100% = its third. */
+.mbar .mtabs.open { width: 100%; right: 0; left: auto; }
