@@ -5,9 +5,21 @@ function renderPickers() {
   const shown = pickerLeagues(layout).map(leagueById);
   // Full width always; with two leagues there is room for the full names.
   const full = shown.length <= 2;
-  document.querySelectorAll('.league-picker').forEach((p) => fill(p, shown.map((l) => el('button', { type: 'button',
-    'aria-pressed': String(l.id === league), 'data-league': l.id, text: full && !p.closest('.mbar') ? l.name : l.short, on: { click: () => setLeague(l.id) } }))));
+  // Matcher: a dropdown (the chosen league shows, tap opens all). Tabell: buttons in full width.
+  document.querySelectorAll('.league-picker').forEach((p) => {
+    const menu = !!p.closest('.mbar');
+    p.classList.toggle('dd', menu); p.classList.toggle('open', menu && leagueMenuOpen);
+    fill(p, shown.map((l) => el('button', { type: 'button', 'aria-pressed': String(l.id === league), 'data-league': l.id,
+      text: menu || full ? l.name : l.short, on: { click: (e) => {
+        if (!menu) { setLeague(l.id); return; }
+        e.stopPropagation();
+        leagueMenuOpen = l.id === league && !leagueMenuOpen;
+        if (l.id === league) renderPickers(); else setLeague(l.id);
+      } } })));
+  });
 }
+let leagueMenuOpen = false;
+document.addEventListener('click', () => { if (leagueMenuOpen) { leagueMenuOpen = false; renderPickers(); } });
 
 // ---------- Rendering: table ----------
 const fmtGD = (n) => (n == null ? '–' : n > 0 ? `+${n}` : String(n));

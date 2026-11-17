@@ -416,3 +416,17 @@ html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { displ
 .mtabs.open button[aria-pressed="true"]::after { content: none; }
 .mbar .league-picker { grid-auto-columns: minmax(max-content, 1fr); }
 .mbar .league-picker button { padding: 0 12px; overflow: visible; }
+/* Matcher: league as a dropdown too (same look as the status menu). */
+.mbar { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+.mtabs.open { width: calc((100% - 8px) / 3); }
+.league-picker.dd { position: relative; display: grid; grid-auto-flow: row; grid-auto-columns: auto; width: 100%; padding: 4px; gap: 0; border-radius: var(--r-full); background: var(--secondary-container); overflow: visible; }
+.league-picker.dd button { min-height: 40px; padding: 0 28px 0 14px; border-radius: var(--r-full); background: transparent; color: var(--on-secondary-container); font-weight: 700; font-size: .875rem; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.league-picker.dd button[aria-pressed="true"]::after { content: '▾'; position: absolute; right: 14px; top: 26px; transform: translateY(-50%); font-size: .75rem; opacity: .8; }
+.league-picker.dd:not(.open) button[aria-pressed="false"] { display: none; }
+.league-picker.dd.open { position: absolute; left: 0; top: 0; z-index: 30; width: calc((100% - 8px) * 2 / 3); border-radius: var(--r-lg); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.league-picker.dd.open button { padding: 0 14px; font-weight: 500; }
+.league-picker.dd.open button[aria-pressed="true"] { font-weight: 700; background: color-mix(in srgb, var(--on-secondary-container) 14%, transparent); }
+.league-picker.dd.open button[aria-pressed="true"]::after { content: none; }
+.mtabs button { text-align: left; padding-left: 14px; }
+.mbar .mtabs { grid-column: 2; grid-row: 1; }
+.mbar { min-height: 48px; }
