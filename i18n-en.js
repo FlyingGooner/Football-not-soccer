@@ -22,6 +22,7 @@ I18N.add({
   'Ny kod skapad. Spara en ny backup nu.': 'New code created. Save a new backup now.',
   'Din egen kod är sparad. Spara en ny backup nu.': 'Your own code is saved. Save a new backup now.',
   'Spara backup': 'Save backup',
+  'Fler val': 'More options', 'Backupen innehåller dina inställningar (lag, favorit, liga), inte matchdata. Läs in den på en annan enhet för att flytta dem.': 'The backup contains your settings (teams, favourite, league), not match data. Load it on another device to move them.', 'Backupen låses med koden. Spara den i din lösenordshanterare.': 'The backup is locked with the code. Save it in your password manager.',
   'Välj egen kod': 'Choose your own code',
   'Koden låser dina backup-filer och sparas på den här enheten.': 'The code locks your backup files and is stored on this device.',
   'Spara kod': 'Save code',

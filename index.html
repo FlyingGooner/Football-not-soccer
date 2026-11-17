@@ -127,19 +127,23 @@
       <details class="card set-sec" id="card-data">
         <summary class="sec-sum"><span class="set-title">Data</span><span class="set-hint">Backup, import, radera</span></summary>
         <div class="set-body">
-          <p class="muted">Backup-filen innehåller följda lag, favorit och vald liga, och låses alltid med din kod nedan. Matchdata ingår inte, den hämtas igen. Läs in filen på en annan enhet för att flytta inställningarna.</p>
           <div class="actions wrap">
             <button type="button" class="btn filled" id="backup-save">Spara backup-fil</button>
             <label class="btn tonal btn-file">Läs in backup-fil<input type="file" id="import-file" accept=".txt,.json"></label>
           </div>
           <div class="pwd-box" id="pwd-box"></div>
           <p class="error" id="import-error" role="alert"></p>
-          <details class="data-text">
-            <summary class="data-text-title">Klistra in text</summary>
-            <label class="field"><span>Importera (ersätter inställningarna)</span><textarea id="import-text" rows="4" autocomplete="off" spellcheck="false" placeholder="Klistra in innehållet i en backup-fil"></textarea></label>
-            <div class="actions"><span class="spacer"></span><button type="button" class="btn tonal" id="import-btn">Importera</button></div>
+          <details class="data-more">
+            <summary class="data-text-title">Fler val</summary>
+            <details class="data-text">
+              <summary class="data-text-title">Klistra in text</summary>
+              <label class="field"><span>Importera (ersätter inställningarna)</span><textarea id="import-text" rows="4" autocomplete="off" spellcheck="false" placeholder="Klistra in innehållet i en backup-fil"></textarea></label>
+              <div class="actions"><span class="spacer"></span><button type="button" class="btn tonal" id="import-btn">Importera</button></div>
+            </details>
+            <div class="actions"><button type="button" class="btn text" id="pwd-own">Välj egen kod</button></div>
+            <p class="muted small">Backupen innehåller dina inställningar (lag, favorit, liga), inte matchdata. Läs in den på en annan enhet för att flytta dem.</p>
+            <div class="actions"><button type="button" class="btn text danger" id="reset">Radera all data</button></div>
           </details>
-          <div class="actions"><button type="button" class="btn text danger" id="reset">Radera all data</button></div>
         </div>
       </details>
       <details class="card set-sec help" id="card-help" lang="sv" data-no-tr>

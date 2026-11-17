@@ -452,3 +452,7 @@ body { padding-left: 8px; padding-right: 8px; }
   }
 }
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+/* Data-kortet städat (2026-11-17): sällan använda val under Fler val */
+.data-more { margin-top: 8px; border-top: 1px solid var(--outline-variant); }
+.data-more > summary { cursor: pointer; min-height: 48px; display: flex; align-items: center; color: var(--primary); font-weight: 500; }
+.data-more > * + * { margin-top: 8px; }

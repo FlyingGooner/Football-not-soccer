@@ -460,8 +460,7 @@ function renderPwd() {
   fill(box, el('div', { class: 'pwd-card' },
     el('div', { class: 'pwd-head' }, el('span', { text: '🔑 Din kod' }), toggle, copy, change),
     showPwd && p ? el('p', { class: 'pwd-show', text: p }) : null,
-    el('button', { type: 'button', class: 'btn text pwd-own', on: { click: ownPassword } }, 'Välj egen kod'),
-    el('p', { class: 'muted small pwd-note', text: 'Alla backup-filer låses med den här koden. Spara den i din lösenordshanterare – du behöver den för att öppna en backup på en ny telefon.' })));
+    el('p', { class: 'muted small pwd-note', text: 'Backupen låses med koden. Spara den i din lösenordshanterare.' })));
 }
 const BACKUP_MSG = { saved: 'Backup-filen sparades', busy: 'Ett sparfönster är redan öppet', fallback: 'Backup-filen laddas ner',
   error: 'Kunde inte spara filen', nocrypto: 'Den här webbläsaren kan inte kryptera – ingen fil sparades' };
@@ -508,6 +507,7 @@ $('imp-ok').addEventListener('click', () => {
   closeWelcome();
   snackbar('Inställningarna importerade', 'Ångra', () => applySettings(before));
 });
+$('pwd-own').addEventListener('click', ownPassword);
 $('reset').addEventListener('click', () => $('confirm-dialog').showModal());
 $('cd-ok').addEventListener('click', () => {
   store.clear(CONFIG.prefix); forgetPassword();
