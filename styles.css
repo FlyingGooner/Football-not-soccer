@@ -387,3 +387,7 @@ html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { displ
 .tab { min-height: 52px; gap: 2px; }
 .tab span { height: 30px; }
 #snackbar { bottom: calc(92px + env(safe-area-inset-bottom)); }
+/* Selected view: the whole item (icon + label) in one rounded indicator. */
+.tab { flex: 1; max-width: 88px; margin: 0 2px; padding: 4px 0; border-radius: var(--r-full); transition: background .2s; }
+.tab span, .tab.on span { width: auto; background: none; }
+.tab.on { background: var(--secondary-container); color: var(--on-secondary-container); }
