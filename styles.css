@@ -391,3 +391,5 @@ html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { displ
 .tab { flex: 1; max-width: 88px; margin: 0 2px; padding: 4px 0; border-radius: var(--r-full); transition: background .2s; }
 .tab span, .tab.on span { width: auto; background: none; }
 .tab.on { background: var(--secondary-container); color: var(--on-secondary-container); }
+.league-picker { width: 100%; margin-inline: 0; }
+.league-picker button { padding: 0 8px; overflow: hidden; text-overflow: ellipsis; }
