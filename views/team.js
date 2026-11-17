@@ -13,9 +13,9 @@ function renderTeam() {
   $('teambar-name').textContent = team.name;
   $('teambar-back').hidden = !peek;   // ← only for a team opened from somewhere (not the favourite)
   const fav = teams.favorite === team.id, on = isFollowed(team.id), fb = $('teambar-fav'), ob = $('teambar-fol');
-  fb.textContent = fav ? '★' : '☆'; fb.setAttribute('aria-pressed', String(fav));
+  fill(fb, el('span', { class: 'ic', 'aria-hidden': 'true', text: fav ? '★' : '☆' }), el('span', { class: 'lb', text: 'Favorit' })); fb.setAttribute('aria-pressed', String(fav));
   fb.setAttribute('aria-label', `${fav ? 'Ta bort som favorit' : 'Gör till favorit'}: ${team.name}`);
-  ob.textContent = on ? '✓' : '+'; ob.setAttribute('aria-pressed', String(on));
+  fill(ob, el('span', { class: 'ic', 'aria-hidden': 'true', text: on ? '✓' : '+' }), el('span', { class: 'lb', text: on ? 'Följer' : 'Följ' })); ob.setAttribute('aria-pressed', String(on));
   ob.setAttribute('aria-label', `${on ? 'Sluta följa' : 'Följ'} ${team.name}`);
   const td = teamData();
   const loading = () => el('span', { class: 'muted', text: 'Laddar…' });
