@@ -443,3 +443,11 @@ body { padding-left: 8px; padding-right: 8px; }
 .tabbar { inset: auto 8px calc(10px + env(safe-area-inset-bottom)) 8px; }
 /* The open status menu is placed in its own grid column, so 100% = its third. */
 .mbar .mtabs.open { width: 100%; right: 0; left: auto; }
+/* Light mode neutral too (2026-11-17): white/grey surfaces, colour only on buttons and elements. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --surface: #f8f8f9; --surface-container: #ececef; --surface-container-high: #e2e2e6;
+    --secondary-container: #dcdce2; --on-secondary-container: #1a1a1d;
+    --on-surface: #1a1a1d; --on-surface-variant: #55555d; --outline: #7a7a83; --outline-variant: #d2d2d8;
+  }
+}
