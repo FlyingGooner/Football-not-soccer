@@ -24,7 +24,8 @@ function lagLine(kind, t, list) {
   const toggle = () => { if (state === 3) lagOpen.set(key, 2); else if (state) lagOpen.delete(key); else lagOpen.set(key, 1); renderFollowed(); };
   const row = el('div', { class: 'lrow tap', role: 'button', tabindex: '0', 'aria-expanded': String(!!state), 'data-lag': key,
     on: { click: toggle, keydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } } } },
-  label, what, el('span', { class: 'muted small', text: past ? fmtShort.format(d) : compShort(m) }));
+  label, what, el('span', { class: 'muted small', text: past ? fmtShort.format(d) : compShort(m) }),
+  el('span', { class: 'chev', 'aria-hidden': 'true', text: '▾' }));
   if (!state) return row;
   // Rows that fit: screen minus header, badge row, card head, two lines and the menu (~330 px), shared by two lists of ~33 px rows.
   const fit = Math.max(CONFIG.moreStep, Math.floor((innerHeight - 330) / 2 / 33));
@@ -59,7 +60,8 @@ function renderFollowed() {
   fill($('lag-live-list'), live.map((m) => expandable(liveRow(m), m)));
   fill($('lag-cards'), shown.map(({ t, ms, up, past }) => el('section', { class: 'card lag', 'data-team': t.id },
     el('h2', { class: 'lag-h' }, el('button', { type: 'button', class: 'lag-open', 'aria-label': `Visa ${t.name}`, on: { click: () => openTeam(t, t.leagueId) } },
-      logo(t.logo), el('span', { text: t.name }), t.id === teams.favorite ? el('span', { class: 'star', 'aria-label': 'Favorit', text: '★' }) : null)),
+      logo(t.logo), el('span', { text: t.name }), t.id === teams.favorite ? el('span', { class: 'star', 'aria-label': 'Favorit', text: '★' }) : null),
+      (() => { const f = formDots(ms, t); return f ? el('span', { class: 'tform lag-form' }, [...f.children].slice(1)) : null; })()),
     ms ? [lagLine('next', t, up), lagLine('past', t, past)] : el('p', { class: 'muted', text: 'Laddar…' }))));
 }
 

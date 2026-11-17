@@ -4,8 +4,8 @@ function formDots(matches, t = team) {
   const pl = (matches || []).filter((m) => m.state === 'post' && m.leagueId === t.leagueId).slice(-5);
   if (!pl.length) return null;
   return el('div', { class: 'form' }, el('span', { class: 'small muted', text: 'Form' }), pl.map((m) => {
-    const r = resultOf(m);
-    return r ? el('span', { class: `dot ${r}`, title: `${opponent(m).name} ${scoreText(m.homeScore, m.awayScore)}`, text: RESULT_SHORT[r] }) : null;
+    const r = resultOf(m, t.id);
+    return r ? el('span', { class: `dot ${r}`, title: `${opponent(m, t.id).name} ${scoreText(m.homeScore, m.awayScore)}`, text: RESULT_SHORT[r] }) : null;
   }));
 }
 
