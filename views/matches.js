@@ -167,9 +167,9 @@ function swipeLeague(dir) {
   const ids = pickerLeagues(layout), next = ids[ids.indexOf(league) + dir];
   if (next) setLeague(next);
 }
-function onSwipe(node, fn) {
+function onSwipe(node, fn, ok = () => true) {
   let t0 = null;
-  node.addEventListener('touchstart', (e) => { const t = e.touches[0]; t0 = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
+  node.addEventListener('touchstart', (e) => { const t = e.touches[0]; t0 = e.touches.length === 1 && ok(e) ? { x: t.clientX, y: t.clientY } : null; }, { passive: true });
   node.addEventListener('touchend', (e) => {
     if (!t0) return;
     const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y;
@@ -177,5 +177,6 @@ function onSwipe(node, fn) {
     if (Math.abs(dx) >= 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) fn(dx < 0 ? 1 : -1);
   }, { passive: true });
 }
-onSwipe($('card-matches'), swipeTab);
-onSwipe($('view-table'), swipeLeague);   // whole view, not only the card
+// Whole screen between the top bar and the menu (not on the league buttons, which may scroll sideways).
+onSwipe(document, (dir) => { if (view === 'matches') swipeTab(dir); else if (view === 'table') swipeLeague(dir); },
+  (e) => !e.target.closest('header, nav, .league-picker, dialog, input, textarea, select'));
