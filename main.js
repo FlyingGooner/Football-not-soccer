@@ -39,6 +39,7 @@ $('tabbar').addEventListener('click', (ev) => {
   if (!t) return;
   ev.preventDefault();
   if (t.dataset.view === 'fav' && peek) { peek = null; syncFav(); teamOpen.next = teamOpen.last = false; }   // the middle button always shows the favourite
+  if (t.dataset.view === 'matches') { mtab = null; if (view === 'matches') { renderLeagueMatches(); scrollTo(0, 0); return; } }   // always the default tab (Aktuella only with today's matches, else Kommande)
   go(t.dataset.view);
 });
 // Bakåt (Android, Safari swipe, ←): show the view of that history step; an open team closes. No new step.
