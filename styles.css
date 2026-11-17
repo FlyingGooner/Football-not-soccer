@@ -393,3 +393,26 @@ html[lang="en"] .help[lang="sv"], html:not([lang="en"]) .help[lang="en"] { displ
 .tab.on { background: var(--secondary-container); color: var(--on-secondary-container); }
 .league-picker { width: 100%; margin-inline: 0; }
 .league-picker button { padding: 0 8px; overflow: hidden; text-overflow: ellipsis; }
+/* Matcher: league (2/3) and status menu (1/3) in one row. */
+.mbar { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; align-items: start; }
+.mbar .league-picker { min-width: 0; }
+.mtabs { position: relative; display: grid; width: 100%; margin: 0; padding: 4px; border-radius: var(--r-full); background: var(--secondary-container); }
+.mtabs button { min-height: 40px; padding: 0 22px 0 10px; border: 0; border-radius: var(--r-full); background: transparent; color: var(--on-secondary-container); font-weight: 700; font-size: .9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mtabs button[aria-pressed="true"] { background: transparent; color: var(--on-secondary-container); }
+.mtabs button[aria-pressed="true"]::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: .75rem; opacity: .8; }
+.mtabs:not(.open) button[aria-pressed="false"] { display: none; }
+.mtabs.open { z-index: 30; border-radius: var(--r-lg); box-shadow: 0 8px 24px rgba(0,0,0,.35); align-self: start; }
+.mtabs.open button[aria-pressed="false"] { font-weight: 500; }
+.mtabs.open button[aria-pressed="true"]::after { content: '▴'; }
+.mbar { position: relative; }
+.mtabs.open { position: absolute; right: 0; top: 0; width: calc((100% - 8px) / 3); }
+.mtabs button[aria-pressed="true"]::after { top: 26px; }
+.mtabs { grid-auto-rows: auto; }
+.mbar { grid-template-columns: minmax(0, 1fr) 128px; }
+.mtabs.open { width: 128px; }
+.mtabs button { padding: 0 24px 0 12px; font-size: .875rem; text-overflow: clip; }
+.mtabs.open button { padding: 0 12px; }
+.mtabs.open button[aria-pressed="true"] { background: color-mix(in srgb, var(--on-secondary-container) 14%, transparent); }
+.mtabs.open button[aria-pressed="true"]::after { content: none; }
+.mbar .league-picker { grid-auto-columns: minmax(max-content, 1fr); }
+.mbar .league-picker button { padding: 0 12px; overflow: visible; }

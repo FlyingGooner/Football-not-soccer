@@ -104,6 +104,7 @@ function leagueMatchList(list, emptyText) {
 }
 // ---------- Card Matcher: tabs Aktuella / Kommande / Spelade (session only) ----------
 const MTABS = [['now', 'Aktuella', 'Inga matcher i dag'], ['next', 'Kommande', 'Inga kommande matcher'], ['past', 'Spelade', 'Inga spelade matcher']];
+let mtabsOpen = false;
 let mtab = null;                 // null = default: Aktuella if there are live or today's matches, else Kommande (reset on every view change)
 const curTab = () => mtab || (matchLists(L(league).league || []).now.length ? 'now' : 'next');
 let extra = { next: 0, past: 0 }; // rows added with Visa fler
@@ -125,8 +126,10 @@ const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? r
 function renderLeagueMatches() {
   const ms = L(league).league || [], lists = matchLists(ms);
   const tab = curTab();
+  // Status as a compact menu next to the leagues: the chosen one shows, tap opens all three.
+  $('mtabs').classList.toggle('open', mtabsOpen);
   fill($('mtabs'), MTABS.map(([id, name]) => el('button', { type: 'button', role: 'tab', 'aria-selected': String(id === tab), 'aria-pressed': String(id === tab), 'data-mtab': id, text: name,
-    on: { click: () => { mtab = id; renderLeagueMatches(); } } })));
+    on: { click: (e) => { e.stopPropagation(); mtabsOpen = id === tab && !mtabsOpen; mtab = id; renderLeagueMatches(); } } })));
   const [, , empty] = MTABS.find(([id]) => id === tab), list = lists[tab];
   if (tab === 'now') { fill($('match-list'), leagueMatchList(list, empty)); $('more').hidden = true; return; }
   const n = fitRows() + extra[tab], dir = tab === 'past' ? -1 : 1;
@@ -180,3 +183,5 @@ function onSwipe(node, fn, ok = () => true) {
 // Whole screen between the top bar and the menu (not on the league buttons, which may scroll sideways).
 onSwipe(document, (dir) => { if (view === 'matches') swipeTab(dir); else if (view === 'table') swipeLeague(dir); },
   (e) => !e.target.closest('header, nav, .league-picker, dialog, input, textarea, select'));
+
+document.addEventListener('click', () => { if (mtabsOpen) { mtabsOpen = false; renderLeagueMatches(); } });

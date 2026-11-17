@@ -6,7 +6,7 @@ function renderPickers() {
   // Full width always; with two leagues there is room for the full names.
   const full = shown.length <= 2;
   document.querySelectorAll('.league-picker').forEach((p) => fill(p, shown.map((l) => el('button', { type: 'button',
-    'aria-pressed': String(l.id === league), 'data-league': l.id, text: full ? l.name : l.short, on: { click: () => setLeague(l.id) } }))));
+    'aria-pressed': String(l.id === league), 'data-league': l.id, text: full && !p.closest('.mbar') ? l.name : l.short, on: { click: () => setLeague(l.id) } }))));
 }
 
 // ---------- Rendering: table ----------
