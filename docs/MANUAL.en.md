@@ -42,3 +42,13 @@ The same text is in the app under **Settings → General → Help and manual** w
 - The latest fetched data is saved and shown offline, with the time of the latest update. Match data is fetched from ESPN directly from your device. ESPN sees your IP address and which leagues and teams are fetched, but no account and no cookies.
 - Under Settings → Data you save an encrypted backup file with followed teams, favourite and league. Match data is not included, it is fetched again.
 - The backup file is always locked with **your code**: 16 random characters the app creates for you the first time it starts and stores on the device. If you would rather use your own code (e.g. the same in all your apps), tap **Choose your own code** – it needs at least 16 characters with upper and lower case, a digit and a special character, the same requirements as the created one. A backup takes one tap. Under Settings → Data you find Your code: **Show**, **Copy** and **New code**. Save the code in your password manager – on a new phone (or after Delete all data) you need it to open a backup. If you restore a backup with a different code, that code is used for new backups from then on. New code means old backup files open only with the old code (Undo is available). The app collects no data – the code is just a key that protects your backups.
+
+
+## Install as an app
+
+![Android: Chrome menu ⋮ → Install app](manual/install-android-en.png)
+- **Android (Chrome):** open the app link, tap ⋮ at the top right and choose **Install app**.
+
+![iPhone: Safari → Share → Add to Home Screen](manual/install-ios-en.png)
+- **iPhone (Safari):** open the link in Safari, tap **Share** (the box with the arrow) and choose **Add to Home Screen** → **Add**.
+- Installed, the app works like a normal app, even offline.

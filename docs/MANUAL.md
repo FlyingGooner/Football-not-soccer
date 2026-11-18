@@ -42,3 +42,13 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 - Senast hämtad data sparas och visas utan nät, med tid för senaste uppdatering. Matchdata hämtas från ESPN direkt från din enhet. ESPN ser din IP-adress och vilka ligor och lag som hämtas, men inget konto och inga cookies.
 - Under Inställningar → Data sparar du en krypterad backup-fil med följda lag, favorit och liga. Matchdata ingår inte, den hämtas igen.
 - Backup-filen låses alltid med **din kod**: 16 slumpade tecken som appen skapar åt dig första gången den startas och sparar på enheten. Vill du hellre använda en egen kod (t.ex. samma i alla dina appar) trycker du **Välj egen kod** – den måste ha minst 16 tecken med stor och liten bokstav, siffra och specialtecken, samma krav som den skapade. Backup sparas med ett tryck. Under Inställningar → Data finns Din kod: **Visa**, **Kopiera** och **Ny kod**. Spara koden i din lösenordshanterare – på en ny telefon (eller efter Radera all data) behöver du den för att öppna en backup. Läser du in en backup med en annan kod används den koden sedan för nya backuper. Ny kod gör att gamla backup-filer bara öppnas med den gamla koden (Ångra finns). Appen samlar ingen data – koden är bara en nyckel som skyddar dina backuper.
+
+
+## Installera som app
+
+![Android: Chrome-menyn ⋮ → Installera app](manual/install-android.png)
+- **Android (Chrome):** öppna appens länk, tryck ⋮ uppe till höger och välj **Installera app**.
+
+![iPhone: Safari → Dela → Lägg till på hemskärmen](manual/install-ios.png)
+- **iPhone (Safari):** öppna länken i Safari, tryck **Dela** (rutan med pilen) och välj **Lägg till på hemskärmen** → **Lägg till**.
+- Installerad fungerar appen som en vanlig app, även utan nät.
