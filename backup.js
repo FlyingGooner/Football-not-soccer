@@ -137,7 +137,9 @@
   async function encrypt(text, pwd, slug) {
     const fail = (m) => { lastError = m; throw new Error(m); };
     if (!NAME_RE.test(slug) || typeof text !== 'string' || !text) fail('ogiltig indata till krypteringen');
-    if (checkPassword(pwd)) fail('koden uppfyller inte kraven – tryck Ny kod eller Välj egen kod');
+    // 2026-11-18: kraven (checkPassword) gäller när en ny kod väljs. En kod som redan finns – t.ex. skapad av en äldre
+    // version med andra krav – får alltid låsa backupen, annars kan man inte spara någon backup alls.
+    if (typeof pwd !== 'string' || !pwd || pwd.length > PWD_MAX) fail('koden saknas – tryck Ny kod');
     if (!hasCrypto()) fail('webbläsaren kan inte kryptera');
     let ct, salt, iv;
     try {
