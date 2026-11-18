@@ -573,7 +573,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     t0 = null;
     if (Math.abs(dx) < 40 || Math.abs(dx) < 1.5 * Math.abs(dy)) return;
     const items = [...nav.querySelectorAll(item)].filter((x) => !x.hidden && x.offsetParent);
-    const next = items[items.findIndex((x) => x.matches(on)) + (dx < 0 ? 1 : -1)];
+    // 2026-11-18: svep i menyn dit du vill gå – åt höger = fliken till höger (som att dra markeringen).
+    const next = items[items.findIndex((x) => x.matches(on)) + (dx > 0 ? 1 : -1)];
     if (next) next.click();
   }, { passive: true });
 })(document.querySelector('.tabbar'), '.tab', '.on');
