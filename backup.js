@@ -38,11 +38,23 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);   // at once can cancel the download in Safari
   }
 
+  // 2026-11-18: why the last save failed, shown in the app's message (a short text, never data).
+  let lastError = '';
+  const note = (e) => { lastError = String((e && e.message) || e || '').slice(0, 120); };
+  // Share sheet with the file (Android/iOS: Spara i Filer, Drive …) – used when the ordinary download fails.
+  async function shareSave(name, text) {
+    const file = new File([text], name, { type: 'text/plain' });
+    if (!navigator.canShare || !navigator.canShare({ files: [file] })) throw new Error('kan inte dela filer här');
+    await navigator.share({ files: [file], title: name });
+  }
+
   // → 'saved' (host saved it) | 'declined' (viewer said no) | 'busy' (a prompt is already open)
   //   | 'fallback' (browser download started) | 'error'
   async function save({ slug, today, text }) {
-    if (typeof text !== 'string' || !text) return 'error';
-    const name = fileName(slug, today);
+    lastError = '';
+    if (typeof text !== 'string' || !text) { lastError = 'ingen text att spara'; return 'error'; }
+    let name;
+    try { name = fileName(slug, today); } catch (e) { note(e); return 'error'; }
     const dl = await host();
     if (dl) {
       try { await dl.save({ filename: name, data: text }); return 'saved'; } catch (e) {
@@ -52,7 +64,12 @@
         // unavailable, not_granted and the rest: try the ordinary download
       }
     }
-    try { blobSave(name, text); return 'fallback'; } catch { return 'error'; }
+    try { blobSave(name, text); return 'fallback'; } catch (e) { note(e); }
+    try { await shareSave(name, text); return 'saved'; } catch (e) {
+      if (e && e.name === 'AbortError') return 'declined';
+      note(lastError ? lastError + '; ' + (e && e.message) : e);
+      return 'error';
+    }
   }
 
   // Reads one chosen file as strict UTF-8 text. → { text } | { error }. Name and MIME type are ignored.
@@ -118,12 +135,16 @@
 
   // → envelope text. Throws if crypto is missing or the password breaks the rule.
   async function encrypt(text, pwd, slug) {
-    if (!NAME_RE.test(slug) || typeof text !== 'string' || !text) throw new Error('Backup.encrypt: ogiltig indata');
-    if (checkPassword(pwd)) throw new Error('Backup.encrypt: ogiltigt lösenord');
-    if (!hasCrypto()) throw new Error('Backup.encrypt: kryptering saknas');
-    const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
-    const key = await deriveKey(pwd, salt, ITER);
-    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad(slug, ITER) }, key, new TextEncoder().encode(text)));
+    const fail = (m) => { lastError = m; throw new Error(m); };
+    if (!NAME_RE.test(slug) || typeof text !== 'string' || !text) fail('ogiltig indata till krypteringen');
+    if (checkPassword(pwd)) fail('koden uppfyller inte kraven – tryck Ny kod eller Välj egen kod');
+    if (!hasCrypto()) fail('webbläsaren kan inte kryptera');
+    let ct, salt, iv;
+    try {
+      salt = crypto.getRandomValues(new Uint8Array(16)); iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(pwd, salt, ITER);
+      ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad(slug, ITER) }, key, new TextEncoder().encode(text)));
+    } catch (e) { fail('krypteringen misslyckades: ' + ((e && e.message) || e)); }
     return JSON.stringify({ app: slug, format: 1, encrypted: true, kdf: KDF, iter: ITER, salt: toB64(salt), iv: toB64(iv), data: toB64(ct) });
   }
 
@@ -318,5 +339,6 @@
     return a.value;
   }
 
-  self.Backup = Object.freeze({ fileName, save, read, checkPassword, isEncrypted, encrypt, decrypt, askPassword, saveWithPassword, openText, generatePassword });
+  self.Backup = Object.freeze({ fileName, save, read, checkPassword, isEncrypted, encrypt, decrypt, askPassword, saveWithPassword, openText, generatePassword,
+    note, get lastError() { return lastError; } });   // 2026-11-18: note(e) / lastError = orsaken till senaste fel
 })();

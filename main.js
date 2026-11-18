@@ -347,7 +347,7 @@ async function saveBackupFile(slug, today, getText) {
     const r = await Backup.save({ slug, today, text: a.value.env });
     if (r === 'saved' || r === 'fallback') { snackbar('Backup sparad. Lösenordet är sparat på enheten – nästa gång räcker ett tryck.', null, null, 5000); return 'first'; }
     return r;
-  } catch { return 'error'; } finally { pwdBusy = false; }
+  } catch (e) { if (!Backup.lastError) Backup.note(e); return 'error'; } finally { pwdBusy = false; }
 }
 // The remembered password first; another password → the usual question. Returns { text } | { error } | { cancelled }.
 async function openBackupText(text, slug) {
@@ -466,7 +466,7 @@ const BACKUP_MSG = { saved: 'Backup-filen sparades', busy: 'Ett sparfönster är
   error: 'Kunde inte spara filen', nocrypto: 'Den här webbläsaren kan inte kryptera – ingen fil sparades' };
 $('backup-save').addEventListener('click', async () => {
   const r = await saveBackupFile(CONFIG.slug, isoToday(), () => exportText(settings(), isoToday()));
-  if (r !== 'first' && BACKUP_MSG[r]) snackbar(BACKUP_MSG[r], null, null, 4000);
+  if (r !== 'first' && BACKUP_MSG[r]) snackbar(BACKUP_MSG[r] + (r === 'error' && Backup.lastError ? ` (${Backup.lastError})` : ''), null, null, r === 'error' ? 8000 : 4000);
 });
 async function openImport(text) {
   const r = await openBackupText(text, CONFIG.slug);
