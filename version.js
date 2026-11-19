@@ -1,1 +1,1 @@
-﻿self.APP_VERSION = '0.16.63';
+﻿self.APP_VERSION = '0.16.64';
