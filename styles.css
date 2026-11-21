@@ -574,3 +574,6 @@ dialog h2 { font-size: 1.0625rem; font-weight: 600; text-align: center; }
 }
 /* Utfälld meny: tätare glas så att texten går att läsa över innehållet (som iOS-menyer) */
 .mbar :is(.league-picker, .mtabs).open { background: color-mix(in srgb, var(--card) 92%, transparent); }
+/* Mindre apprubrik, tydligt versionsnummer (2026-11-21) */
+.brand { font-size: 1.25rem; font-weight: 600; letter-spacing: 0; }
+.version { font-size: .8125rem; font-weight: 600; line-height: 1; padding: 6px 12px; background: var(--fill-2); color: var(--text); -webkit-backdrop-filter: none; backdrop-filter: none; border: 0; box-shadow: none; }
