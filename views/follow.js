@@ -4,10 +4,13 @@ let lagFilter = null;          // a team id shown alone (märkesraden, session o
 const lagOpen = new Map();     // `${teamId}:next|past` → 1 (5 more) or 2 (all), session only
 
 function liveRow(m) {
-  return el('div', { class: 'lm', 'data-match': m.id },
-    el('span', { class: 't h' }, teamName(m.home, m.leagueId), logo(m.home.logo)),
-    el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore), el('span', { class: 'live', text: liveText(m) }), el('span', { class: 'end', text: compShort(m) })),
-    el('span', { class: 't' }, logo(m.away.logo), teamName(m.away, m.leagueId)));
+  // Samma matchkort som på Matcher (2026-11-21): ledaren fet + grön sida, den andra röd, resultat i flytande bubbla.
+  const hs = Number(m.homeScore), as = Number(m.awayScore), ok = Number.isFinite(hs) && Number.isFinite(as) && hs !== as;
+  const cls = (a, b) => (!ok ? '' : a > b ? ' win' : ' lose');
+  return el('div', { class: 'lm mc' + (ok ? (hs > as ? ' lead lead-h' : ' lead lead-a') : ''), 'data-match': m.id },
+    el('span', { class: `t h${cls(hs, as)}` }, teamName(m.home, m.leagueId), logo(m.home.logo)),
+    el('span', { class: 's' }, el('span', { class: 'sc', text: scoreText(m.homeScore, m.awayScore) }), el('span', { class: 'live', text: liveText(m) }), el('span', { class: 'end', text: compShort(m) })),
+    el('span', { class: `t${cls(as, hs)}` }, logo(m.away.logo), teamName(m.away, m.leagueId)));
 }
 // One line: Kommande (day, time, opponent (H/B)) or Spelad (V/O/F, score, opponent, date).
 function lagLine(kind, t, list) {
