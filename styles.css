@@ -226,15 +226,16 @@ dialog p { margin: 0 0 12px; }
 .icon-btn:disabled { opacity: .38; cursor: default; }
 .l-off .row-name { color: var(--muted); text-decoration: line-through; }
 /* Card Matcher: tabs, rows as tall as table rows, Visa fler */
-/* Tredelad rad (2026-11-21): lag | resultat | lag som egna rutor; ledaren grön, den andra röd, oavgjort grått; text i vita bubblor */
-#card-matches .lm { padding: 0; min-height: 0; margin: 6px 0; gap: 4px; background: none; align-items: stretch; }
-#card-matches .lm > .t, #card-matches .lm > .s { padding: 8px; border-radius: var(--r-md); background: var(--surface-container-high); display: flex; align-items: center; }
-#card-matches .lm > .s { flex-direction: column; justify-content: center; }
-#card-matches .lm > .t.win { background: rgba(46, 160, 67, .22); color: inherit; }
-#card-matches .lm > .t.lose { background: rgba(211, 47, 47, .18); }
-#card-matches .lm > .t > span:not(.ph) { background: var(--surface); padding: 4px 10px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+/* Ett kort per match, internt tredelat (2026-11-21): lag | resultat | lag. Ledarens del grön, den andra röd, oavgjort neutral; resultatet i en vit bubbla */
+#card-matches .lm { padding: 0; min-height: 56px; margin: 8px 0; gap: 0; align-items: stretch; border-radius: 16px; overflow: hidden; background: var(--surface-container-high); box-shadow: 0 1px 2px rgba(0,0,0,.10), 0 1px 3px 1px rgba(0,0,0,.05); }
+#card-matches .lm > .t { padding: 10px 12px; display: flex; align-items: center; }
+#card-matches .lm > .s { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-inline: 1px solid var(--line); }
+#card-matches .lm > .t.win { background: rgba(46, 160, 67, .18); color: inherit; }
+#card-matches .lm > .t.lose { background: rgba(211, 47, 47, .12); }
+#card-matches .lm > .s .sc { background: var(--surface); padding: 2px 10px; border-radius: 999px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+#card-matches .lm > .s .live, #card-matches .lm > .s .end { margin: 0; }
 #card-matches .day { border-top: 0; }
-#card-matches .lm .s { width: 88px; min-width: 88px; padding: 8px 4px; }
+#card-matches .lm .s { width: 92px; min-width: 92px; padding: 8px 4px; }
 .lm .s .end { display: block; font-size: .625rem; font-weight: 500; color: var(--muted); }
 .lm .t.win { --side: 46, 160, 67; }
 .lm .t.lose { color: var(--muted); --side: 211, 47, 47; }

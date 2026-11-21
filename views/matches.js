@@ -101,7 +101,7 @@ function leagueMatchList(list, emptyText) {
     const hs = Number(m.homeScore), as = Number(m.awayScore), scored = m.state !== 'pre' && Number.isFinite(hs) && Number.isFinite(as);
     const cls = (a, b) => (!scored || a === b ? '' : a > b ? ' win' : ' lose');
     const mid = m.state === 'pre' ? el('span', { class: 's', text: fmtTime.format(m.date) })
-      : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore),
+      : el('span', { class: 's' }, el('span', { class: 'sc', text: scoreText(m.homeScore, m.awayScore) }),
         m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : el('span', { class: 'end', text: 'Slut' }));
     // Eget kort per match (2026-11-21): grått tills någon leder, då grön ton och grön kant på ledarens sida.
     const lead = scored && hs !== as ? (hs > as ? ' lead lead-h' : ' lead lead-a') : '';
