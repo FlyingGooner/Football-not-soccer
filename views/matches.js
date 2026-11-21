@@ -92,6 +92,9 @@ function leagueMatchList(list, emptyText) {
   if (!list.length) return el('p', { class: 'muted', text: emptyText });
   const wrap = el('div');
   let lastDay = null, group = null;
+  // Pågår först, sedan kommande, sist spelade (2026-11-21); stabil sortering behåller ordningen inom varje grupp.
+  const rank = { in: 0, pre: 1, post: 2 };
+  list = [...list].sort((a, b) => (rank[a.state] ?? 1) - (rank[b.state] ?? 1));
   for (const m of list) {
     const today = fmtDayKey.format(m.date) === fmtDayKey.format(Date.now());
     const key = m.state === 'in' ? 'live' : today ? `today-${m.state}` : fmtDayKey.format(m.date);
