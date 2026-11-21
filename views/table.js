@@ -29,7 +29,8 @@ function tableRow(r, lid, rows, pickable) {
   const followed = teams.follow.find((t) => t.id === r.id);
   const tr = el('tr', { class: [z ? z.cls : '', followed ? 'me' : ''].join(' ').trim() || null },
     el('td', { class: 'pos', text: v(r.rank) }),
-    el('td', { class: 'team' }, el('span', { class: 'tname' }, logo(r.logo), el('span', { text: r.name }))),
+    el('td', { class: 'team' }, el('span', { class: 'tname' }, logo(r.logo), el('span', { text: r.name }),
+      followed ? el('span', { class: 'fstar', 'aria-label': 'Följer', text: '★' }) : null)),   // stjärna i stället för färg (2026-11-21)
     el('td', { text: v(r.played) }),
     el('td', { class: 'wdl', text: v(r.w) }), el('td', { class: 'wdl', text: v(r.d) }), el('td', { class: 'wdl', text: v(r.l) }),
     el('td', { text: fmtGD(r.gd) }), el('td', { class: 'pts', text: v(r.pts) }));
