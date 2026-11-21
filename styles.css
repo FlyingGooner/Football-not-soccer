@@ -486,33 +486,91 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .lm.mc > .s:has(.live) { background: color-mix(in srgb, var(--error-container) 70%, var(--surface)); }
 .lm.mc > .s .live { background: none; padding: 0; border-radius: 0; font-size: .75rem; font-weight: 700; letter-spacing: .3px; line-height: 1.2; color: var(--error); }
 .lm.mc > .s:has(.live) .end { display: none; }
-/* Material 3 (2026-11-21): klara färger med kontrast ≥ 7:1. Matchkortet delas i två fasta halvor – vinnaren i
-   grön container, förloraren i röd – med on-färgerna som text. Resultatrutan är en neutral yta, live i error-container.
-   Menyraden är en M3-navigeringsrad (solid yta, pillermarkering) i stället för glas. */
+/* Apple HIG + Liquid Glass (2026-11-21, ersätter M3-blocket samma kväll). Systemfärger och grupperade ytor från iOS,
+   appens gräsgröna som tonfärg. Glas (frostat: webben kan inte bryta ljuset som iOS) på menyrad, väljare, versionsknapp,
+   dialoger och snackbar. "Minska genomskinlighet" / "Öka kontrast" i telefonen ger solida ytor. */
 :root {
-  --win-c: #b4f1b4; --on-win-c: #002106; --loss-c: #ffdad6; --on-loss-c: #410002;
-  --score-c: #ffffff; --on-error: #ffffff; --on-score-c: #1a1a1d; --nav-c: #ffffff; --nav-ind: #d6e8c8; --on-nav-ind: #0c2000;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, system-ui, sans-serif;
+  --tint: #2f7a1c; --on-tint: #ffffff;
+  --bg: #f2f2f7; --card: #ffffff; --fill: rgba(118,118,128,.12); --fill-2: rgba(118,118,128,.20);
+  --text: #000000; --muted: rgba(60,60,67,.72); --line: rgba(60,60,67,.22);
+  --ios-green: #248a3d; --ios-red: #d70015; --ios-orange: #c93400;
+  --win-c: rgba(52,199,89,.22); --loss-c: rgba(255,59,48,.18);
+  --glass: rgba(255,255,255,.62); --glass-line: rgba(255,255,255,.75); --glass-shadow: 0 8px 32px rgba(0,0,0,.12);
+  --primary: var(--tint); --on-primary: var(--on-tint); --surface: var(--bg); --surface-container: var(--card); --surface-container-high: var(--card);
+  --secondary-container: var(--fill-2); --on-secondary-container: var(--text); --on-surface: var(--text); --on-surface-variant: var(--muted);
+  --outline: rgba(60,60,67,.36); --outline-variant: var(--line); --error: var(--ios-red); --error-container: rgba(255,59,48,.14); --on-error-container: var(--ios-red);
+  --win: var(--ios-green); --loss: var(--ios-red); --draw: #8e8e93; --zone-cl: #0071a4; --zone-eu: var(--ios-orange); --zone-rel: var(--ios-red);
+  --r-sm: 10px; --r-md: 14px; --r-lg: 22px; --r-xl: 30px;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --win-c: #164d24; --on-win-c: #c6f7c4; --loss-c: #7a1c18; --on-loss-c: #ffdad6;
-    --score-c: #36363c; --on-error: #690005; --on-score-c: #f4f4f6; --nav-c: #1f1f23; --nav-ind: #33492a; --on-nav-ind: #d6f2c4;
+    --tint: #5fd34a; --on-tint: #062100;
+    --bg: #000000; --card: #1c1c1e; --fill: rgba(118,118,128,.24); --fill-2: rgba(118,118,128,.36);
+    --text: #ffffff; --muted: rgba(235,235,245,.68); --line: rgba(84,84,88,.65);
+    --ios-green: #30d158; --ios-red: #ff6961; --ios-orange: #ffb340;
+    --win-c: rgba(48,209,88,.24); --loss-c: rgba(255,69,58,.24);
+    --glass: rgba(40,40,44,.58); --glass-line: rgba(255,255,255,.16); --glass-shadow: 0 8px 32px rgba(0,0,0,.55);
+    --outline: rgba(235,235,245,.3); --zone-cl: #64d2ff;
   }
 }
-.lm.mc.lead-h { background: linear-gradient(90deg, var(--win-c) 0 50%, var(--loss-c) 50% 100%); }
-.lm.mc.lead-a { background: linear-gradient(90deg, var(--loss-c) 0 50%, var(--win-c) 50% 100%); }
-.lm.mc.lead-h > .t.h, .lm.mc.lead-a > .t:last-child { color: var(--on-win-c); }
-.lm.mc.lead-h > .t:last-child, .lm.mc.lead-a > .t.h { color: var(--on-loss-c); }
-.lm.mc > .s { background: var(--score-c); color: var(--on-score-c); }
-.lm.mc > .s .end { color: color-mix(in srgb, var(--on-score-c) 72%, transparent); }
-.lm.mc > .s:has(.live) { background: var(--score-c); }
-.lm.mc > .s .live { background: var(--error); color: var(--on-error); padding: 0 6px; border-radius: var(--r-full); margin-top: 1px; }
-.tabbar { background: var(--nav-c); -webkit-backdrop-filter: none; backdrop-filter: none; border: 0;
-  box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.10); }
-.tabbar::before { content: none; }
-.tab { color: var(--on-surface-variant); }
-.tab.on { color: var(--on-surface); }
-.tab.on span, .tab.on { background: none; }
-.tab.on span { background: var(--nav-ind); color: var(--on-nav-ind); }
-.tab > span:first-child { width: 64px; height: 32px; }
-@media (prefers-color-scheme: dark) { .tabbar { box-shadow: 0 4px 16px rgba(0,0,0,.5); border: 1px solid var(--outline-variant); } }
+body { font-family: var(--font); letter-spacing: -.01em; }
+.brand { font-size: 1.75rem; font-weight: 700; letter-spacing: .01em; line-height: 1.15; }
+h2 { font-size: .8125rem; font-weight: 400; letter-spacing: 0; text-transform: uppercase; color: var(--muted); }
+.card { background: var(--card); border-radius: var(--r-lg); box-shadow: none; }
+/* Glas */
+.tabbar, .league-picker, .league-picker.dd, .mtabs, .version, dialog, #snackbar {
+  background: var(--glass); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+  border: .5px solid var(--glass-line); box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,.35); }
+.tabbar::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 45%); }
+@media (prefers-color-scheme: dark) { .tabbar::before { background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0) 50%); } }
+.version { color: var(--text); }
+.league-picker button[aria-pressed="true"], .mtabs button[aria-pressed="true"] { background: var(--fill-2); color: var(--text); }
+.mbar :is(.league-picker, .mtabs):not(.open) button { background: none; color: var(--text); }
+.mbar :is(.league-picker, .mtabs).open button { color: var(--text); }
+.mbar :is(.league-picker, .mtabs).open button[aria-pressed="true"] { background: var(--fill-2); }
+#snackbar { color: var(--text); }
+#snackbar .btn.text { color: var(--tint); }
+dialog { border-radius: var(--r-xl); color: var(--text); }
+dialog::backdrop { background: rgba(0,0,0,.25); }
+dialog h2 { font-size: 1.0625rem; font-weight: 600; text-align: center; }
+/* Flikrad: ikon över text, tonfärg på vald flik, ingen pillermarkering */
+.tab { color: var(--muted); }
+.tab.on { color: var(--tint); background: var(--fill); }
+.tab.on span { background: none; }
+/* Knappar och kontroller */
+.btn { border-radius: var(--r-full); font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; }
+.btn.filled { background: var(--tint); color: var(--on-tint); }
+.btn.tonal { background: var(--fill); color: var(--tint); }
+.btn.text { color: var(--tint); }
+.btn.danger { color: var(--ios-red); }
+.btn.danger-fill { background: var(--ios-red); color: #fff; }
+.chip, .lchip { border: 0; background: var(--fill); color: var(--text); border-radius: var(--r-full); }
+.chip.on, .lchip[aria-pressed="true"] { background: var(--tint); color: var(--on-tint); }
+.field input, .field textarea { border: 0; background: var(--fill); border-radius: var(--r-sm); }
+.field input:focus, .field textarea:focus { outline: 2px solid var(--tint); }
+:focus-visible { outline-color: var(--tint); }
+.seg button[aria-pressed="true"] { border-bottom-color: var(--tint); }
+/* Listor: hårfina avdelare som i iOS */
+.lrow, ul.mlist li { border-top-width: .5px; border-color: var(--line); }
+/* Matchkortet: Apples gröna och röda som ton över kortet, neutral resultatruta */
+.lm.mc { background: var(--fill); }
+.lm.mc.lead-h { background: linear-gradient(90deg, var(--win-c) 0 50%, var(--loss-c) 50% 100%), var(--card); }
+.lm.mc.lead-a { background: linear-gradient(90deg, var(--loss-c) 0 50%, var(--win-c) 50% 100%), var(--card); }
+.lm.mc > .t { color: var(--text); }
+.lm.mc > .s { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.lm.mc > .s .end { color: var(--muted); }
+.lm.mc > .s:has(.live) { background: var(--card); }
+.lm.mc > .s .live { background: var(--ios-red); color: #fff; padding: 0 7px; border-radius: var(--r-full); margin-top: 1px; }
+.live { background: var(--ios-red); color: #fff; }
+/* Tillgänglighet: solida ytor och tydligare kanter */
+@media (prefers-reduced-transparency: reduce) {
+  .tabbar, .league-picker, .league-picker.dd, .mtabs, .version, dialog, #snackbar { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .tabbar::before { content: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --muted: var(--text); --line: var(--outline); --glass: var(--card); }
+  .tabbar, .league-picker, .league-picker.dd, .mtabs, .version, dialog, #snackbar { -webkit-backdrop-filter: none; backdrop-filter: none; border: 1px solid var(--text); }
+}
+/* Utfälld meny: tätare glas så att texten går att läsa över innehållet (som iOS-menyer) */
+.mbar :is(.league-picker, .mtabs).open { background: color-mix(in srgb, var(--card) 92%, transparent); }
