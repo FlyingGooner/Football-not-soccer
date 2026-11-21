@@ -51,9 +51,12 @@ function matchHero(m, kind) {
     mid = el('div', { class: 'mid' }, el('span', { class: 'score', text: scoreText(m.homeScore, m.awayScore) }),
       m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : (r ? el('span', { class: `badge ${r}`, text: RESULT_LONG[r] }) : null));
   }
-  const side = (t) => el('div', { class: 'side' }, logo(t.logo), teamName(t, m.leagueId));
+  // Leader/winner's side green, loser's red; draw neutral (as in Matcher).
+  const hs = Number(m.homeScore), as = Number(m.awayScore), scored = m.state !== 'pre' && Number.isFinite(hs) && Number.isFinite(as);
+  const cls = (a, b) => (!scored || a === b ? '' : a > b ? ' win' : ' lose');
+  const side = (t, c) => el('div', { class: `side${c}` }, logo(t.logo), teamName(t, m.leagueId));
   return el('div', { class: 'hero' },
-    el('div', { class: 'match-main' }, side(m.home), mid, side(m.away)),
+    el('div', { class: 'match-main' }, side(m.home, ` h${cls(hs, as)}`), mid, side(m.away, cls(as, hs))),
     el('div', { class: 'meta' }, `${m.league} · ${isHomeFor(m) ? 'Hemma' : 'Borta'}`, m.state !== 'pre' ? ` · ${fmtDate.format(d)}` : null,
       m.state === 'pre' && kind === 'next' ? el('span', { class: 'countdown', 'data-kickoff': m.date, text: countdown(d - Date.now()) }) : null));
 }
@@ -64,7 +67,7 @@ function teamMatchList(list, past, id = favId()) {
   return el('ul', { class: 'mlist' }, list.map((m) => {
     const d = new Date(m.date), o = opponent(m, id), r = resultOf(m, id), home = isHomeFor(m, id);
     const comp = compShort(m);
-    return expandable(el('li', null,
+    return expandable(el('li', { class: past && r === 'W' ? 'win' : past && r === 'L' ? 'lose' : null },
       el('span', { class: 'd', text: past ? fmtShort.format(d) : `${fmtShort.format(d)} ${fmtTime.format(d)}` }),
       el('span', { class: 'o' }, teamName(o, m.leagueId), ` (${home ? 'H' : 'B'})`),
       el('span', { class: 'c', text: comp }),
