@@ -62,7 +62,7 @@ I18N.add({
   'Exporten saknar data.': 'The export has no data.',
   'Inga spelade matcher': 'No played matches', 'Inga spelade matcher.': 'No played matches.', 'Ingen inplanerad match': 'No scheduled match', 'Ingen inplanerad match.': 'No scheduled match.',
   'Kunde inte hämta lagen.': 'Could not fetch the teams.', 'Ingen matchinfo tillgänglig.': 'No match info available.', 'Inga mål.': 'No goals.', 'Inga mål eller kort.': 'No goals or cards.',
-  'I går': 'Yesterday', 'I dag': 'Today', 'I morgon': 'Tomorrow', 'Idag': 'Today', 'Inga matcher i dag': 'No matches today', 'Inga kommande matcher': 'No upcoming matches',
+  'I går': 'Yesterday', 'I dag': 'Today', 'I morgon': 'Tomorrow', 'Idag': 'Today', 'Spelade idag': 'Played today', 'Senare idag': 'Later today', 'Inga matcher i dag': 'No matches today', 'Inga kommande matcher': 'No upcoming matches',
   'Kunde inte hämta fler matcher': 'Could not fetch more matches', 'Inga lag': 'No teams', 'Tryck på ett lag för att visa det': 'Tap a team to show it',
   'Ingen tabell tillgänglig.': 'No table available.', 'Aktuella': 'Current', 'Kommande': 'Upcoming', 'Spelade': 'Played', 'Spelad': 'Played', 'Slut': 'FT',
   'Hemma': 'Home', 'Borta': 'Away', 'Form': 'Form', 'Egen': 'Custom', 'Standard': 'Default', 'Ladda om': 'Reload', 'Offline': 'Offline', 'Snart avspark': 'Kick-off soon', 'Alla': 'All',

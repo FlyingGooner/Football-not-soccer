@@ -90,14 +90,19 @@ function leagueMatchList(list, emptyText) {
   const wrap = el('div');
   let lastDay = null, group = null;
   for (const m of list) {
-    const key = m.state === 'in' ? 'live' : fmtDayKey.format(m.date);
-    if (key !== lastDay) { group = el('div', { class: 'dgroup' }, el('div', { class: 'day', text: m.state === 'in' ? 'Pågår nu' : dayLabel(m.date) })); wrap.append(group); lastDay = key; }
+    const today = fmtDayKey.format(m.date) === fmtDayKey.format(Date.now());
+    const key = m.state === 'in' ? 'live' : today ? `today-${m.state}` : fmtDayKey.format(m.date);
+    const label = m.state === 'in' ? 'Pågår nu' : today ? (m.state === 'post' ? 'Spelade idag' : 'Senare idag') : dayLabel(m.date);
+    if (key !== lastDay) { group = el('div', { class: 'dgroup' }, el('div', { class: 'day', text: label })); wrap.append(group); lastDay = key; }
+    // Leader/winner bold, loser dimmed; a draw stays neutral.
+    const hs = Number(m.homeScore), as = Number(m.awayScore), scored = m.state !== 'pre' && Number.isFinite(hs) && Number.isFinite(as);
+    const cls = (a, b) => (!scored || a === b ? '' : a > b ? ' win' : ' lose');
     const mid = m.state === 'pre' ? el('span', { class: 's', text: fmtTime.format(m.date) })
       : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore),
         m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : el('span', { class: 'end', text: 'Slut' }));
     const row = el('div', { class: 'lm', 'data-match': m.id },
-      el('span', { class: 't h' }, teamName(m.home, m.leagueId), logo(m.home.logo)), mid,
-      el('span', { class: 't' }, logo(m.away.logo), teamName(m.away, m.leagueId)));
+      el('span', { class: `t h${cls(hs, as)}` }, teamName(m.home, m.leagueId), logo(m.home.logo)), mid,
+      el('span', { class: `t${cls(as, hs)}` }, logo(m.away.logo), teamName(m.away, m.leagueId)));
     group.append(...expandable(row, m));
   }
   return wrap;
@@ -112,7 +117,7 @@ let loadingMore = false;
 function matchLists(ms) {
   const today = fmtDayKey.format(Date.now()), isToday = (m) => fmtDayKey.format(m.date) === today;
   return {
-    now: [...ms.filter((m) => m.state === 'in'), ...ms.filter((m) => m.state !== 'in' && isToday(m))],
+    now: [...ms.filter((m) => m.state === 'in'), ...ms.filter((m) => m.state === 'post' && isToday(m)), ...ms.filter((m) => m.state === 'pre' && isToday(m))],
     next: ms.filter((m) => m.state === 'pre' && !isToday(m) && new Date(m.date) > Date.now()),
     past: ms.filter((m) => m.state === 'post').reverse(),
   };
