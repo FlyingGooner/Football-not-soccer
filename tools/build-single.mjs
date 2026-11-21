@@ -44,6 +44,20 @@ function addModule(rel) {
   if (/^\s*export\s+default\b/m.test(code)) throw new Error(`export default is not supported (${rel})`);
   const exps = [];
   for (const m of code.matchAll(/^export\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([\w$]+)/gm)) exps.push(m[1]);
+  // export const A = 1, B = 2: också namnen efter komma på samma rad (utanför parenteser/strängar).
+  for (const m of code.matchAll(/^export\s+(?:const|let|var)\s+[\w$]+\s*=(.*)$/gm)) {
+    let depth = 0, q = null, seg = '';
+    for (const ch of m[1]) {
+      if (q) { if (ch === q) q = null; continue; }
+      if (ch === "'" || ch === '"' || ch === '`') q = ch;
+      else if ('([{'.includes(ch)) depth++;
+      else if (')]}'.includes(ch)) depth--;
+      else if (ch === ',' && depth === 0) { seg = ''; continue; }
+      seg += ch;
+      const n = depth === 0 && seg.match(/^\s*([\w$]+)\s*=$/);
+      if (n && !seg.endsWith('==')) exps.push(n[1]);
+    }
+  }
   for (const m of code.matchAll(/^export\s*\{([^}]*)\}/gm)) for (const part of m[1].split(',')) {
     const p = part.trim(); if (!p) continue;
     const a = /^([\w$]+)\s+as\s+([\w$]+)$/.exec(p); exps.push(a ? `${a[2]}: ${a[1]}` : p);
