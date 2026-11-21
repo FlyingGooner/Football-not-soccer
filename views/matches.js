@@ -120,7 +120,7 @@ let loadingMore = false;
 function matchLists(ms) {
   const today = fmtDayKey.format(Date.now()), isToday = (m) => fmtDayKey.format(m.date) === today;
   return {
-    now: [...ms.filter((m) => m.state === 'in'), ...ms.filter((m) => m.state === 'post' && isToday(m)), ...ms.filter((m) => m.state === 'pre' && isToday(m))],
+    now: [...ms.filter((m) => m.state === 'post' && isToday(m)), ...ms.filter((m) => m.state === 'in'), ...ms.filter((m) => m.state === 'pre' && isToday(m))],
     next: ms.filter((m) => m.state === 'pre' && !isToday(m) && new Date(m.date) > Date.now()),
     past: ms.filter((m) => m.state === 'post').reverse(),
   };
