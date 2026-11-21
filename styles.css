@@ -577,3 +577,10 @@ dialog h2 { font-size: 1.0625rem; font-weight: 600; text-align: center; }
 /* Mindre apprubrik, tydligt versionsnummer (2026-11-21) */
 .brand { font-size: 1.25rem; font-weight: 600; letter-spacing: 0; }
 .version { font-size: .8125rem; font-weight: 600; line-height: 1; padding: 6px 12px; background: var(--fill-2); color: var(--text); -webkit-backdrop-filter: none; backdrop-filter: none; border: 0; box-shadow: none; }
+/* Mål och kort mot respektive kant (2026-11-21): hemma vänster, borta höger och speglat – minuten ytterst */
+.evs:not(.muted) { padding-inline: 14px; }
+.evs .h { text-align: left; }
+.evs .a { text-align: right; }
+.evs .a .ev .m { margin: 0 0 0 4px; }
+.evs .h .ev .i { margin-right: 4px; }
+.evs .a .ev .i { margin-left: 4px; }

@@ -16,9 +16,13 @@ function eventsView(m, goalsOnly) {
   if (!evs.length) return el('div', { class: 'evs muted small', text: goalsOnly ? 'Inga mål.' : 'Inga mål eller kort.' });
   const icon = (e, i) => (e.kind === 'goal' ? '⚽ ' : e.kind === 'yellow' ? '🟨 '
     : evs.some((x, j) => j < i && x.kind === 'yellow' && x.name === e.name && x.teamId === e.teamId) ? '🟨🟥 ' : '🟥 ');   // second yellow
-  const line = (e) => el('div', { class: 'ev' }, el('span', { class: 'm', text: e.min }), icon(e, evs.indexOf(e)),
-    el('span', { text: e.name }), e.pen ? el('span', { class: 'muted', text: ' (str.)' }) : null, e.og ? el('span', { class: 'muted', text: ' (sj.)' }) : null);
-  const col = (id, cls) => el('div', { class: cls }, evs.filter((e) => e.teamId === id).map(line));
+  // Hemma: minut, ikon, namn mot vänsterkanten. Borta speglat mot högerkanten: namn, ikon, minut (2026-11-21).
+  const line = (e, away) => {
+    const name = [el('span', { text: e.name }), e.pen ? el('span', { class: 'muted', text: ' (str.)' }) : null, e.og ? el('span', { class: 'muted', text: ' (sj.)' }) : null];
+    const ic = el('span', { class: 'i', text: icon(e, evs.indexOf(e)).trim() }), min = el('span', { class: 'm', text: e.min });
+    return el('div', { class: 'ev' }, ...(away ? [...name, ic, min] : [min, ic, ...name]));
+  };
+  const col = (id, cls) => el('div', { class: cls }, evs.filter((e) => e.teamId === id).map((e) => line(e, cls === 'a')));
   return el('div', { class: 'evs' }, col(m.home.id, 'h'), col(m.away.id, 'a'));
 }
 const openMatches = new Set();   // expanded match rows (session only)
