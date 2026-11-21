@@ -238,8 +238,7 @@ dialog p { margin: 0 0 12px; }
 .lm.mc .s { width: 92px; min-width: 92px; box-sizing: border-box; margin-inline: 6px !important; }
 .lm .s .end { display: block; font-size: .625rem; font-weight: 500; color: var(--muted); }
 .lm .t.win { --side: 46, 160, 67; }
-.lm .t.lose { color: var(--muted); --side: 211, 47, 47; }
-.lm .t.lose img { opacity: .55; }
+.lm .t.lose { --side: 211, 47, 47; }  /* skarp text även för förloraren, färgen visar resultatet (2026-11-21) */
 /* Lag: winner bold, loser muted in the hero card; list rows get a thin result edge */
 .side.win { --side: 46, 160, 67; } .side.lose { --side: 211, 47, 47; }
 .side.lose { color: var(--muted); } .side.lose img { opacity: .55; }
