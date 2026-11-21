@@ -103,7 +103,9 @@ function leagueMatchList(list, emptyText) {
     const mid = m.state === 'pre' ? el('span', { class: 's', text: fmtTime.format(m.date) })
       : el('span', { class: 's' }, scoreText(m.homeScore, m.awayScore),
         m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : el('span', { class: 'end', text: 'Slut' }));
-    const row = el('div', { class: 'lm', 'data-match': m.id },
+    // Eget kort per match (2026-11-21): grått tills någon leder, då grön ton och grön kant på ledarens sida.
+    const lead = scored && hs !== as ? (hs > as ? ' lead lead-h' : ' lead lead-a') : '';
+    const row = el('div', { class: 'lm' + lead, 'data-match': m.id },
       el('span', { class: `t h${cls(hs, as)}` }, teamName(m.home, m.leagueId), logo(m.home.logo)), mid,
       el('span', { class: `t${cls(as, hs)}` }, logo(m.away.logo), teamName(m.away, m.leagueId)));
     group.append(...expandable(row, m));
