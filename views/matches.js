@@ -86,7 +86,7 @@ function dayLabel(date) {
 function liveText(m) {
   if (/^(HT|half ?time)$/i.test(m.detail || '') || /^HT$/i.test(m.clock || '')) return 'HT';
   const c = (m.clock || '').replace(/'\+(\d+)'?$/, "'+$1");
-  return `LIVE ${c}`.trim();
+  return c || 'LIVE';   // 2026-11-21: bara tiden, röd bakgrund visar att det är live
 }
 function leagueMatchList(list, emptyText) {
   if (!list.length) return el('p', { class: 'muted', text: emptyText });

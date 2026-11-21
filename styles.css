@@ -490,3 +490,7 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
   .tabbar::before { background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0) 55%); }
 }
 .help img.shot { display: block; width: 100%; max-width: 390px; height: auto; margin: 4px 0 12px; border: 1px solid var(--outline-variant, #ccc); border-radius: 12px; }
+/* Live (2026-11-21): bara tiden, större, ingen prick – röd bakgrund visar live */
+.live { font-size: .875rem; padding: 2px 10px; }
+.live::before { content: none; }
+.lm .s .live { font-size: .9375rem; line-height: 1.3; }
