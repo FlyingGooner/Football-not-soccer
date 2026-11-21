@@ -225,10 +225,9 @@ dialog p { margin: 0 0 12px; }
 /* Card Matcher: tabs, rows as tall as table rows, Visa fler */
 #card-matches .lm { padding: 10px 12px; min-height: 0; margin: 6px 0; border-radius: var(--r-md); background: var(--surface-container-high); }
 #card-matches .day { border-top: 0; }
-/* Leder någon (2026-11-21): hela kortet får en jämn grön ton, kanten på ledarens sida – ingen toning */
-#card-matches .lm.lead { background: rgba(46, 160, 67, .13); }
-#card-matches .lm.lead-h { box-shadow: inset 4px 0 rgb(46, 160, 67); }
-#card-matches .lm.lead-a { box-shadow: inset -4px 0 rgb(46, 160, 67); }
+/* Leder någon (2026-11-21): ledarens halva grön, den andra röd, kant i samma färg på varje sida – ingen toning */
+#card-matches .lm.lead-h { background: linear-gradient(90deg, rgba(46, 160, 67, .15) 50%, rgba(211, 47, 47, .13) 50%); box-shadow: inset 4px 0 rgb(46, 160, 67), inset -4px 0 rgb(211, 47, 47); }
+#card-matches .lm.lead-a { background: linear-gradient(90deg, rgba(211, 47, 47, .13) 50%, rgba(46, 160, 67, .15) 50%); box-shadow: inset 4px 0 rgb(211, 47, 47), inset -4px 0 rgb(46, 160, 67); }
 #card-matches .lm .s { width: 64px; min-width: 64px; }
 .lm .s .end { display: block; font-size: .625rem; font-weight: 500; color: var(--muted); }
 .lm .t.win { --side: 46, 160, 67; }
