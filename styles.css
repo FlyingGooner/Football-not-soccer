@@ -241,7 +241,7 @@ dialog p { margin: 0 0 12px; }
 .lm .t.lose { --side: 211, 47, 47; }  /* skarp text även för förloraren, färgen visar resultatet (2026-11-21) */
 /* Lag: winner bold, loser muted in the hero card; list rows get a thin result edge */
 .side.win { --side: 46, 160, 67; } .side.lose { --side: 211, 47, 47; }
-.side.lose { color: var(--muted); } .side.lose img { opacity: .55; }
+/* förloraren skarp även här (2026-11-21) */
 /* Vinnare fet, förlorare grå med blekt märke – inga färgtoningar (2026-11-21) */
 ul.mlist li.win { --side: 46, 160, 67; } ul.mlist li.lose { --side: 211, 47, 47; }
 ul.mlist li.win, ul.mlist li.lose { box-shadow: inset 3px 0 rgb(var(--side)); }  /* bara en tunn kant, ingen toning (2026-11-21) */
