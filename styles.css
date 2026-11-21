@@ -486,3 +486,33 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .lm.mc > .s:has(.live) { background: color-mix(in srgb, var(--error-container) 70%, var(--surface)); }
 .lm.mc > .s .live { background: none; padding: 0; border-radius: 0; font-size: .75rem; font-weight: 700; letter-spacing: .3px; line-height: 1.2; color: var(--error); }
 .lm.mc > .s:has(.live) .end { display: none; }
+/* Material 3 (2026-11-21): klara färger med kontrast ≥ 7:1. Matchkortet delas i två fasta halvor – vinnaren i
+   grön container, förloraren i röd – med on-färgerna som text. Resultatrutan är en neutral yta, live i error-container.
+   Menyraden är en M3-navigeringsrad (solid yta, pillermarkering) i stället för glas. */
+:root {
+  --win-c: #b4f1b4; --on-win-c: #002106; --loss-c: #ffdad6; --on-loss-c: #410002;
+  --score-c: #ffffff; --on-error: #ffffff; --on-score-c: #1a1a1d; --nav-c: #ffffff; --nav-ind: #d6e8c8; --on-nav-ind: #0c2000;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --win-c: #164d24; --on-win-c: #c6f7c4; --loss-c: #7a1c18; --on-loss-c: #ffdad6;
+    --score-c: #36363c; --on-error: #690005; --on-score-c: #f4f4f6; --nav-c: #1f1f23; --nav-ind: #33492a; --on-nav-ind: #d6f2c4;
+  }
+}
+.lm.mc.lead-h { background: linear-gradient(90deg, var(--win-c) 0 50%, var(--loss-c) 50% 100%); }
+.lm.mc.lead-a { background: linear-gradient(90deg, var(--loss-c) 0 50%, var(--win-c) 50% 100%); }
+.lm.mc.lead-h > .t.h, .lm.mc.lead-a > .t:last-child { color: var(--on-win-c); }
+.lm.mc.lead-h > .t:last-child, .lm.mc.lead-a > .t.h { color: var(--on-loss-c); }
+.lm.mc > .s { background: var(--score-c); color: var(--on-score-c); }
+.lm.mc > .s .end { color: color-mix(in srgb, var(--on-score-c) 72%, transparent); }
+.lm.mc > .s:has(.live) { background: var(--score-c); }
+.lm.mc > .s .live { background: var(--error); color: var(--on-error); padding: 0 6px; border-radius: var(--r-full); margin-top: 1px; }
+.tabbar { background: var(--nav-c); -webkit-backdrop-filter: none; backdrop-filter: none; border: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.10); }
+.tabbar::before { content: none; }
+.tab { color: var(--on-surface-variant); }
+.tab.on { color: var(--on-surface); }
+.tab.on span, .tab.on { background: none; }
+.tab.on span { background: var(--nav-ind); color: var(--on-nav-ind); }
+.tab > span:first-child { width: 64px; height: 32px; }
+@media (prefers-color-scheme: dark) { .tabbar { box-shadow: 0 4px 16px rgba(0,0,0,.5); border: 1px solid var(--outline-variant); } }
