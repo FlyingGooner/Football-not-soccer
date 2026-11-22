@@ -27,7 +27,7 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 ## Flytta kort
 
 - Under Inställningar → Utseende → Ligor och kortordning väljer du vilka ligor och turneringar som visas i ligaväljaren och i vilken ordning, och ordningen på korten under Favorit. ↑ ↓ flyttar, ● visar och ○ döljer. Återställ ger standard.
-- Det finns Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Allsvenskan, Champions League, Europa League, Conference League, VM, EM, Copa América, Afrikanska mästerskapen och Gold Cup. Svep i sidled på Tabell för att byta liga och på Matcher för att byta flik.
+- Det finns Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Allsvenskan, Champions League, Europa League, Conference League, VM, EM, Copa América, Afrikanska mästerskapen och Gold Cup. Svep i sidled på Matcher eller Tabell för att byta liga.
 
 ## Matcher och live
 

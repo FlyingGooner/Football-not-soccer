@@ -198,7 +198,7 @@ function onSwipe(node, fn, ok = () => true) {
   }, { passive: true });
 }
 // Whole screen between the top bar and the menu (not on the league buttons, which may scroll sideways).
-onSwipe(document, (dir) => { if (view === 'table') swipeLeague(dir); },
+onSwipe(document, (dir) => { if (view === 'matches' || view === 'table') swipeLeague(dir); },   // 2026-11-22: svep = byt liga även i Matcher
   (e) => !e.target.closest('header, nav, .league-picker, dialog, input, textarea, select'));
 
 

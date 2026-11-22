@@ -27,7 +27,7 @@ The same text is in the app under **Settings → General → Help and manual** w
 ## Move cards
 
 - Under Settings → Appearance → Leagues and card order you choose which leagues and competitions show in the league picker and in which order, and the order of the cards under Favourite. ↑ ↓ moves, ● shows and ○ hides. Reset restores the default.
-- There are Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Allsvenskan, Champions League, Europa League, Conference League, World Cup, Euros, Copa América, Africa Cup of Nations and Gold Cup. Swipe sideways on Table to change league and on Matches to change tab.
+- There are Premier League, LaLiga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, Allsvenskan, Champions League, Europa League, Conference League, World Cup, Euros, Copa América, Africa Cup of Nations and Gold Cup. Swipe sideways on Matches or Table to change league.
 
 ## Matches and live
 
