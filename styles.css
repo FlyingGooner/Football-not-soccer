@@ -587,3 +587,5 @@ dialog h2 { font-size: 1.0625rem; font-weight: 600; text-align: center; }
 /* Liten, symmetrisk rubrikrad (2026-11-21): appnamn och version lika diskreta, i höjd med varandra */
 .brand { font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
 .version { font-size: .75rem; font-weight: 600; line-height: 1; padding: 5px 10px; }
+/* Sidan skrollar aldrig i sidled och studsar inte (2026-11-22, som Budget buddy). clip skapar ingen skrollbehållare: sticky och svep fungerar som förut. */
+html, body { overflow-x: clip; overscroll-behavior-x: none; }
