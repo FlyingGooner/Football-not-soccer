@@ -223,7 +223,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Testfil för `file://`: `dist/football-not-soccer.html`, byggs med `tools/build-single.ps1` (ingen installation eller offline i den).
 
 ## Design
-- Apple-stil (HIG) med Liquid Glass enligt `../STIL.md` (beslut 2026-11-21, ersätter Material Design 3), samma stil som de andra apparna. **Nyckelfärg gräsgrön `#4c8c2b`** (beslut 2026-11-11, ersätter plommonlila `#4b1d6e`). Gulare än simple-nutritions blågröna `#2f7d5b`, så att apparna skiljs åt på hemskärmen. Inte ligornas färger, logotyper eller typsnitt (klubbmärken från datakällan är ok).
+- Material Design 3 enligt `../STIL.md` (beslut 2026-11-22, åter efter Apple-stilen 2026-11-21); bara menyraden nertill är genomskinligt glas, samma stil som de andra apparna. **Nyckelfärg gräsgrön `#4c8c2b`** (beslut 2026-11-11, ersätter plommonlila `#4b1d6e`). Gulare än simple-nutritions blågröna `#2f7d5b`, så att apparna skiljs åt på hemskärmen. Inte ligornas färger, logotyper eller typsnitt (klubbmärken från datakällan är ok).
 - **Ljust och mörkt tema** följer telefonens inställning (`prefers-color-scheme`), inget eget val i appen. `color-scheme: light dark` så att tvingat mörkt läge inte färgar om sidan. Färger bara som variabler i `styles.css` (samma namn som simple-nutrition):
 
 | Variabel | Ljust | Mörkt |
@@ -258,7 +258,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - [ ] Pågående match visar LIVE och uppdateras utan omladdning, i båda lägena.
 - [ ] Utan nät visas sparad data med tidsstämpel; vid API-fel ett tydligt felmeddelande, aldrig en blank skärm.
 - [ ] Installerad app startar offline. Installera-knappen syns bara när webbläsaren erbjuder installation.
-- [ ] Ljust och mörkt tema i Apple-stil, utan Premier Leagues varumärken.
+- [ ] Ljust och mörkt tema i Material 3, utan Premier Leagues varumärken.
 
 ## Framtida idéer
 - Matchdetaljer med laguppställning och statistik (kräver extra anrop till `summary` – nytt underlag för granskning).
