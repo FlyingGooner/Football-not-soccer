@@ -223,7 +223,7 @@ Samma struktur som simple-nutrition (beslut 2026-11-11): rubrikrad med appens na
 - Testfil för `file://`: `dist/football-not-soccer.html`, byggs med `tools/build-single.ps1` (ingen installation eller offline i den).
 
 ## Design
-- Material Design 3 enligt `../STIL.md` (beslut 2026-11-22, åter efter Apple-stilen 2026-11-21); bara menyraden nertill är genomskinligt glas, samma stil som de andra apparna. **Nyckelfärg gräsgrön `#4c8c2b`** (beslut 2026-11-11, ersätter plommonlila `#4b1d6e`). Gulare än simple-nutritions blågröna `#2f7d5b`, så att apparna skiljs åt på hemskärmen. Inte ligornas färger, logotyper eller typsnitt (klubbmärken från datakällan är ok).
+- Material 3 Expressive (Googles senaste Material-version) enligt `../STIL.md` (beslut 2026-11-22, åter efter Apple-stilen 2026-11-21); bara menyraden nertill är genomskinligt glas, samma stil som de andra apparna. **Nyckelfärg gräsgrön `#4c8c2b`** (beslut 2026-11-11, ersätter plommonlila `#4b1d6e`). Gulare än simple-nutritions blågröna `#2f7d5b`, så att apparna skiljs åt på hemskärmen. Inte ligornas färger, logotyper eller typsnitt (klubbmärken från datakällan är ok).
 - **Ljust och mörkt tema** följer telefonens inställning (`prefers-color-scheme`), inget eget val i appen. `color-scheme: light dark` så att tvingat mörkt läge inte färgar om sidan. Färger bara som variabler i `styles.css` (samma namn som simple-nutrition):
 
 | Variabel | Ljust | Mörkt |
