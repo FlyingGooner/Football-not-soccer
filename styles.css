@@ -572,3 +572,11 @@ details[open] > :not(summary) { animation: m3e-in .35s var(--spring); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: 0s !important; }
 }
+/* Matcher utan vy-knapp (2026-11-22): Kommande och Spelade som rubriker i samma lista */
+.lm-sec { margin-top: 18px; }
+.lm-sec-h { margin: 0 0 6px; font-size: 1rem; font-weight: 600; color: var(--on-surface); }
+#match-list > .lm-sec:first-child { margin-top: 0; }
+.league-picker:has(#mtabs[hidden]) .sep, #mtabs[hidden] { display: none; }
+.mbar:has(#mtabs[hidden]) { grid-template-columns: minmax(0, 1fr); }
+.mbar:has(#mtabs[hidden]) .league-picker.dd:not(.open) { border-radius: var(--r-full); }
+.mbar:has(#mtabs[hidden]) .league-picker.dd.open { width: 100%; }

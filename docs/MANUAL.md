@@ -4,7 +4,7 @@ Samma text finns i appen under **Inställningar → Allmänt → Hjälp och manu
 
 ## Matcher och tabell
 
-- Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher finns flikarna Aktuella (pågående och dagens matcher), Kommande och Spelade, under Tabell hela tabellen.
+- Välj Premier League, LaLiga, Serie A eller Champions League med knapparna överst. Under Matcher står först pågående och dagens matcher, sedan Kommande och Spelade i samma lista (Visa fler under var och en), under Tabell hela tabellen.
 - Listan fyller skärmen. Visa fler visar fler matcher och hämtar en vecka till när det behövs.
 
 ## Varför din data är säker här

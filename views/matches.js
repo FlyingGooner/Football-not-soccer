@@ -140,29 +140,29 @@ function fitRows() {
   return Math.max(CONFIG.minRows, Math.floor((innerHeight - Math.max(top, 0) - bar - 72) / 44));
 }
 const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? r.from <= monthAt(-CONFIG.monthsMax) : r.to >= monthAt(CONFIG.monthsMax)); };
+// 2026-11-22: ingen vy-knapp – Idag, Kommande och Spelade i samma lista, som för laget man följer.
 function renderLeagueMatches() {
   const ms = L(league).league || [], lists = matchLists(ms);
-  const tab = curTab();
-  // Status as a compact menu next to the leagues: the chosen one shows, tap opens all three.
-  $('mtabs').classList.toggle('open', mtabsOpen);
-  fill($('mtabs'), MTABS.map(([id, name]) => el('button', { type: 'button', role: 'tab', 'aria-selected': String(id === tab), 'aria-pressed': String(id === tab), 'data-mtab': id, text: name,
-    on: { click: (e) => { e.stopPropagation(); mtabsOpen = id === tab && !mtabsOpen; mtab = id; renderLeagueMatches(); } } })));
-  const [, , empty] = MTABS.find(([id]) => id === tab), list = lists[tab];
-  if (tab === 'now') { fill($('match-list'), leagueMatchList(list, empty)); $('more').hidden = true; return; }
-  const n = fitRows() + extra[tab], dir = tab === 'past' ? -1 : 1;
-  fill($('match-list'), leagueMatchList(list.slice(0, n), L(league).league ? empty : 'Laddar…'));
-  $('more').hidden = !L(league).league || (list.length <= n && rangeEnd(dir));
-  $('more').disabled = loadingMore;
-  $('more').dataset.dir = String(dir);
+  $('mtabs').hidden = true; $('more').hidden = true;
+  if (!L(league).league) { fill($('match-list'), el('p', { class: 'muted', text: 'Laddar…' })); return; }
+  const sec = (tab, title, empty) => {
+    const list = lists[tab], n = CONFIG.moreStep + extra[tab], dir = tab === 'past' ? -1 : 1;
+    const more = list.length > n || !rangeEnd(dir);
+    return el('section', { class: 'lm-sec' }, el('h3', { class: 'lm-sec-h', text: title }),
+      leagueMatchList(list.slice(0, n), empty),
+      more ? el('button', { type: 'button', class: 'btn text more-btn', disabled: loadingMore, text: loadingMore ? 'Laddar…' : 'Visa fler',
+        on: { click: () => showMore(tab) } }) : null);
+  };
+  fill($('match-list'), lists.now.length ? leagueMatchList(lists.now, '') : null,
+    sec('next', 'Kommande', 'Inga kommande matcher'), sec('past', 'Spelade', 'Inga spelade matcher'));
 }
 // Visa fler: more rows from the cache; when it runs out, one more month from ESPN in that direction.
-async function showMore() {
-  const tab = curTab();
-  if (tab === 'now' || loadingMore) return;
-  const step = fitRows(), dir = tab === 'past' ? -1 : 1, lid = league;
+async function showMore(tab) {
+  if (loadingMore) return;
+  const step = CONFIG.moreStep, dir = tab === 'past' ? -1 : 1, lid = league;
   extra[tab] += step;
   const have = matchLists(L(lid).league || [])[tab].length;
-  if (have < fitRows() + extra[tab] && !rangeEnd(dir)) {
+  if (have < step + extra[tab] && !rangeEnd(dir)) {
     const e = L(lid), k = dir < 0 ? monthAdd(e.range.from, -1) : monthAdd(e.range.to, 1);
     loadingMore = true; renderLeagueMatches();
     try {
@@ -175,7 +175,7 @@ async function showMore() {
   }
   renderLeagueMatches();
 }
-$('more').addEventListener('click', showMore);
+
 // Swipe left/right on the list → next/previous tab (only clearly horizontal swipes, ≥ 50 px).
 function swipeTab(dir) {
   const ids = MTABS.map(([id]) => id), cur = curTab();
@@ -198,7 +198,7 @@ function onSwipe(node, fn, ok = () => true) {
   }, { passive: true });
 }
 // Whole screen between the top bar and the menu (not on the league buttons, which may scroll sideways).
-onSwipe(document, (dir) => { if (view === 'matches') swipeTab(dir); else if (view === 'table') swipeLeague(dir); },
+onSwipe(document, (dir) => { if (view === 'table') swipeLeague(dir); },
   (e) => !e.target.closest('header, nav, .league-picker, dialog, input, textarea, select'));
 
-document.addEventListener('click', () => { if (mtabsOpen) { mtabsOpen = false; renderLeagueMatches(); } });
+
