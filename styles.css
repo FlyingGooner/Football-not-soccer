@@ -601,3 +601,9 @@ details.lm-sec { margin-top: 12px; border-top: 1px solid var(--line); padding-to
 .lm-sec .dgroup:first-child > .day { padding-top: 0; }
 details.lm-sec { margin-top: 6px; }
 .lm-sec > summary { min-height: 40px; }
+/* 2026-11-22: prickar under ligan i Matcher – svep mellan ligorna */
+.league-dots { display: flex; justify-content: center; gap: 2px; margin: 6px 0 2px; }
+.league-dots[hidden] { display: none; }
+.ldot { width: 24px; height: 24px; padding: 0; border: 0; background: none; display: grid; place-items: center; }
+.ldot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--outline-variant, #c4c7c5); transition: width .2s, background .2s; }
+.ldot.on::after { width: 20px; border-radius: 4px; background: var(--primary); }

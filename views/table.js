@@ -17,6 +17,13 @@ function renderPickers() {
         if (l.id === league) renderPickers(); else setLeague(l.id);
       } } })));
   });
+  // 2026-11-22: prickar under ligan i Matcher – visar att man kan svepa mellan ligorna (en prick per liga, tryck = byt).
+  const dots = $('league-dots');
+  if (dots) {
+    dots.hidden = shown.length < 2;
+    fill(dots, shown.map((l) => el('button', { type: 'button', class: 'ldot' + (l.id === league ? ' on' : ''), 'aria-label': l.name, 'aria-current': l.id === league ? 'true' : null,
+      on: { click: () => { if (l.id !== league) setLeague(l.id); } } })));
+  }
 }
 let leagueMenuOpen = false;
 document.addEventListener('click', () => { if (leagueMenuOpen) { leagueMenuOpen = false; renderPickers(); } });
