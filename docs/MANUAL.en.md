@@ -4,7 +4,7 @@ The same text is in the app under **Settings → General → Help and manual** w
 
 ## Matches and table
 
-- Choose Premier League, LaLiga, Serie A or Champions League with the buttons at the top. Under Matches you first see live and today's matches, then Upcoming and Played in the same list (Show more under each), under Table the whole table.
+- Choose Premier League, LaLiga, Serie A or Champions League with the buttons at the top. Under Matches you first see live and today's matches, then Upcoming and Played as collapsed rows – tap to expand (Show more under each), under Table the whole table.
 - The list fills the screen. Show more shows more matches and fetches another week when needed.
 
 ## Why your data is safe here

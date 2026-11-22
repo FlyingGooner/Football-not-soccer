@@ -60,7 +60,7 @@ I18N.add({
   'Klistra in en exporterad text först.': 'Paste an exported text first.', 'Texten är inte en giltig export (trasig JSON). Kopiera hela texten igen.': 'The text is not a valid export (broken JSON). Copy the whole text again.',
   'Texten kommer inte från Football, not soccer.': 'The text does not come from Football, not soccer.', 'Okänt exportformat – uppdatera appen och försök igen.': 'Unknown export format – update the app and try again.',
   'Exporten saknar data.': 'The export has no data.',
-  'Inga spelade matcher': 'No played matches', 'Inga spelade matcher.': 'No played matches.', 'Ingen inplanerad match': 'No scheduled match', 'Ingen inplanerad match.': 'No scheduled match.',
+  'Nästa: ': 'Next: ', 'Senaste: ': 'Latest: ', 'Inga spelade matcher': 'No played matches', 'Inga spelade matcher.': 'No played matches.', 'Ingen inplanerad match': 'No scheduled match', 'Ingen inplanerad match.': 'No scheduled match.',
   'Kunde inte hämta lagen.': 'Could not fetch the teams.', 'Ingen matchinfo tillgänglig.': 'No match info available.', 'Inga mål.': 'No goals.', 'Inga mål eller kort.': 'No goals or cards.',
   'I går': 'Yesterday', 'I dag': 'Today', 'I morgon': 'Tomorrow', 'Idag': 'Today', 'Spelade idag': 'Played today', 'Senare idag': 'Later today', 'Inga matcher i dag': 'No matches today', 'Inga kommande matcher': 'No upcoming matches',
   'Kunde inte hämta fler matcher': 'Could not fetch more matches', 'Inga lag': 'No teams', 'Tryck på ett lag för att visa det': 'Tap a team to show it',

@@ -141,6 +141,7 @@ function fitRows() {
 }
 const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? r.from <= monthAt(-CONFIG.monthsMax) : r.to >= monthAt(CONFIG.monthsMax)); };
 // 2026-11-22: ingen vy-knapp – Idag, Kommande och Spelade i samma lista, som för laget man följer.
+const secOpen = new Set();
 function renderLeagueMatches() {
   const ms = L(league).league || [], lists = matchLists(ms);
   $('mtabs').hidden = true; $('more').hidden = true;
@@ -148,10 +149,14 @@ function renderLeagueMatches() {
   const sec = (tab, title, empty) => {
     const list = lists[tab], n = CONFIG.moreStep + extra[tab], dir = tab === 'past' ? -1 : 1;
     const more = list.length > n || !rangeEnd(dir);
-    return el('section', { class: 'lm-sec' }, el('h3', { class: 'lm-sec-h', text: title }),
+    // 2026-11-22: hopfälld tills man trycker (öppet-läget gäller sessionen)
+    const d = el('details', { class: 'lm-sec', open: secOpen.has(tab) },
+      el('summary', { class: 'lm-sec-h' }, el('span', { text: title }), el('span', { class: 'muted lm-sec-n', text: list.length ? self.I18N.tr(tab === 'past' ? 'Senaste: ' : 'Nästa: ') + dayLabel(list[0].date) : '' })),
       leagueMatchList(list.slice(0, n), empty),
       more ? el('button', { type: 'button', class: 'btn text more-btn', disabled: loadingMore, text: loadingMore ? 'Laddar…' : 'Visa fler',
         on: { click: () => showMore(tab) } }) : null);
+    d.addEventListener('toggle', () => { if (d.open) secOpen.add(tab); else secOpen.delete(tab); });
+    return d;
   };
   fill($('match-list'), lists.now.length ? leagueMatchList(lists.now, '') : null,
     sec('next', 'Kommande', 'Inga kommande matcher'), sec('past', 'Spelade', 'Inga spelade matcher'));

@@ -580,3 +580,13 @@ details[open] > :not(summary) { animation: m3e-in .35s var(--spring); }
 .mbar:has(#mtabs[hidden]) { grid-template-columns: minmax(0, 1fr); }
 .mbar:has(#mtabs[hidden]) .league-picker.dd:not(.open) { border-radius: var(--r-full); }
 .mbar:has(#mtabs[hidden]) .league-picker.dd.open { width: 100%; }
+/* Kommande och Spelade hopfällda (2026-11-22), tätare matchkort */
+details.lm-sec { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 4px; }
+#match-list > details.lm-sec:first-child { border-top: 0; }
+.lm-sec > summary { list-style: none; display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; margin: 0; }
+.lm-sec > summary::-webkit-details-marker { display: none; }
+.lm-sec > summary::after { content: '▸'; color: var(--muted); }
+.lm-sec[open] > summary::after { content: '▾'; }
+.lm-sec-n { margin-left: auto; font-size: .8125rem; font-weight: 400; }
+.lm.mc { min-height: 0; padding-block: 2px; }
+.lm.mc > .s { padding-block: 4px; }
