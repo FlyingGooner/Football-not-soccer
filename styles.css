@@ -502,3 +502,23 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .version { font-size: .75rem; font-weight: 600; line-height: 1; padding: 5px 10px; }
 /* Sidan skrollar aldrig i sidled och studsar inte (2026-11-22, som Budget buddy). clip skapar ingen skrollbehållare: sticky och svep fungerar som förut. */
 html, body { overflow-x: clip; overscroll-behavior-x: none; }
+/* Matchkortet (2026-11-22, åter från Material 3-blocket 2026-11-21): två fasta halvor – vinnaren i grön container, förloraren i röd –
+   med on-färgerna som text, neutral resultatruta, live i röd. Menyraden förblir glas. */
+:root {
+  --win-c: #b4f1b4; --on-win-c: #002106; --loss-c: #ffdad6; --on-loss-c: #410002;
+  --score-c: #ffffff; --on-error: #ffffff; --on-score-c: #1a1a1d;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --win-c: #164d24; --on-win-c: #c6f7c4; --loss-c: #7a1c18; --on-loss-c: #ffdad6;
+    --score-c: #36363c; --on-error: #690005; --on-score-c: #f4f4f6;
+  }
+}
+.lm.mc.lead-h { background: linear-gradient(90deg, var(--win-c) 0 50%, var(--loss-c) 50% 100%); }
+.lm.mc.lead-a { background: linear-gradient(90deg, var(--loss-c) 0 50%, var(--win-c) 50% 100%); }
+.lm.mc.lead-h > .t.h, .lm.mc.lead-a > .t:last-child { color: var(--on-win-c); }
+.lm.mc.lead-h > .t:last-child, .lm.mc.lead-a > .t.h { color: var(--on-loss-c); }
+.lm.mc > .s { background: var(--score-c); color: var(--on-score-c); }
+.lm.mc > .s .end { color: color-mix(in srgb, var(--on-score-c) 72%, transparent); }
+.lm.mc > .s:has(.live) { background: var(--score-c); }
+.lm.mc > .s .live { background: var(--error); color: var(--on-error); padding: 0 6px; border-radius: var(--r-full); margin-top: 1px; }
