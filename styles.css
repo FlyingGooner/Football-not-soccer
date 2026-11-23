@@ -616,3 +616,49 @@ dialog .actions.pair > button { width: 100%; min-height: 48px; margin: 0; }
 .btn.text { border: 1px solid var(--outline); }
 .btn.text.danger { border-color: var(--error, #ba1a1a); }
 #snackbar .btn.text { border: 0; }
+
+/* ==========================================================================
+   Finish (2026-11-23) – gemensamt finslipningslager, samma i alla appar.
+   Ligger sist och bygger på M3-rollerna (--primary, --surface …). Ändrar inga
+   färger eller layouter – bara typografi, djup, rörelse och detaljer.
+   ========================================================================== */
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+body { font-feature-settings: "kern" 1, "liga" 1; }
+h1, h2, h3, .view-title, .brand { text-wrap: balance; }
+h1, .view-title, .brand { letter-spacing: -0.022em; }
+p, li { text-wrap: pretty; }
+/* Siffror i rak linje: belopp, tabeller, statistik, resultat. */
+.amount, td, th, .stat-n, .lm-n, .score, .sc, .pts, .kcal, input[inputmode="decimal"], input[inputmode="numeric"] { font-variant-numeric: tabular-nums; }
+::selection { background: color-mix(in srgb, var(--primary) 30%, transparent); }
+
+/* Kort: hårfin kant + mjuk, låg skugga (ljust); svag ljuskant (mörkt). */
+.card {
+  box-shadow: 0 0 0 0.5px color-mix(in srgb, var(--outline-variant) 80%, transparent),
+              0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.14);
+}
+@media (prefers-color-scheme: dark) {
+  .card { box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.07), 0 0 0 0.5px rgb(255 255 255 / 0.06), 0 10px 28px -14px rgb(0 0 0 / 0.6); }
+}
+
+/* Knappar: fylld = diskret glans och skugga i appens färg; ram = tunnare och finare. (Tryckformen är M3 Expressive.) */
+.btn.filled, .btn-filled, .primary, .weigh-save {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 1px 2px rgb(0 0 0 / 0.10),
+              0 6px 16px -8px color-mix(in srgb, var(--primary) 60%, transparent);
+}
+.btn.text:not(.danger), .btn-text, button.link:not(.danger):not(.wk-open) { border-color: color-mix(in srgb, var(--outline) 55%, transparent) !important; }
+button, .btn, a, input, select, textarea, summary {
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .2s ease, transform .14s cubic-bezier(.2, .8, .2, 1);
+}
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--primary), 0 0 0 6px color-mix(in srgb, var(--primary) 18%, transparent); }
+
+/* Dialogrutor (entrén är M3 Expressive): djupare skugga, nedtonad och lätt suddig bakgrund. */
+dialog[open] {
+  box-shadow: 0 24px 64px -16px rgb(0 0 0 / 0.38), 0 0 0 0.5px color-mix(in srgb, var(--outline-variant) 70%, transparent);
+}
+dialog::backdrop { background: rgb(0 0 0 / 0.36); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+@media (prefers-reduced-transparency: reduce) { dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgb(0 0 0 / 0.5); } }
