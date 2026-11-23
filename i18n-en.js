@@ -3,6 +3,7 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
+  'Försök igen': 'Try again',
   'Svep åt sidan för att byta liga': 'Swipe sideways to change league',
   'Öppnas snabbare och fungerar utan nät': 'Opens faster and works offline', 'Installera': 'Install', 'Visa hur': 'Show how', '📲 Installera som app': '📲 Install as an app',
   '📲 Installera som app – öppnas snabbare och fungerar utan nät': '📲 Install as an app – opens faster and works offline', 'Installera som app': 'Install as an app', 'Tryck på Dela ⬆️ längst ner i Safari.': 'Tap Share ⬆️ at the bottom of Safari.', 'Välj Lägg till på hemskärmen.': 'Choose Add to Home Screen.', 'Tryck Lägg till. Öppna sedan appen från hemskärmen.': 'Tap Add. Then open the app from the home screen.',
@@ -72,6 +73,9 @@ I18N.add({
   '(sj.)': '(o.g.)', '(str.)': '(pen.)', 'Afrika': 'Africa', 'Portugal': 'Portugal', 'Grupp': 'Group', 'Mål': 'Goals', 'Kort': 'Cards',
 }, [
   [/^Du kan följa högst (\d+) lag$/, 'You can follow at most $1 teams'],
+  [/^Följer inte (.+) längre$/, 'No longer following $1'],
+  [/^(.+) återställd$/, (g, tr) => `${tr(g[1])} reset`],
+  [/^Återställ (.+)$/, (g, tr) => `Reset ${tr(g[1])}`],
   [/^Liga: (.+)\. Favorit: (.+)\. (\d+) följda lag$/, (g) => `League: ${g[1]}. Favourite: ${g[2] === 'ingen' ? 'none' : g[2]}. ${g[3]} followed teams`],
   [/^(\d+) av (\d+) följda$/, '$1 of $2 followed'],
   [/^(\d+) av (\d+)$/, '$1 of $2'],

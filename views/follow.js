@@ -85,7 +85,9 @@ function renderTeamPicker() {
       el('span', { text: l.name }), el('span', { class: 'muted', 'aria-hidden': 'true', text: open ? '▾' : '▸' }));
     const body = !open ? null : rows && rows.length
       ? el('ul', { class: 'rows' }, [...rows].sort((a, b) => a.name.localeCompare(b.name, 'sv')).map((r) => pickRow(r, l.id)))
-      : el('p', { class: 'muted small', text: pickLoading.has(l.id) ? 'Hämtar…' : 'Kunde inte hämta lagen.' });
+      : pickLoading.has(l.id) ? el('p', { class: 'muted small', text: 'Hämtar…' })
+        : [el('p', { class: 'muted small', text: 'Kunde inte hämta lagen.' }),   // 2026-11-23: försök igen utan att fälla ihop
+          el('button', { type: 'button', class: 'btn text', text: 'Försök igen', on: { click: () => { pickOpen.delete(l.id); togglePickLeague(l.id); } } })];
     return el('section', { class: 'card pick-sec' }, head, body);
   }));
 }

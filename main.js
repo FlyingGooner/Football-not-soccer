@@ -99,6 +99,14 @@ function follow(row, lid) {
 }
 // Unfollowing the favourite leaves no favourite; the team's cache goes too.
 function unfollow(id) {
+  // 2026-11-23: Ångra – laget (och favoriten) tillbaka; matchdatan hämtas igen.
+  const was = teams.follow.find((t) => t.id === id), idx = teams.follow.indexOf(was), wasFav = teams.favorite === id;
+  if (was) snackbar(`Följer inte ${was.name} längre`, 'Ångra', () => {
+    if (isFollowed(id) || teams.follow.length >= TEAM_MAX) return;
+    teams.follow.splice(Math.min(idx, teams.follow.length), 0, was);
+    if (wasFav) teams.favorite = id;
+    saveSettings(); resolveLeague(was); render(); renderStatus();
+  });
   teams.follow = teams.follow.filter((t) => t.id !== id);
   if (teams.favorite === id) teams.favorite = null;
   if (lagFilter === id) lagFilter = null;

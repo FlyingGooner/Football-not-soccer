@@ -61,6 +61,9 @@ function renderLayout() {
           el('button', { type: 'button', class: 'icon-btn sm lay-eye', 'aria-pressed': String(!off), 'aria-label': `${off ? 'Visa' : 'Dölj'} ${label[id]}`, text: off ? '○' : '●',
             on: { click: () => setLayout(v, { order, hidden: off ? hidden.filter((x) => x !== id) : [...hidden, id] }) } }));
       })),
-      el('button', { type: 'button', class: 'btn text', 'data-reset': v, text: `Återställ ${name}`, on: { click: () => setLayout(v, null) } })];
+      el('button', { type: 'button', class: 'btn text', 'data-reset': v, text: `Återställ ${name}`, on: { click: () => {   // 2026-11-23: Ångra
+        const before = layout[v]; setLayout(v, null);
+        if (before) snackbar(`${name} återställd`, 'Ångra', () => setLayout(v, before));
+      } } })];
   }));
 }
