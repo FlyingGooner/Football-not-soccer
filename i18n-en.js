@@ -3,7 +3,7 @@
 // Lag- och liganamn kommer från ESPN (engelska) och lämnas som de är.
 I18N.setKey('fns.lang');
 I18N.add({
-  'Försök igen': 'Try again',
+  'Försök igen': 'Try again', 'Kunde inte hämta data. Kontrollera nätet och försök igen.': 'Could not fetch data. Check the network and try again.', 'Nästa:': 'Next:', 'Senaste:': 'Latest:', 'Texten är för lång för en backup.': 'The text is too long for a backup.',
   'Svep åt sidan för att byta liga': 'Swipe sideways to change league',
   'Öppnas snabbare och fungerar utan nät': 'Opens faster and works offline', 'Installera': 'Install', 'Visa hur': 'Show how', '📲 Installera som app': '📲 Install as an app',
   '📲 Installera som app – öppnas snabbare och fungerar utan nät': '📲 Install as an app – opens faster and works offline', 'Installera som app': 'Install as an app', 'Tryck på Dela ⬆️ längst ner i Safari.': 'Tap Share ⬆️ at the bottom of Safari.', 'Välj Lägg till på hemskärmen.': 'Choose Add to Home Screen.', 'Tryck Lägg till. Öppna sedan appen från hemskärmen.': 'Tap Add. Then open the app from the home screen.',
@@ -76,7 +76,10 @@ I18N.add({
   [/^Följer inte (.+) längre$/, 'No longer following $1'],
   [/^(.+) återställd$/, (g, tr) => `${tr(g[1])} reset`],
   [/^Återställ (.+)$/, (g, tr) => `Reset ${tr(g[1])}`],
-  [/^Liga: (.+)\. Favorit: (.+)\. (\d+) följda lag$/, (g) => `League: ${g[1]}. Favourite: ${g[2] === 'ingen' ? 'none' : g[2]}. ${g[3]} followed teams`],
+  // 2026-11-23: även med exportdatum och överhoppade lag
+  [/^Liga: (.+?)\. Favorit: (.+?)\. (\d+) följda lag(?:\. Exporterad ([\d-]+))?\.?(?: (\d+) ogiltiga hoppas över\.)?$/, (g, tr) => `League: ${tr(g[1])}. Favourite: ${g[2] === 'ingen' ? 'none' : g[2]}. ${g[3]} followed teams`
+    + (g[4] ? `. Exported ${g[4]}.` : '.') + (g[5] ? ` ${g[5]} invalid skipped.` : '')],
+  [/^(Gör till favorit|Ta bort som favorit): (.+)$/, (g) => `${g[1] === 'Gör till favorit' ? 'Make favourite' : 'Remove as favourite'}: ${g[2]}`],
   [/^(\d+) av (\d+) följda$/, '$1 of $2 followed'],
   [/^(\d+) av (\d+)$/, '$1 of $2'],
   [/^Sluta följa (.+)$/, (g) => `Stop following ${g[1]}`],

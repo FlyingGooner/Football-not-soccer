@@ -239,7 +239,9 @@ async function refresh() {
       renderStatus(nothing ? (navigator.onLine ? 'Kunde inte hämta data' : 'Offline') : !navigator.onLine ? 'Offline – visar sparad data'
         : (failed === all.length ? 'Kunde inte hämta data – visar sparad data' : 'Viss data kunde inte hämtas'), true);
       if (nothing) {
-        const msg = () => el('p', { class: 'error', text: 'Kunde inte hämta data. Kontrollera nätet och öppna appen igen.' });
+        // 2026-11-23: Försök igen = samma hämtning som när appen öppnas igen (bara på tryck).
+        const msg = () => el('div', {}, el('p', { class: 'error', text: 'Kunde inte hämta data. Kontrollera nätet och försök igen.' }),
+          el('button', { type: 'button', class: 'btn tonal', text: 'Försök igen', on: { click: () => refresh() } }));
         for (const id of ['table-full', 'match-list', 'team-next']) fill($(id), msg());
       }
     } else renderStatus();
