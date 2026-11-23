@@ -65,7 +65,7 @@ function renderFollowed() {
     el('h2', { class: 'lag-h' }, el('button', { type: 'button', class: 'lag-open', 'aria-label': `Visa ${t.name}`, on: { click: () => openTeam(t, t.leagueId) } },
       logo(t.logo), el('span', { text: t.name }), t.id === teams.favorite ? el('span', { class: 'star', 'aria-label': 'Favorit', text: '★' }) : null),
       (() => { const f = formDots(ms, t); return f ? el('span', { class: 'tform lag-form' }, [...f.children].slice(1)) : null; })()),
-    ms ? [lagLine('next', t, up), lagLine('past', t, past)] : el('p', { class: 'muted', text: 'Laddar…' }))));
+    ms ? [lagLine('next', t, up), lagLine('past', t, past)] : el('p', { class: 'muted', text: navigator.onLine ? 'Laddar…' : 'Offline – ingen sparad data' }))));
 }
 
 // ---------- Lagväljaren: domestic leagues, collapsed; teams from the league's table ----------

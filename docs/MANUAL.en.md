@@ -22,7 +22,7 @@ The same text is in the app under **Settings → General → Help and manual** w
 
 ## Following
 
-- Following shows all followed teams: at the top the badges (tap to show only one team), live matches and a card per team with the upcoming and latest played match. Tap a team name anywhere in the app (table, matches, team card) to see the team as under Favourite. ← in the team row (or Back) takes you back where you were. Back goes through the tabs you have visited; the app closes only where you started. Tap Upcoming or Played for more matches. Under Settings → Teams ★ makes a team your favourite and ✕ stops following it.
+- Following shows all followed teams: at the top the badges (tap to show only one team), live matches and a card per team with the upcoming and latest played match. Tap a team name anywhere in the app (table, matches, team card) to see the team as under Favourite. ← in the team row (or Back) takes you back where you were. Back goes through the tabs you have visited; the app closes only where you started. Tap Upcoming or Played for more matches. Under Settings → Teams ★ makes a team your favourite and ✕ stops following it. Undo is available right after. If no data can be fetched, there is a Try again button.
 
 ## Move cards
 

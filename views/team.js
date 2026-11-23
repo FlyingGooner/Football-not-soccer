@@ -18,7 +18,7 @@ function renderTeam() {
   fill(ob, el('span', { class: 'ic', 'aria-hidden': 'true', text: on ? '✓' : '+' }), el('span', { class: 'lb', text: on ? 'Följer' : 'Följ' })); ob.setAttribute('aria-pressed', String(on));
   ob.setAttribute('aria-label', `${on ? 'Sluta följa' : 'Följ'} ${team.name}`);
   const td = teamData();
-  const loading = () => el('span', { class: 'muted', text: 'Laddar…' });
+  const loading = () => el('span', { class: 'muted', text: navigator.onLine ? 'Laddar…' : 'Offline – ingen sparad data' });   // 2026-11-23: inte "Laddar…" för alltid
   if (!td) { fill($('team-next'), loading()); fill($('team-last'), loading()); fill($('team-next-list')); fill($('team-last-list')); }
   else {
     const upcoming = td.matches.filter((m) => m.state !== 'post'), past = td.matches.filter((m) => m.state === 'post').reverse();
