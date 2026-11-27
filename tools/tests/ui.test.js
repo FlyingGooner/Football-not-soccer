@@ -5,6 +5,14 @@ const tab = (v) => click(`#tabbar [data-view="${v}"]`);
 const settle = () => T.until(() => !busy && !again && !leagueTimer, 'refresh blev inte klar');
 const tableRows = () => [...document.querySelectorAll('#table-full tbody tr')];
 const pickLeague = (id) => click(`#view-${view} [data-league="${id}"]`);
+const secs = () => [...document.querySelectorAll('#match-list details.lm-sec')];   // [Kommande, Spelade]
+const openSec = (i) => { if (!secs()[i].open) click(secs()[i].querySelector('summary')); };
+// Swipe handled on document (bubbles), only clearly horizontal.
+const swipe = (node, x0, x1, y1 = 100) => {
+  const t = (x, y) => new Touch({ identifier: 1, target: node, clientX: x, clientY: y });
+  node.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [t(x0, 100)], changedTouches: [t(x0, 100)] }));
+  node.dispatchEvent(new TouchEvent('touchend', { bubbles: true, touches: [], changedTouches: [t(x1, y1)] }));
+};
 
 // The test file (dist) gets a rewritten CSP from build-single.ps1 (inline code), so only the network directives are compared.
 T.test('säkerhet: CSP-nätverk bara ESPN, no-referrer', () => {
@@ -25,48 +33,36 @@ T.test('första start: Matcher i PL, pågående överst, resultat', async () => 
   T.eq(view, 'matches');
   T.ok(!T.$('#view-matches').hidden && T.$('#view-table').hidden, 'bara Matcher syns');
   T.eq(T.$('#tabbar .tab.on').dataset.view, 'matches');
-  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'now', 'Aktuella när det finns pågående matcher');
-  click('#mtabs [data-mtab="now"]');
-  T.ok(T.$('#match-list').textContent.includes('Pågår nu'), 'pågående match överst');
-  T.ok(T.$('#match-list').textContent.includes("LIVE 67'"), 'LIVE med minut');
-  T.ok(T.$('#more').hidden, 'Aktuella har ingen Visa fler');
+  T.ok(T.$('#match-list .day').textContent === 'Pågår nu', 'pågående match överst');
+  T.eq(T.$('#match-list .live').textContent, "67'", 'live med minut');
+  T.eq(secs().map((d) => d.open), [false, false], 'Kommande och Spelade hopfällda när det spelas i dag');
   T.ok(!T.$('#today'), 'Idag-raden borttagen');
 });
-T.test('Matcher: flikarna Kommande och Spelade, Visa fler', async () => {
-  click('#mtabs [data-mtab="next"]');
-  T.ok(!T.$('#match-list').textContent.includes('Idag'), 'Kommande har inte dagens matcher');
-  T.ok(document.querySelectorAll('#match-list .lm').length >= 5, 'minst 5 rader');
-  click('#mtabs [data-mtab="past"]');
-  const rows = () => document.querySelectorAll('#match-list .lm').length, n = rows();
-  T.ok(n >= 5 && T.$('#match-list .end').textContent === 'Slut', 'spelade med Slut');
-  T.ok(!T.$('#more').hidden, 'Visa fler');
+T.test('Matcher: avsnitten Kommande och Spelade fälls ut, Visa fler', async () => {
+  openSec(0);
+  T.ok(!secs()[0].textContent.includes('Senare idag'), 'Kommande har inte dagens matcher');
+  T.ok(secs()[0].querySelectorAll('.lm').length >= 5, 'minst 5 rader');
+  openSec(1);
+  const rows = () => secs()[1].querySelectorAll('.lm').length, n = rows();
+  T.ok(n >= 5 && secs()[1].querySelector('.end').textContent === 'Slut', 'spelade med Slut');
+  const more = secs()[1].querySelector('.more-btn');
+  T.ok(more, 'Visa fler');
   const before = __calls.length;
-  click('#more');
+  click(more);
   await T.until(() => !loadingMore, 'Visa fler blev inte klar');
   T.ok(rows() >= n, 'inte färre rader');
   if (__calls.length > before) T.ok(/dates=\d{6}$/.test(__calls[__calls.length - 1].url), 'en månad till hämtas');
-  click('#mtabs [data-mtab="now"]');
 });
-T.test('Matcher: ingen rubrik, svep byter flik', () => {
+T.test('Matcher: ingen rubrik, svep byter liga, lodrätt svep ignoreras', async () => {
   T.ok(!T.$('#card-matches h2'), 'ingen rubrik Matcher');
-  const sel = () => T.$('#mtabs [aria-selected="true"]').dataset.mtab;
-  const card = T.$('#card-matches');
-  const swipe = (x0, x1, y1 = 100) => {
-    const t = (x, y) => new Touch({ identifier: 1, target: card, clientX: x, clientY: y });
-    card.dispatchEvent(new TouchEvent('touchstart', { touches: [t(x0, 100)], changedTouches: [t(x0, 100)] }));
-    card.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(x1, y1)] }));
-  };
-  swipe(300, 100);
-  T.eq(sel(), 'next');
-  swipe(300, 100);
-  T.eq(sel(), 'past');
-  swipe(300, 100);
-  T.eq(sel(), 'past', 'sista fliken');
-  swipe(100, 300, 400);
-  T.eq(sel(), 'past', 'lodrätt svep ignoreras');
-  swipe(100, 300);
-  swipe(100, 300);
-  T.eq(sel(), 'now');
+  swipe(T.$('#card-matches'), 300, 100, 400);
+  T.eq(league, 'eng.1', 'lodrätt svep ignoreras');
+  swipe(T.$('#card-matches'), 300, 100);
+  T.eq(league, 'esp.1');
+  await settle();
+  swipe(T.$('#card-matches'), 100, 300);
+  T.eq(league, 'eng.1');
+  await settle();
 });
 T.test('cache: ingen ny hämtning av tabell eller intervall vid flikbyte', async () => {
   const before = __calls.length;
@@ -87,7 +83,7 @@ T.test('säkerhet: bara ESPN:s API, utan cookies och referer, med tidsgräns', (
   }
 });
 T.test('säkerhet: klubbmärken från annan värd visas inte', () => {
-  T.eq(document.querySelectorAll('img').length, 0);
+  T.eq(document.querySelectorAll('img:not(.shot)').length, 0, 'bara manualens bilder');
   T.ok(document.querySelectorAll('.ph').length > 0, 'platshållare');
 });
 T.test('ligor: standard fyra i väljaren, VM väljs under Inställningar och visar grupper, svep byter liga', async () => {
@@ -104,15 +100,10 @@ T.test('ligor: standard fyra i väljaren, VM väljs under Inställningar och vis
   T.eq([...document.querySelectorAll('#table-full .grp')].map((h) => h.textContent), ['Group A', 'Group B']);
   T.eq(document.querySelectorAll('#table-full tbody tr').length, 8);
   const card = T.$('#view-table');
-  const swipe = (x0, x1) => {
-    const t = (x) => new Touch({ identifier: 1, target: card, clientX: x, clientY: 100 });
-    card.dispatchEvent(new TouchEvent('touchstart', { touches: [t(x0)], changedTouches: [t(x0)] }));
-    card.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(x1)] }));
-  };
-  swipe(100, 300);
+  swipe(card, 100, 300);
   T.eq(league, 'uefa.champions');
   await settle();
-  swipe(300, 100);
+  swipe(card, 300, 100);
   T.eq(league, 'fifa.world');
   await settle();
   tab('settings');
@@ -177,7 +168,7 @@ T.test('Tabell: tryck visar laget som Favorit-vyn, + följer där, egen färg', 
   click('#teambar-fol');
   T.eq(follows(), ['202']);
   T.eq(favorite(), null);
-  T.eq(T.$('#teambar-fol').textContent, '✓');
+  T.eq(T.$('#teambar-fol').textContent, '✓Följer');
   click('#teambar-fol');
   T.eq(follows(), [], '✓ slutar följa, laget visas kvar');
   T.eq(T.$('#teambar-name').textContent, 'Esp 2');
@@ -252,7 +243,7 @@ T.test('Lag: märkesrad, favoriten först, filter, pågående match, Kommande/Sp
   click('#lag-cards [data-team="202"] .lag-open');
   T.eq(view, 'fav');
   T.eq(T.$('#teambar-name').textContent, 'Esp 2', 'lagnamnet öppnar lagets vy');
-  T.eq(T.$('#teambar-fol').textContent, '✓');
+  T.eq(T.$('#teambar-fol').textContent, '✓Följer');
   tab('team');
 });
 T.test('Inst.: följda lag, ★ byter favorit, ✕ slutar följa och tar bort cachen', () => {
@@ -291,21 +282,21 @@ T.test('CL: lag får sin inhemska liga', async () => {
 T.test('matchdetaljer: spelad visar bara mål, pågående även kort', async () => {
   tab('matches');
   await settle();
-  click('#mtabs [data-mtab="past"]');
-  const row = T.$('#match-list .lm.tap');
+  openSec(1);
+  const row = secs()[1].querySelector('.lm.tap');
   click(row);
-  T.ok(T.$('#match-list .evs').textContent.includes('A. Skytt'), 'målskytt');
-  T.ok(!T.$('#match-list .evs').textContent.includes('🟨'), 'inget kort');
+  T.ok(secs()[1].querySelector('.evs').textContent.includes('A. Skytt'), 'målskytt');
+  T.ok(!secs()[1].querySelector('.evs').textContent.includes('🟨'), 'inget kort');
   T.eq(row.getAttribute('aria-expanded'), 'true');
-  click('#mtabs [data-mtab="now"]');
-  click(T.$('#match-list .lm.tap'));
-  T.ok(T.$('#match-list .evs').textContent.includes('🟨'), 'gult kort i pågående');
+  const live = T.$('#match-list > div .lm.tap');   // pågående överst, utanför avsnitten
+  click(live);
+  T.ok(live.nextElementSibling.textContent.includes('🟨'), 'gult kort i pågående');
 });
 T.test('matchdetaljer: andra gula visas 🟨🟥, live-tid med tilläggstid och HT', () => {
   const m = { home: { id: '1' }, away: { id: '2' }, events: [{ kind: 'yellow', min: "20'", name: 'X', teamId: '1' }, { kind: 'red', min: "70'", name: 'X', teamId: '1' }, { kind: 'red', min: "80'", name: 'Y', teamId: '2' }] };
   const t = [...eventsView(m).querySelectorAll('.ev')].map((n) => n.textContent);
-  T.eq(t, ["20'🟨 X", "70'🟨🟥 X", "80'🟥 Y"]);
-  T.eq(liveText({ clock: "45'+3'", detail: '' }), "LIVE 45'+3");
+  T.eq(t, ["20'🟨X", "70'🟨🟥X", "Y🟥80'"], 'borta speglat: namn, ikon, minut');
+  T.eq(liveText({ clock: "45'+3'", detail: '' }), "45'+3");
   T.eq(liveText({ clock: "45'", detail: 'HT' }), 'HT');
 });
 T.test('export: bara inställningar, ingen matchdata', () => {
@@ -373,25 +364,25 @@ T.test('lagnamn i matchrad öppnar lagets vy, fäller inte ut matchen', async ()
   T.ok(row.getAttribute('aria-expanded') !== 'true', 'matchen fälldes inte ut');
   tab('matches');
 });
-T.test('byte av vy: Matcher öppnas på Kommande, utfällda matcher återställs', async () => {
+T.test('byte av vy: utfällda matcher återställs, utfällda avsnitt gäller sessionen', async () => {
   tab('matches');
   await settle();
-  click('#mtabs [data-mtab="past"]');
-  click('#match-list .lm.tap');
+  openSec(1);
+  click(secs()[1].querySelector('.lm.tap'));
   T.ok(T.$('#match-list .evs'), 'utfälld');
   tab('table');
   tab('matches');
   await settle();
-  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'now');
-  click('#mtabs [data-mtab="past"]');
-  T.ok(!T.$('#match-list .evs'), 'ihopfälld igen');
+  T.ok(secs()[1].open, 'Spelade fortfarande utfälld');
+  T.ok(!T.$('#match-list .evs'), 'matchen ihopfälld igen');
+  click(secs()[1].querySelector('summary'));
+  await T.until(() => !secOpen.has('past'), 'toggle-händelsen');
 });
-T.test('Matcher utan matcher i dag öppnas på Kommande', () => {
+T.test('Matcher utan matcher i dag: Kommande utfälld', () => {
   const e = L(league), saved = e.league;
   e.league = saved.filter((m) => m.state === 'pre' && new Date(m.date) - Date.now() > 2 * 864e5);
-  mtab = null;
   renderLeagueMatches();
-  T.eq(T.$('#mtabs [aria-selected="true"]').dataset.mtab, 'next');
+  T.eq(secs().map((d) => d.open), [true, false]);
   e.league = saved;
   renderLeagueMatches();
 });
@@ -404,8 +395,8 @@ T.test('anrop: ligor per månad (3 parallellt), inga lagscheman per lag, CL har 
   const urls = __calls.slice(before).map((c) => c.url);
   T.ok(!urls.some((u) => /\/teams\//.test(u)), 'inga lagscheman: ' + urls.join());
   T.ok(urls.every((u) => !u.includes('dates=') || /dates=\d{6}$/.test(u)), 'bara månader');
-  click('#mtabs [data-mtab="next"]');
-  T.ok(document.querySelectorAll('#match-list .lm').length > 0, 'CL: kommande matcher');
+  openSec(0);
+  T.ok(secs()[0].querySelectorAll('.lm').length > 0, 'CL: kommande matcher');
 });
 T.test('anrop: snabbt ligabyte hämtar bara sista ligan, samma URL högst en gång per minut', async () => {
   const before = __calls.length;

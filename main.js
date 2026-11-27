@@ -293,8 +293,9 @@ function applySettings(s) {
 const PWD_KEY = 'fns.pwd', OFF_KEY = 'fns.pwdoff';
 let showPwd = false, pwdBusy = false;
 // 2026-11-15: koden skapas av appen (generatePassword: 16 tecken, kryptografisk slump) och sparas på enheten. Egen kod går att välja (ownPassword), med samma krav.
-function savedPassword() {
-  try { let p = localStorage.getItem(PWD_KEY); if (!p) { p = Backup.generatePassword(); localStorage.setItem(PWD_KEY, p); } return p; } catch { return ''; }
+// create = false: only read (renderPwd/keep must not recreate fns.pwd right after Radera all data).
+function savedPassword(create = true) {
+  try { let p = localStorage.getItem(PWD_KEY); if (!p && create) { p = Backup.generatePassword(); localStorage.setItem(PWD_KEY, p); } return p || ''; } catch { return ''; }
 }
 function rememberOn() { return true; }   // koden sparas alltid (2026-11-15)
 function setRemember(on) {
@@ -304,7 +305,7 @@ function setRemember(on) {
 }
 // En backup som lästs in med en annan kod: den koden används sedan (en kod att hålla reda på, t.ex. på en ny telefon).
 function keep(pwd) {
-  if (!pwd || pwd === savedPassword()) return;
+  if (!pwd || pwd === savedPassword(false)) return;
   try { localStorage.setItem(PWD_KEY, pwd); } catch { return; }
   renderPwd(); snackbar('Koden från filen används nu för nya backuper.', null, null, 4000);
 }
@@ -463,7 +464,7 @@ oneFieldWhenShown();
 // Din kod (2026-11-15): skapas alltid av appen. Visa, Kopiera, Ny kod.
 function renderPwd() {
   const box = $('pwd-box'); if (!box) return;
-  const p = savedPassword();
+  const p = showPwd ? savedPassword() : '';
   const toggle = el('button', { type: 'button', class: 'btn text', 'aria-pressed': showPwd ? 'true' : 'false', on: { click: () => { showPwd = !showPwd; renderPwd(); } } }, showPwd ? 'Dölj' : 'Visa');
   const copy = el('button', { type: 'button', class: 'btn text', on: { click: copyPassword } }, 'Kopiera');
   const change = el('button', { type: 'button', class: 'btn text', on: { click: rememberPassword } }, 'Ny kod');
