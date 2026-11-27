@@ -46,6 +46,11 @@ function expandable(row, m, tag = 'div') {
   sync();
   return [row, box];
 }
+// Leader/winner's side ' win', loser's ' lose'; a draw or no score stays neutral (hero and Matcher rows).
+function sides(m) {
+  const hs = Number(m.homeScore), as = Number(m.awayScore), scored = m.state !== 'pre' && Number.isFinite(hs) && Number.isFinite(as);
+  return { hs, as, scored, cls: (a, b) => (!scored || a === b ? '' : a > b ? ' win' : ' lose') };
+}
 function matchHero(m, kind) {
   const d = new Date(m.date);
   let mid;
@@ -55,9 +60,7 @@ function matchHero(m, kind) {
     mid = el('div', { class: 'mid' }, el('span', { class: 'score', text: scoreText(m.homeScore, m.awayScore) }),
       m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : (r ? el('span', { class: `badge ${r}`, text: RESULT_LONG[r] }) : null));
   }
-  // Leader/winner's side green, loser's red; draw neutral (as in Matcher).
-  const hs = Number(m.homeScore), as = Number(m.awayScore), scored = m.state !== 'pre' && Number.isFinite(hs) && Number.isFinite(as);
-  const cls = (a, b) => (!scored || a === b ? '' : a > b ? ' win' : ' lose');
+  const { hs, as, cls } = sides(m);
   const side = (t, c) => el('div', { class: `side${c}` }, logo(t.logo), teamName(t, m.leagueId));
   return el('div', { class: 'hero' },
     el('div', { class: 'match-main' }, side(m.home, ` h${cls(hs, as)}`), mid, side(m.away, cls(as, hs))),
@@ -104,9 +107,7 @@ function leagueMatchList(list, emptyText) {
     const key = m.state === 'in' ? 'live' : today ? `today-${m.state}` : fmtDayKey.format(m.date);
     const label = m.state === 'in' ? 'Pågår nu' : today ? (m.state === 'post' ? 'Spelade idag' : 'Senare idag') : dayLabel(m.date);
     if (key !== lastDay) { group = el('div', { class: 'dgroup' }, el('div', { class: 'day', text: label })); wrap.append(group); lastDay = key; }
-    // Leader/winner bold, loser dimmed; a draw stays neutral.
-    const hs = Number(m.homeScore), as = Number(m.awayScore), scored = m.state !== 'pre' && Number.isFinite(hs) && Number.isFinite(as);
-    const cls = (a, b) => (!scored || a === b ? '' : a > b ? ' win' : ' lose');
+    const { hs, as, scored, cls } = sides(m);
     const mid = m.state === 'pre' ? el('span', { class: 's', text: fmtTime.format(m.date) })
       : el('span', { class: 's' }, el('span', { class: 'sc', text: scoreText(m.homeScore, m.awayScore) }),
         m.state === 'in' ? el('span', { class: 'live', text: liveText(m) }) : el('span', { class: 'end', text: 'Slut' }));
@@ -119,11 +120,7 @@ function leagueMatchList(list, emptyText) {
   }
   return wrap;
 }
-// ---------- Card Matcher: tabs Aktuella / Kommande / Spelade (session only) ----------
-const MTABS = [['now', 'Aktuella', 'Inga matcher i dag'], ['next', 'Kommande', 'Inga kommande matcher'], ['past', 'Spelade', 'Inga spelade matcher']];
-let mtabsOpen = false;
-let mtab = null;                 // null = default: Aktuella if there are live or today's matches, else Kommande (reset on every view change)
-const curTab = () => mtab || (matchLists(L(league).league || []).now.length ? 'now' : 'next');
+// ---------- Card Matcher: pågående/dagens, sedan Kommande och Spelade (session only) ----------
 let extra = { next: 0, past: 0 }; // rows added with Visa fler
 let loadingMore = false;
 function matchLists(ms) {
@@ -133,11 +130,6 @@ function matchLists(ms) {
     next: ms.filter((m) => m.state === 'pre' && !isToday(m) && new Date(m.date) > Date.now()),
     past: ms.filter((m) => m.state === 'post').reverse(),
   };
-}
-// Rows that fit down to the bottom menu (at least CONFIG.minRows).
-function fitRows() {
-  const top = $('match-list').getBoundingClientRect().top, bar = $('tabbar').getBoundingClientRect().height || 80;
-  return Math.max(CONFIG.minRows, Math.floor((innerHeight - Math.max(top, 0) - bar - 72) / 44));
 }
 const rangeEnd = (dir) => { const r = L(league).range; return !r || (dir < 0 ? r.from <= monthAt(-CONFIG.monthsMax) : r.to >= monthAt(CONFIG.monthsMax)); };
 // 2026-11-22: ingen vy-knapp – Idag, Kommande och Spelade i samma lista, som för laget man följer.
@@ -182,13 +174,7 @@ async function showMore(tab) {
   renderLeagueMatches();
 }
 
-// Swipe left/right on the list → next/previous tab (only clearly horizontal swipes, ≥ 50 px).
-function swipeTab(dir) {
-  const ids = MTABS.map(([id]) => id), cur = curTab();
-  const next = ids[ids.indexOf(cur) + dir];
-  if (next) { mtab = next; renderLeagueMatches(); }
-}
-// Tabell: swipe → next/previous league in the picker.
+// Matcher and Tabell: swipe → next/previous league in the picker.
 function swipeLeague(dir) {
   const ids = pickerLeagues(layout), next = ids[ids.indexOf(league) + dir];
   if (next) setLeague(next);

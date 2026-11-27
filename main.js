@@ -22,7 +22,7 @@ function go(v, fetch = true, push = true) {
   if (view !== 'fav' && peek) { peek = null; syncFav(); }
   // Leaving Inställningar folds its sections again (as in Stress control and Simple nutrition).
   if (prev === 'settings' && view !== 'settings') for (const d of document.querySelectorAll('#view-settings details[open]')) d.open = false;
-  if (view !== prev) { mtab = null; openMatches.clear(); teamOpen.next = teamOpen.last = false; lagOpen.clear(); extra = { next: 0, past: 0 }; showPwd = false; }   // new view: start fresh
+  if (view !== prev) { openMatches.clear(); teamOpen.next = teamOpen.last = false; lagOpen.clear(); extra = { next: 0, past: 0 }; showPwd = false; }   // new view: start fresh
   if (location.hash !== '#' + view) {
     if (push && view !== prev) history.pushState({ fns: 1 }, '', '#' + view);   // fns: a step this app added (← may go back)
     else history.replaceState(history.state, '', '#' + view);
@@ -39,7 +39,7 @@ $('tabbar').addEventListener('click', (ev) => {
   if (!t) return;
   ev.preventDefault();
   if (t.dataset.view === 'fav' && peek) { peek = null; syncFav(); teamOpen.next = teamOpen.last = false; }   // the middle button always shows the favourite
-  if (t.dataset.view === 'matches') { mtab = null; if (view === 'matches') { renderLeagueMatches(); scrollTo(0, 0); return; } }   // always the default tab (Aktuella only with today's matches, else Kommande)
+  if (t.dataset.view === 'matches' && view === 'matches') { renderLeagueMatches(); scrollTo(0, 0); return; }   // tap on the open tab: back to the top
   go(t.dataset.view);
 });
 // Bakåt (Android, Safari swipe, ←): show the view of that history step; an open team closes. No new step.
