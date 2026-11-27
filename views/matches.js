@@ -137,7 +137,6 @@ const secOpen = new Set();
 const secShut = new Set();   // 2026-11-22: Kommande är utfälld när inget spelas idag – tills man fäller ihop den
 function renderLeagueMatches() {
   const ms = L(league).league || [], lists = matchLists(ms);
-  $('mtabs').hidden = true; $('more').hidden = true;
   if (!L(league).league) { fill($('match-list'), el('p', { class: 'muted', text: 'Laddar…' })); return; }
   const sec = (tab, title, empty) => {
     const list = lists[tab], n = CONFIG.moreStep + extra[tab], dir = tab === 'past' ? -1 : 1;
